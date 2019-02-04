@@ -8,7 +8,7 @@ using DataLayer.EfClasses;
 using GenericServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ServiceLayer.HomeController.Dtos
+namespace ServiceLayer.Books.Dtos
 {
     public class ChangePubDateDto : ILinkToEntity<Book>
     {

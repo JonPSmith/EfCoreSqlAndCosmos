@@ -3,8 +3,6 @@
 
 using System.Linq;
 using DataLayer.EfCode;
-using DataNoSql;
-using EfCoreInAction.Helpers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +19,9 @@ namespace EfCoreInAction.Controllers
         private static bool _cancel;
 
         // GET
-        public IActionResult Index([FromServices]EfCoreContext context)
+        public IActionResult Index([FromServices]SqlDbContext context)
         {
-            Request.ThrowErrorIfNotLocal();
+
 
             _progress = 0;
             _cancel = false;
@@ -33,20 +31,17 @@ namespace EfCoreInAction.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Books(int numBooks, bool wipeDatabase, 
-            [FromServices]EfCoreContext context,
-            [FromServices]DbContextOptions<EfCoreContext> options,
-            [FromServices]INoSqlCreators noSqlCreators,
-            [FromServices]ILogger<RavenStore> logger,
+            [FromServices]SqlDbContext context,
+            [FromServices]DbContextOptions<SqlDbContext> options,
             [FromServices]IHostingEnvironment env)
         {
             if (numBooks == 0)
                 return View((object) "Error: should contain the number of books to generate.");
 
-            Request.ThrowErrorIfNotLocal();
 
             if (wipeDatabase)
                 context.DevelopmentWipeCreated(env.WebRootPath);
-            options.GenerateBooks(noSqlCreators, logger, numBooks, env.WebRootPath, numWritten =>
+            options.GenerateBooks(numBooks, env.WebRootPath, numWritten =>
             {
                 _progress = numWritten * 100.0 / numBooks;
                 return _cancel;

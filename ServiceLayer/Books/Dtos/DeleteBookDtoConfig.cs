@@ -7,7 +7,7 @@ using AutoMapper;
 using DataLayer.EfClasses;
 using GenericServices.Configuration;
 
-namespace ServiceLayer.HomeController.Dtos
+namespace ServiceLayer.Books.Dtos
 {
     class DeleteBookDtoConfig : PerDtoConfig<DeleteBookDto, Book>
     {

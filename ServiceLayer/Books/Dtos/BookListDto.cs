@@ -5,7 +5,7 @@ using System;
 using DataLayer.EfClasses;
 using GenericServices;
 
-namespace ServiceLayer.HomeController.Dtos
+namespace ServiceLayer.Books.Dtos
 {
     public class BookListDto : ILinkToEntity<Book>
     {

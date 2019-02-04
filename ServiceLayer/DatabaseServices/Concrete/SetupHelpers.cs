@@ -6,8 +6,10 @@ using System.IO;
 using System.Linq;
 using DataLayer.EfCode;
 using DataLayer.SqlCode;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 using ServiceLayer.DatabaseCode.Services;
 
 namespace ServiceLayer.DatabaseServices.Concrete
@@ -54,6 +56,14 @@ namespace ServiceLayer.DatabaseServices.Concrete
             }
 
             return numBooks;
+        }
+
+        public static void GenerateBooks(this DbContextOptions<SqlDbContext> options,
+            int numBooksToAdd, string wwwrootDirectory, Func<int, bool> progessCancel)
+        {
+            //add generated books
+            var gen = new BookGenerator(Path.Combine(wwwrootDirectory, SeedFileSubDirectory, TemplateFileName),true);
+            gen.WriteBooks(numBooksToAdd, options, progessCancel);
         }
     }
 }

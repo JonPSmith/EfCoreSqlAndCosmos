@@ -9,7 +9,7 @@ using DataLayer.EfClasses;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
 
-namespace ServiceLayer.HomeController.Dtos
+namespace ServiceLayer.Books.Dtos
 {
     public class CreateBookDto : ILinkToEntity<Book>
     {

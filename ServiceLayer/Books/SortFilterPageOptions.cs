@@ -5,9 +5,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using ServiceLayer.HomeController.QueryObjects;
+using ServiceLayer.Books.QueryObjects;
 
-namespace ServiceLayer.HomeController
+namespace ServiceLayer.Books
 {
     public class SortFilterPageOptions
     {

@@ -4,9 +4,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using ServiceLayer.HomeController.Dtos;
+using ServiceLayer.Books.Dtos;
 
-namespace ServiceLayer.HomeController.QueryObjects
+namespace ServiceLayer.Books.QueryObjects
 {
     public enum OrderByOptions
     {

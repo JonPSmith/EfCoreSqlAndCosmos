@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using DataLayer.QueryObjects;
 using EfCoreInAction.Controllers;
-using GenericServices;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using ServiceLayer.Books;
 using ServiceLayer.Books.Dtos;
 using ServiceLayer.Logger;
@@ -16,11 +13,11 @@ namespace EfCoreSqlAndCosmos.Controllers
     {
 
 
-        public async Task<IActionResult> Index
+        public IActionResult Index
         (SortFilterPageOptions options,
             [FromServices] IListBooksService service)
         {
-            var output = await service.SortFilterPage(options);
+            var output = service.SortFilterPage(options).ToList();
             return View(new BookListCombinedDto(options, output));              
         }
 

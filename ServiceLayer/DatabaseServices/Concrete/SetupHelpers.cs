@@ -38,9 +38,6 @@ namespace ServiceLayer.DatabaseServices.Concrete
 
         public static int SeedDatabase(this SqlDbContext context, string wwwrootDirectory)
         {
-            if (!(context.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists())
-                throw new InvalidOperationException("The database does not exist. If you are using Migrations then run PMC command update-database to create it");
-
             var numBooks = context.Books.Count();
             if (numBooks == 0)
             {

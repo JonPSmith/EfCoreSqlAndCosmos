@@ -9,7 +9,6 @@ namespace ServiceLayer.Books
 {
     public interface IListBooksService
     {
-        Task<IQueryable<BookListDto>> SortFilterPage
-            (SortFilterPageOptions options);
+        IQueryable<BookListDto> SortFilterPage(SortFilterPageOptions options);
     }
 }

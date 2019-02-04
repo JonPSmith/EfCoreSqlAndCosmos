@@ -21,8 +21,7 @@ namespace ServiceLayer.Books.Services
             _context = context;
         }
 
-        public async Task<IQueryable<BookListDto>> SortFilterPage
-            (SortFilterPageOptions options)
+        public IQueryable<BookListDto> SortFilterPage(SortFilterPageOptions options)
         {
             var booksQuery = _context.Books            
                 .AsNoTracking()                        
@@ -31,7 +30,7 @@ namespace ServiceLayer.Books.Services
                 .FilterBooksBy(options.FilterBy,       
                                options.FilterValue);   
 
-            await options.SetupRestOfDto(booksQuery);        
+            options.SetupRestOfDto(booksQuery);        
 
             return booksQuery.Page(options.PageNum-1,  
                                    options.PageSize);  

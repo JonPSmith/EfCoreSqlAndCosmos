@@ -1,44 +1,25 @@
 ﻿using System;
-using System.IO;
 using DataLayer.EfCode;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ServiceLayer.DatabaseServices.Concrete;
 
 namespace EfCoreSqlAndCosmos
 {
     public static class DatabaseStartupHelpers
     {
-  private const string WwwRootDirectory = "wwwroot\\";
-
-        public static string GetWwwRootPath()
+        public static void SetupDevelopmentDatabase(this IServiceProvider serviceProvider, string wwwRootPath, bool seedDatabase = true)
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), WwwRootDirectory);
-        }
-
-        public static IWebHost SetupDevelopmentDatabase(this IWebHost webHost, bool seedDatabase = true)
-        {
-            using (var scope = webHost.Services.CreateScope())
+            using (var scope = serviceProvider.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 using (var context = services.GetRequiredService<SqlDbContext>())
                 {
-                    try
-                    {
-                        context.DevelopmentEnsureCreated(GetWwwRootPath());
-                        if (seedDatabase)
-                            context.SeedDatabase(GetWwwRootPath());
-                    }
-                    catch (Exception ex)
-                    {
-                        var logger = services.GetRequiredService<ILogger<Program>>();
-                        logger.LogError(ex, "An error occurred while setting upor seeding the development database.");
-                    }
+
+                    context.DevelopmentEnsureCreated(wwwRootPath);
+                    if (seedDatabase)
+                        context.SeedDatabase(wwwRootPath);
                 }
             }
-
-            return webHost;
         }
     }
 }

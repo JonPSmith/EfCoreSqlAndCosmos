@@ -54,7 +54,7 @@ namespace EfCoreSqlAndCosmos
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -77,6 +77,13 @@ namespace EfCoreSqlAndCosmos
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //I setup the database here, as its easier to get the wwwroot directory
+            //see this issue to track this problem https://github.com/aspnet/AspNetCore/issues/4206
+            serviceProvider.SetupDevelopmentDatabase(env.WebRootPath);
+
+
+
         }
     }
 }

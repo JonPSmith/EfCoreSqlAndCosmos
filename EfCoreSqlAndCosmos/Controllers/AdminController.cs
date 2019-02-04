@@ -1,14 +1,13 @@
-﻿// Copyright (c) 2017 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT licence. See License.txt in the project root for license information.
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
-using DataLayer.EfClasses;
+using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 using EfCoreInAction.Controllers;
 using GenericServices;
 using GenericServices.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ServiceLayer.Books.Dtos;
 using ServiceLayer.DatabaseServices.Concrete;
 

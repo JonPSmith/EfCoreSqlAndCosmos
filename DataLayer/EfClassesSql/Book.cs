@@ -1,14 +1,15 @@
-﻿// Copyright (c) 2018 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT licence. See License.txt in the project root for license information.
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using DataLayer.EfClasses;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataLayer.EfClasses
+namespace DataLayer.EfClassesSql
 {
     public class Book
     {
@@ -47,6 +48,25 @@ namespace DataLayer.EfClasses
             _authorsLink = new HashSet<BookAuthor>(authors.Select(a => new BookAuthor(this, a, order++)));
         }
 
+        public int BookId { get; private set; }
+
+        [Required(AllowEmptyStrings = false)]
+        public string Title { get; private set; }
+
+        public string Description { get; private set; }
+        public DateTime PublishedOn { get; set; }
+        public string Publisher { get; private set; }
+        public decimal OrgPrice { get; private set; }
+        public decimal ActualPrice { get; private set; }
+
+        [MaxLength(PromotionalTextLength)]
+        public string PromotionalText { get; private set; }
+
+        public string ImageUrl { get; private set; }
+
+        public IEnumerable<Review> Reviews => _reviews?.ToList();
+        public IEnumerable<BookAuthor> AuthorsLink => _authorsLink?.ToList();
+
         public static IStatusGeneric<Book> CreateBook(string title, string description, DateTime publishedOn,
             string publisher, decimal price, string imageUrl, ICollection<Author> authors)
         {
@@ -75,23 +95,6 @@ namespace DataLayer.EfClasses
 
             return status.SetResult(book);
         }
-
-        public int BookId { get; private set; }
-        [Required(AllowEmptyStrings = false)]
-        public string Title { get; private set; }
-        public string Description { get; private set; }
-        public DateTime PublishedOn { get; set; }
-        public string Publisher { get; private set; }
-        public decimal OrgPrice { get; private set; }
-        public decimal ActualPrice { get; private set; }
-
-        [MaxLength(PromotionalTextLength)]
-        public string PromotionalText { get; private set; }
-
-        public string ImageUrl { get; private set; }
-
-        public IEnumerable<Review> Reviews => _reviews?.ToList();
-        public IEnumerable<BookAuthor> AuthorsLink => _authorsLink?.ToList();
 
         public void UpdatePublishedOn(DateTime publishedOn)
         {

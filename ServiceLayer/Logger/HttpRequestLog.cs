@@ -1,12 +1,5 @@
-﻿// =====================================================
-// EfCoreExample - Example code to go with book
-// Filename: HttpRequestLog.cs
-// Date Created: 2016/09/11
-// 
-// Under the MIT License (MIT)
-// 
-// Written by Jon P Smith : GitHub JonPSmith, www.thereformedprogrammer.net
-// =====================================================
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
 using System.Collections.Concurrent;
@@ -36,6 +29,16 @@ namespace ServiceLayer.Logger
 
         private List<LogParts> _requestLogs;
 
+        private HttpRequestLog(string traceIdentifier)
+        {
+            TraceIdentifier = traceIdentifier;
+            LastAccessed = DateTime.UtcNow;
+            _requestLogs = new List<LogParts>();
+
+            //now clear old request logs
+            ClearOldLogs(MaxKeepLogMinutes);
+        }
+
         public string TraceIdentifier { get; }
 
         public DateTime LastAccessed { get; private set; }
@@ -45,16 +48,6 @@ namespace ServiceLayer.Logger
         public override string ToString()
         {
             return $"At time: {LastAccessed:s}, Logs : {string.Join("/n", _requestLogs.Select(x => x.ToString()))}";
-        }
-
-        private HttpRequestLog(string traceIdentifier)
-        {
-            TraceIdentifier = traceIdentifier;
-            LastAccessed = DateTime.UtcNow;
-            _requestLogs = new List<LogParts>();
-
-            //now clear old request logs
-            ClearOldLogs(MaxKeepLogMinutes);
         }
 
         public static void AddLog(string traceIdentifier, LogLevel logLevel, EventId eventId, string eventString)

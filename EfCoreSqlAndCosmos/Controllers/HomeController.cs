@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
+
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using EfCoreInAction.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Books;
@@ -11,8 +13,6 @@ namespace EfCoreSqlAndCosmos.Controllers
 {
     public class HomeController : BaseTraceController
     {
-
-
         public IActionResult Index
         (SortFilterPageOptions options,
             [FromServices] IListBooksService service)

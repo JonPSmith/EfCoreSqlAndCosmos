@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2017 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT licence. See License.txt in the project root for license information.
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Data;
 using System.Data.SqlClient;
@@ -12,7 +12,6 @@ namespace DataLayer.SqlCode
 {
     public static class ApplyScriptExtension
     {
-
         /// <summary>
         /// This reads in a SQL script file and executes each command to the database pointed at by the DbContext
         /// Each command should have an GO at the start of the line after the command.

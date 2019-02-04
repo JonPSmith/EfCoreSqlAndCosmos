@@ -16,6 +16,7 @@ namespace DataLayer.EfClassesNoSql
             get { return CreateIdString(); }
             set { SetBookIdFromId(value); }
         }
+
         public int BookId { get; set; }
         public string Title { get; set; }
         public DateTime PublishedOn { get; set; }
@@ -37,6 +38,5 @@ namespace DataLayer.EfClassesNoSql
         {
             return IdStart + BookId.ToString("D10");
         }
-
     }
 }

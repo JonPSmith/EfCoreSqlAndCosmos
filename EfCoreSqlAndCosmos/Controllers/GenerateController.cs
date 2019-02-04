@@ -1,19 +1,17 @@
-﻿// Copyright (c) 2017 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT licence. See License.txt in the project root for license information.
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Linq;
 using DataLayer.EfCode;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using ServiceLayer.DatabaseServices.Concrete;
 
 namespace EfCoreInAction.Controllers
 {
     public class GenerateController : BaseTraceController
     {
-
         //This is a hack. Shouldn't use static variables like this! Not multi-user safe!!
         private static double _progress;
         private static bool _cancel;

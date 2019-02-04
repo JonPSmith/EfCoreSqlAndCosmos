@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2017 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT licence. See License.txt in the project root for license information.
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using DataLayer.EfClasses;
+using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -15,13 +16,10 @@ namespace ServiceLayer.DatabaseServices.Concrete
 {
     public class BookGenerator
     {
-        private readonly bool _makeBookTitlesDistinct;
+        private readonly Dictionary<string, Author> _authorDict = new Dictionary<string, Author>();
 
         private readonly ImmutableList<BookData> _loadedBookData;
-        private readonly Dictionary<string, Author> _authorDict = new Dictionary<string, Author>();
-        private int NumBooksInSet => _loadedBookData.Count;
-
-        public ImmutableDictionary<string, Author> AuthorDict => _authorDict.ToImmutableDictionary();
+        private readonly bool _makeBookTitlesDistinct;
 
         public BookGenerator(string filePath, bool makeBookTitlesDistinct)
         {
@@ -30,12 +28,9 @@ namespace ServiceLayer.DatabaseServices.Concrete
                 .ToImmutableList();
         }
 
-        public class BookData
-        {
-            public DateTime PublishDate { get; set; }
-            public string Title { get; set; }
-            public string Authors { get; set; }
-        }
+        private int NumBooksInSet => _loadedBookData.Count;
+
+        public ImmutableDictionary<string, Author> AuthorDict => _authorDict.ToImmutableDictionary();
 
         public void WriteBooks(int numBooks, DbContextOptions<SqlDbContext> options, Func<int, bool> progessCancel)
         {
@@ -152,6 +147,13 @@ namespace ServiceLayer.DatabaseServices.Concrete
         {
             return authors.Replace(" and ", ",").Replace(" with ", ",")
                 .Split(',').Select(x => x.Trim()).Where(x => x.Length > 1);
+        }
+
+        public class BookData
+        {
+            public DateTime PublishDate { get; set; }
+            public string Title { get; set; }
+            public string Authors { get; set; }
         }
     }
 }

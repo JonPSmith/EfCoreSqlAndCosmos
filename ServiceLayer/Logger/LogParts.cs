@@ -1,12 +1,5 @@
-﻿// =====================================================
-// EfCoreExample - Example code to go with book
-// Filename: LogParts.cs
-// Date Created: 2016/09/11
-// 
-// Under the MIT License (MIT)
-// 
-// Written by Jon P Smith : GitHub JonPSmith, www.thereformedprogrammer.net
-// =====================================================
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -17,6 +10,13 @@ namespace ServiceLayer.Logger
     public class LogParts
     {
         private const string EfCoreEventIdStartWith = "Microsoft.EntityFrameworkCore";
+
+        public LogParts(LogLevel logLevel, EventId eventId, string eventString)
+        {
+            LogLevel = logLevel;
+            EventId = eventId;
+            EventString = eventString;
+        }
 
         [JsonConverter(typeof(StringEnumConverter))]
         public LogLevel LogLevel { get; private set; }
@@ -34,17 +34,9 @@ namespace ServiceLayer.Logger
             }
         }
 
-        public LogParts(LogLevel logLevel, EventId eventId, string eventString)
-        {
-            LogLevel = logLevel;
-            EventId = eventId;
-            EventString = eventString;
-        }
-
         public override string ToString()
         {
             return $"{LogLevel}: {EventString}";
         }
-
     }
 }

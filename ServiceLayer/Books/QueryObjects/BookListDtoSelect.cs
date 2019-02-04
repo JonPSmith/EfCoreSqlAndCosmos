@@ -25,9 +25,9 @@ namespace ServiceLayer.Books.QueryObjects
                         .OrderBy(q => q.Order)                
                         .Select(q => q.Author.Name)),
                 ReviewsCount = p.Reviews.Count(),
-                ReviewsAverageVotes =
-                    p.Reviews.Select(y =>
-                        (double?)y.NumStars).Average()
+                //ReviewsAverageVotes =
+                //    p.Reviews.Select(y =>
+                //        (double?)y.NumStars).Average()
             });
         }
     }

@@ -59,26 +59,26 @@ var LoggingDisplay = (function($) {
 
     function fillModalBody() {
         var displayType = getDisplayType();
-        var body = '<div class="panel-group" id="log-accordian" role="tablist" aria-multiselectable="true">';
+        var body = ''; //'<div class="card-group" id="log-accordian" role="tablist" aria-multiselectable="true">';
         for (var i = 0; i < logs.requestLogs.length; i++) {
             if (displayType !== 'sql' || logs.requestLogs[i].isDb)
             body +=     
-'<div class="panel panel-default">'+
-   '<div class ="panel-heading" role="tab" id="heading'+i+'">'+
-      '<h4 class ="panel-title text-overflow-dots">'+
-        '<a role="button" data-toggle="collapse" data-parent="#log-accordion" href="#collapse' + i + '" aria-expanded="true" aria-controls="collapse' + i + '">' +
+'<div class="card">'+
+   '<div class ="card-heading" role="tab" id="heading'+i+'">'+
+      '<h4 class ="card-title text-overflow-dots">'+
+        '<a role="button" data-toggle="collapse" href="#collapse' + i + '" aria-expanded="false" aria-controls="collapse' + i + '">' +
           '<span class="' + setContextualColors(logs.requestLogs[i].logLevel) + '">' + logs.requestLogs[i].logLevel + ':&nbsp;</span>'+
             logs.requestLogs[i].eventString + 
         '</a>'+
       '</h4>'+
     '</div>'+
-    '<div id="collapse'+i+'" class ="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">'+
-            '<div class ="panel-body white-space-pre">' + logs.requestLogs[i].eventString+''+
+    '<div id="collapse'+i+'" class ="collapse">'+
+            '<div class ="card-body white-space-pre">' + logs.requestLogs[i].eventString+''+
        '</div>'+
   '</div>'+
 '</div>';
         }
-        body += '</div>';
+        //body += '</div>';
         $logModalBody.html(body);
     }
 

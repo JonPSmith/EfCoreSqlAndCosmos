@@ -69,10 +69,17 @@ textarea {
     white-space: nowrap;
 }
 
+/*------------------------------------------------------------------
+    Extra bits to cover bootstrap 3/4 issues
+*/
 
 @media (min-width: 768px) {
     .modal-xl {
         width: 90%;
         max-width:1200px;
     }
+}
+
+.hidden {
+    display: none !important;
 }

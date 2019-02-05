@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Logger;
 
-namespace EfCoreInAction.Controllers
+namespace EfCoreSqlAndCosmos.Controllers
 {
     public abstract class BaseTraceController : Controller
     {

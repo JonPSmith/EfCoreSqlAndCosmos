@@ -1,15 +1,10 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using System.Collections.Generic;
 using System.Linq;
 using DataLayer.EfCode;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Test.Helpers;
 using TestSupport.EfHelpers;
-using TestSupport.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Extensions.AssertExtensions;
@@ -33,15 +28,18 @@ namespace Test.UnitTests.DataLayer
             using (var context = new SqlDbContext(options))
             {
                 context.Database.EnsureCreated();
-                context.SeedDatabaseFourBooks();
+                var book = DddEfTestData.CreateDummyBookOneAuthor();
+                book.AddReview(5, "test", "test");
+                context.Add(book);
+                context.SaveChanges();
 
                 //ATTEMPT
                 var aveReviews = context.Books
                     .Select(p => p.Reviews.Select(y => (double?) y.NumStars).Average())
-                    .ToList();
+                    .Single();
 
                 //VERIFY
-                aveReviews.ShouldEqual(new List<double?>{null, null, null, 5});
+                aveReviews.ShouldEqual(5);
             }
         }
 
@@ -49,14 +47,17 @@ namespace Test.UnitTests.DataLayer
         public void TestAverageReviewSqlServerOk()
         {
             //SETUP
-            var config = AppSettings.GetConfiguration("..\\EfCoreSqlAndCosmos");
-            var connection = config.GetConnectionString("BookSqlConnection");
-            var builder = new DbContextOptionsBuilder<SqlDbContext>()
-                .UseSqlServer(connection)
-                .UseLoggerFactory(new LoggerFactory(new[]
-                    {new MyLoggerProviderActionOut(x => _output.WriteLine(x.Message))}));
-            using (var context = new SqlDbContext(builder.Options))
+            var options = this.CreateUniqueMethodOptionsWithLogging<SqlDbContext>(
+                log => _output.WriteLine(log.Message));
+            using (var context = new SqlDbContext(options))
             {
+                context.Database.EnsureCreated();
+                context.WipeAllDataFromDatabase();
+
+                var book = DddEfTestData.CreateDummyBookOneAuthor();
+                book.AddReview(5, "test", "test");
+                context.Add(book);
+                context.SaveChanges();
 
                 //ATTEMPT
                 var aveReviews = context.Books

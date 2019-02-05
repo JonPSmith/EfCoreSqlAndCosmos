@@ -3,7 +3,6 @@
 
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
-using EfCoreInAction.Controllers;
 using GenericServices;
 using GenericServices.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

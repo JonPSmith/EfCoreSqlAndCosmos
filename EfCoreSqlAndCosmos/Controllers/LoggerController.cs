@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Logger;
 
-namespace EfCoreInAction.Controllers
+namespace EfCoreSqlAndCosmos.Controllers
 {
     public class LoggerController : Controller
     {

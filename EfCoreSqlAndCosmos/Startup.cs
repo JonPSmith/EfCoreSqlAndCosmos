@@ -4,6 +4,7 @@
 using System;
 using System.Reflection;
 using DataLayer.EfCode;
+using EfCoreSqlAndCosmos.Logger;
 using GenericServices.Setup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NetCore.AutoRegisterDi;
 using ServiceLayer.Books.Dtos;
 using ServiceLayer.Books.Services;
@@ -37,6 +39,7 @@ namespace EfCoreSqlAndCosmos
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var sqlConnection = Configuration.GetConnectionString("BookSqlConnection");
             services.AddDbContext<SqlDbContext>(options =>
@@ -53,8 +56,10 @@ namespace EfCoreSqlAndCosmos
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider,
+            ILoggerFactory loggerFactory, IHttpContextAccessor httpContextAccessor)
         {
+            loggerFactory.AddProvider(new RequestTransientLogger(() => httpContextAccessor));
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

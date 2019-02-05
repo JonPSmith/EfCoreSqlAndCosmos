@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using EfCoreInAction.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Books;
 using ServiceLayer.Books.Dtos;
@@ -18,6 +17,7 @@ namespace EfCoreSqlAndCosmos.Controllers
             [FromServices] IListBooksService service)
         {
             var output = service.SortFilterPage(options).ToList();
+            SetupTraceInfo();
             return View(new BookListCombinedDto(options, output));              
         }
 

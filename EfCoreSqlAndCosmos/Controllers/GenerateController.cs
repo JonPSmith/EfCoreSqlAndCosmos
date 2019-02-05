@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceLayer.DatabaseServices.Concrete;
 
-namespace EfCoreInAction.Controllers
+namespace EfCoreSqlAndCosmos.Controllers
 {
     public class GenerateController : BaseTraceController
     {

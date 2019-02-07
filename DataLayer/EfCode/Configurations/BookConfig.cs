@@ -22,6 +22,8 @@ namespace DataLayer.EfCode.Configurations
             entity.HasIndex(x => x.PublishedOn);
             entity.HasIndex(x => x.ActualPrice);
 
+            entity.HasQueryFilter(p => !p.SoftDeleted);
+
             //----------------------------
             //relationships
 

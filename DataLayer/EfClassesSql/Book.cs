@@ -42,6 +42,8 @@ namespace DataLayer.EfClassesSql
 
         public string ImageUrl { get; private set; }
 
+        public bool SoftDeleted { get; private set; }
+
         public IEnumerable<Review> Reviews => _reviews?.ToList();
         public IEnumerable<BookAuthor> AuthorsLink => _authorsLink?.ToList();
 

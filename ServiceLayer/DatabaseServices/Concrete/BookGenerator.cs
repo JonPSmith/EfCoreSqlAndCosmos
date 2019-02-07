@@ -107,7 +107,7 @@ namespace ServiceLayer.DatabaseServices.Concrete
         {
             //if (_updater == null)
             //    throw new InvalidOperationException("The NoSql updater is null. This can be caused by the NoSql connection string being null or empty.");
-            using (var context = new SqlDbContext(options))
+            using (var context = new SqlDbContext(options, null))
             {
                 //need to set the key of the authors entities. They aren't tarcked but the add will sort out whether to add/Unchanged based on primary key
                 foreach (var dbAuthor in context.Authors.ToList())

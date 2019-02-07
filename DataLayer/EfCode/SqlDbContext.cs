@@ -3,15 +3,20 @@
 
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode.Configurations;
+using DataLayer.NoSqlCode;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.EfCode
 {
     public class SqlDbContext : DbContext
     {
-        public SqlDbContext(                             
-            DbContextOptions<SqlDbContext> options)      
-            : base(options) {}
+        private IBookUpdater _bookUpdater;
+
+        public SqlDbContext(DbContextOptions<SqlDbContext> options, IBookUpdater bookUpdater = null)      
+            : base(options)
+        {
+            _bookUpdater = bookUpdater;
+        }
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Author> Authors { get; set; }

@@ -10,12 +10,10 @@ namespace ServiceLayer.Books.QueryObjects
 {
     public enum OrderByOptions
     {
-        [Display(Name = "sort by...")]
-        SimpleOrder = 0,
-        [Display(Name = "Votes ↑")]
-        ByVotes,
         [Display(Name = "Publication Date ↑")]
         ByPublicationDate,
+        [Display(Name = "Votes ↑")]
+        ByVotes,
         [Display(Name = "Price ↓")]
         ByPriceLowestFirst,
         [Display(Name = "Price ↑")]
@@ -29,10 +27,7 @@ namespace ServiceLayer.Books.QueryObjects
              OrderByOptions orderByOptions)
         {
             switch (orderByOptions)
-            {
-                case OrderByOptions.SimpleOrder:          
-                    return books.OrderByDescending(       
-                        x => x.BookId);                   
+            {              
                 case OrderByOptions.ByVotes:              
                     return books.OrderByDescending(x =>   
                         x.ReviewsAverageVotes);           

@@ -2,12 +2,14 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DataLayer.NoSqlCode
 {
     public interface IBookUpdater
     {
-        void IfBookListChangesThenUpdateNoSql(IEnumerable<EntityEntry> changes);
+        void FindTheChangesBeforeSaveChangesIsCalled();
+        Task UpdateNoSqlIfBooksHaveChangedAsync();
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using DataLayer.EfClassesNoSql;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +24,9 @@ namespace DataLayer.NoSqlCode.Internal
             _noSqlContext = noSqlContext ?? throw new ArgumentNullException(nameof(noSqlContext)); ;
         }
 
-        public void UpdateNoSql(IImmutableList<BookChangeInfo> booksToUpdate)
+        public async Task<bool> UpdateNoSqlAsync(IImmutableList<BookChangeInfo> booksToUpdate)
         {
-            if (_noSqlContext == null || !booksToUpdate.Any()) return;
+            if (_noSqlContext == null || !booksToUpdate.Any()) return false;
 
             foreach (var bookToUpdate in booksToUpdate)
             {
@@ -34,12 +35,12 @@ namespace DataLayer.NoSqlCode.Internal
                     case EntityState.Deleted:
                     {
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
-                        _noSqlContext.Remove<BookListNoSql>(noSqlBook);
+                        _noSqlContext.Remove(noSqlBook);
                     }
                         break;
                     case EntityState.Modified:
                     {
-                        var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
+                        var noSqlBook = await _noSqlContext.FindAsync<BookListNoSql>(bookToUpdate.BookId);
                         noSqlBook = _sqlContext.Books.ProjectBook(bookToUpdate.BookId);
                     }
                         break;
@@ -51,6 +52,8 @@ namespace DataLayer.NoSqlCode.Internal
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
+            return true;
         }
     }
 }

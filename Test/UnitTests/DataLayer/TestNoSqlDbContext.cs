@@ -41,8 +41,6 @@ namespace Test.UnitTests.DataLayer
             }
         }
 
-
-
         [Fact]
         public async Task TestCosmosDbCatchFailedRequestOk()
         {

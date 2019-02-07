@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 [assembly: InternalsVisibleTo("Test")]
-namespace DataLayer.NoSqlCode
+namespace DataLayer.NoSqlCode.Internal
 {
     internal class BookChangeInfo 
     {

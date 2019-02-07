@@ -2,11 +2,13 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace DataLayer.EfClassesNoSql
 {
     public class BookListNoSql
     {
+        [Key]
         public Guid BookId { get; set; }
         public string Title { get; set; }
         public DateTime PublishedOn { get; set; }
@@ -16,6 +18,5 @@ namespace DataLayer.EfClassesNoSql
         public string AuthorsOrdered { get; set; }
         public int ReviewsCount { get; set; }
         public double? ReviewsAverageVotes { get; set; }
-
     }
 }

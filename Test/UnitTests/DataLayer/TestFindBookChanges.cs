@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
+using DataLayer.NoSqlCode.Internal;
 using Microsoft.EntityFrameworkCore;
 using Test.Helpers;
 using TestSupport.EfHelpers;

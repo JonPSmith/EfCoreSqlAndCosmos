@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
+using Microsoft.Extensions.Configuration;
 using Test.Helpers;
+using TestSupport.Helpers;
 using Xunit;
 using Xunit.Extensions.AssertExtensions;
 
@@ -18,10 +20,11 @@ namespace Test.UnitTests.DataLayer
         public async Task TestCosmosDbLocalDbEmulatorCreateDatabaseOk()
         {
             //SETUP
+            var config = AppSettings.GetConfiguration();
             var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
                 .UseCosmos(
-                    "https://localhost:8081",
-                    "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+                    config["endpoint"],
+                    config["authKey"],
                     nameof(TestNoSqlDbContext));
 
             using (var context = new NoSqlDbContext(builder.Options))
@@ -29,15 +32,12 @@ namespace Test.UnitTests.DataLayer
                 await context.Database.EnsureCreatedAsync();
 
                 //ATTEMPT
-                if (!context.Books.Any())
-                {
-                    var book = NoSqlTestData.CreateDummyNoSqlBook();
-                    context.Add(book);
-                    await context.SaveChangesAsync();
-                }
+                var book = NoSqlTestData.CreateDummyNoSqlBook();
+                context.Add(book);
+                await context.SaveChangesAsync();
 
                 //VERIFY
-                (await context.Books.CountAsync()).ShouldEqual(1);
+                (await context.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
             }
         }
 
@@ -47,10 +47,11 @@ namespace Test.UnitTests.DataLayer
         public async Task TestCosmosDbCatchFailedRequestOk()
         {
             //SETUP
+            var config = AppSettings.GetConfiguration();
             var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
                 .UseCosmos(
-                    "https://localhost:8081",
-                    "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+                    config["endpoint"],
+                    config["authKey"],
                     "UNKNOWNDATABASE");
 
             using (var context = new NoSqlDbContext(builder.Options))
@@ -66,37 +67,16 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public async Task TestCosmosDbCatchFailedRequestExecutionStrategy1OnOk()
+        public async Task TestCosmosDbCatchFailedRequestExecutionStrategyOnOk()
         {
             //SETUP
+            var config = AppSettings.GetConfiguration();
             var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
                 .UseCosmos(
-                    "https://localhost:8081",
-                    "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+                    config["endpoint"],
+                    config["authKey"],
                     "UNKNOWNDATABASE",
                     options => options.ExecutionStrategy(c => new CosmosExecutionStrategy(c)));
-
-            using (var context = new NoSqlDbContext(builder.Options))
-            {
-                //ATTEMPT
-                var book = NoSqlTestData.CreateDummyNoSqlBook();
-                context.Add(book);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () => await context.SaveChangesAsync());
-
-                //VERIFY
-                ex.Message.ShouldEqual("NotFound");
-            }
-        }
-
-        [Fact]
-        public async Task TestCosmosDbCatchFailedRequestExecutionStrategy2OffOk()
-        {
-            //SETUP
-            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
-                .UseCosmos(
-                    "https://localhost:8081",
-                    "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
-                    "UNKNOWNDATABASE");
 
             using (var context = new NoSqlDbContext(builder.Options))
             {

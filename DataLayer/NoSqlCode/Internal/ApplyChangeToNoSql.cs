@@ -10,7 +10,7 @@ using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 
 [assembly: InternalsVisibleTo("Test")]
-namespace DataLayer.NoSqlCode
+namespace DataLayer.NoSqlCode.Internal
 {
     internal class ApplyChangeToNoSql
     {
@@ -19,8 +19,8 @@ namespace DataLayer.NoSqlCode
 
         public ApplyChangeToNoSql(SqlDbContext sqlContext, NoSqlDbContext noSqlContext)
         {
-            _sqlContext = sqlContext;
-            _noSqlContext = noSqlContext;
+            _sqlContext = sqlContext ?? throw new ArgumentNullException(nameof(sqlContext));
+            _noSqlContext = noSqlContext ?? throw new ArgumentNullException(nameof(noSqlContext)); ;
         }
 
         public void UpdateNoSql(IImmutableList<BookChangeInfo> booksToUpdate)

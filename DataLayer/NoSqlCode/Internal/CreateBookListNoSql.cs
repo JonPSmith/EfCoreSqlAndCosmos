@@ -4,12 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using DataLayer.EfClassesNoSql;
 using DataLayer.EfClassesSql;
 
-namespace DataLayer.NoSqlCode
+[assembly: InternalsVisibleTo("Test")]
+namespace DataLayer.NoSqlCode.Internal
 {
-    public static class CreateBookListNoSql
+    internal static class CreateBookListNoSql
     {
         private class BookWithParts
         {
@@ -53,7 +55,7 @@ namespace DataLayer.NoSqlCode
                     ActualPrice = p.ActualPrice,
                     PromotionText = p.PromotionalText,
                     ReviewsCount = p.Reviews.Count(),
-                    ReviewsAverageVotes = p.Reviews.Select(y => (double?)y.NumStars).Average()
+                    ReviewsAverageVotes = null //p.Reviews.Select(y => (double?)y.NumStars).Average()
                 }
             });
         }

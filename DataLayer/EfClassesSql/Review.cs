@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DataLayer.EfClasses
+namespace DataLayer.EfClassesSql
 {
     public class Review
     {
@@ -11,12 +12,13 @@ namespace DataLayer.EfClasses
 
         private Review() { }
 
-        internal Review(int numStars, string comment, string voterName, int bookId = 0)
+        internal Review(int numStars, string comment, string voterName, Guid bookId = default(Guid))
         {
             NumStars = numStars;
             Comment = comment;
             VoterName = voterName;
-            BookId = bookId;
+            if (bookId != default(Guid))
+                BookId = bookId;
         }
 
         public int ReviewId { get; private set; }
@@ -30,7 +32,7 @@ namespace DataLayer.EfClasses
         //-----------------------------------------
         //Relationships
 
-        public int BookId { get; private set; }
+        public Guid BookId { get; private set; }
     }
 
 }

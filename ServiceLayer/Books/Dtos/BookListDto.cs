@@ -9,7 +9,7 @@ namespace ServiceLayer.Books.Dtos
 {
     public class BookListDto : ILinkToEntity<Book>
     {
-        public int BookId { get; set; }
+        public Guid BookId{ get; set; }
         public string Title { get; set; }
         public DateTime PublishedOn { get; set; }
         public decimal OrgPrice { get; set; }

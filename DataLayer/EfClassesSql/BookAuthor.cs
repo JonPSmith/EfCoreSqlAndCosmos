@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using DataLayer.EfClassesSql;
+using System;
 
-namespace DataLayer.EfClasses
+namespace DataLayer.EfClassesSql
 {
     public class BookAuthor
     {
@@ -16,7 +16,7 @@ namespace DataLayer.EfClasses
             Order = order;
         }
 
-        public int BookId { get; private set; }
+        public Guid BookId { get; private set; }
         public int AuthorId { get; private set; }
         public byte Order { get; private set; }
 

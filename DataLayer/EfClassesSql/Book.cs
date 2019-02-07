@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using DataLayer.EfClasses;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,28 +26,7 @@ namespace DataLayer.EfClassesSql
 
         private Book() { }
 
-        public Book(string title, string description, DateTime publishedOn, 
-            string publisher, decimal price, string imageUrl, ICollection<Author> authors)
-        {
-            if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentNullException(nameof(title)); 
-
-            Title = title;
-            Description = description;
-            PublishedOn = publishedOn;
-            Publisher = publisher;
-            ActualPrice = price;
-            OrgPrice = price;
-            ImageUrl = imageUrl;
-            _reviews = new HashSet<Review>();       //We add an empty list on create. I allows reviews to be added when building test data
-
-            if (authors == null || !authors.Any())
-                throw new ArgumentException("You must have at least one Author for a book", nameof(authors));
-            byte order = 0;
-            _authorsLink = new HashSet<BookAuthor>(authors.Select(a => new BookAuthor(this, a, order++)));
-        }
-
-        public int BookId { get; private set; }
+        public Guid BookId { get; private set; }
 
         [Required(AllowEmptyStrings = false)]
         public string Title { get; private set; }
@@ -76,6 +54,7 @@ namespace DataLayer.EfClassesSql
 
             var book = new Book
             {
+                BookId = Guid.NewGuid(),
                 Title = title,
                 Description = description,
                 PublishedOn = publishedOn,

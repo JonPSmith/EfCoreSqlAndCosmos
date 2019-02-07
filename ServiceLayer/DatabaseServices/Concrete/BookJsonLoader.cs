@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DataLayer.EfClasses;
 using DataLayer.EfClassesSql;
 using Newtonsoft.Json;
 using ServiceLayer.DatabaseServices.Concrete;
@@ -40,13 +39,13 @@ namespace ServiceLayer.DatabaseCode.Services
         private static Book CreateBookWithRefs(BookInfoJson bookInfoJson, Dictionary<string, Author> authorDict)
         {
             var authors = bookInfoJson.authors.Select(x => authorDict[x]).ToList();
-            var book = new Book(bookInfoJson.title, 
+            var book = Book.CreateBook(bookInfoJson.title, 
                 bookInfoJson.description, 
                 DecodePubishDate(bookInfoJson.publishedDate),
                 bookInfoJson.publisher, 
                 ((decimal?)bookInfoJson.saleInfoListPriceAmount) ?? DefaultBookPrice, 
                 bookInfoJson.imageLinksThumbnail,
-                authors);
+                authors).Result;
 
             if (bookInfoJson.averageRating != null)
                 CalculateReviewsToMatch((double)bookInfoJson.averageRating, (int)bookInfoJson.ratingsCount).ToList()

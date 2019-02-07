@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using DataLayer.EfClasses;
 using DataLayer.EfClassesSql;
 
 namespace ServiceLayer.DatabaseServices.Concrete
@@ -12,10 +11,10 @@ namespace ServiceLayer.DatabaseServices.Concrete
     {
         public static Book CreateSpecialBook()
         {
-            var book4 = new Book("Quantum Networking",
+            var book4 = Book.CreateBook("Quantum Networking",
                 "Entangled quantum networking provides faster-than-light data communications",
                 new DateTime(2057, 1, 1), "Manning", 220, null,
-                new List<Author> {new Author {Name = "Future Person"}});
+                new List<Author> {new Author {Name = "Future Person"}}).Result;
             book4.AddReview(5, "I look forward to reading this book, if I am still alive!", "Jon P Smith");
             book4.AddReview(5, "I would write this book if I was still alive!", "Albert Einstein");
 

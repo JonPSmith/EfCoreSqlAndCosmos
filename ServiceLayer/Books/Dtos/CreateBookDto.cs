@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using DataLayer.EfClasses;
 using DataLayer.EfClassesSql;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +19,7 @@ namespace ServiceLayer.Books.Dtos
         }
 
         //This will be populated with the primary key of the created book
-        public int BookId { get; set; }
+        public Guid BookId{ get; set; }
 
         //I would normally have the Required attribute to catch this at the front end
         //But to show how the static create method catches that error I have commented it out

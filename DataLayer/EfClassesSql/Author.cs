@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace DataLayer.EfClasses
+namespace DataLayer.EfClassesSql
 {
     //I have styled the Author entity class as a standard-styled entity, 
     //i.e. it can be created/updated via its property setters. 

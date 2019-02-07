@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using DataLayer.EfClasses;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 
@@ -23,7 +22,7 @@ namespace Test.Helpers
         public static Book CreateDummyBookOneAuthor()
         {
 
-            var book = new Book
+            var book = Book.CreateBook
             (
                 "Book Title",
                 "Book Description",
@@ -34,7 +33,7 @@ namespace Test.Helpers
                 new[] { new Author { Name = "Test Author"} }
             );
 
-            return book;
+            return book.Result;
         }
 
         public static List<Book> CreateDummyBooks(int numBooks = 10, bool stepByYears = false)
@@ -43,7 +42,7 @@ namespace Test.Helpers
             var commonAuthor = new Author { Name = "CommonAuthor"};
             for (int i = 0; i < numBooks; i++)
             {
-                var book = new Book
+                var book = Book.CreateBook
                 (
                     $"Book{i:D4} Title",
                     $"Book{i:D4} Description",
@@ -52,7 +51,7 @@ namespace Test.Helpers
                     (short)(i + 1),
                     $"Image{i:D4}",
                     new[] { new Author { Name = $"Author{i:D4}"}, commonAuthor}
-                );
+                ).Result;
                 for (int j = 0; j < i; j++)
                 {
                     book.AddReview((j % 5) + 1, null, j.ToString());
@@ -76,7 +75,7 @@ namespace Test.Helpers
 
             var books = new List<Book>();
 
-            var book1 = new Book
+            var book1 = Book.CreateBook
             (
                 "Refactoring",
                 "Improving the design of existing code",
@@ -85,10 +84,10 @@ namespace Test.Helpers
                 40,
                 null,
                 new[] { martinFowler }
-            );
+            ).Result;
             books.Add(book1);
 
-            var book2 = new Book
+            var book2 = Book.CreateBook
             (
                 "Patterns of Enterprise Application Architecture",
                 "Written in direct response to the stiff challenges",
@@ -97,10 +96,10 @@ namespace Test.Helpers
                 53,
                 null,
                 new []{martinFowler}
-            );
+            ).Result;
             books.Add(book2);
 
-            var book3 = new Book
+            var book3 = Book.CreateBook
             (
                 "Domain-Driven Design",
                  "Linking business needs to software design",
@@ -109,10 +108,10 @@ namespace Test.Helpers
                 56,
                 null,
                 new[] { new Author { Name = "Eric Evans"}}
-            );
+            ).Result;
             books.Add(book3);
 
-            var book4 = new Book
+            var book4 = Book.CreateBook
             (
                 "Quantum Networking",
                 "Entangled quantum networking provides faster-than-light data communications",
@@ -121,7 +120,7 @@ namespace Test.Helpers
                 220,
                 null,
                 new[] { new Author { Name = "Future Person"} }
-            );
+            ).Result;
             book4.AddReview(5,
                 "I look forward to reading this book, if I am still alive!", "Jon P Smith");
             book4.AddReview(5,

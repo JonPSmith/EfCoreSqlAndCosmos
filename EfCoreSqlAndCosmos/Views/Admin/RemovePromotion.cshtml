@@ -6,12 +6,12 @@
     <form method="post">
         @Html.ValidationSummary(true, null, new { @class = "text-danger h4" })
         <!-- Input and Submit elements -->
-        <input name="Data.BookId" type="hidden" value="@Model.BookId" />
+        <input name="BookId" type="hidden" value="@Model.BookId" />
         @*We need these in case where there is an error and we need to reshow the data again*@
-        <input name="Data.Title" type="hidden" value="@Model.Title" />
-        <input name="Data.OrgPrice" type="hidden" value="@Model.OrgPrice" />
-        <input name="Data.ActualPrice" type="hidden" value="@Model.ActualPrice" />
-        <input name="Data.PromotionalText" type="hidden" value="@Model.PromotionalText" />
+        <input name="Title" type="hidden" value="@Model.Title" />
+        <input name="OrgPrice" type="hidden" value="@Model.OrgPrice" />
+        <input name="ActualPrice" type="hidden" value="@Model.ActualPrice" />
+        <input name="PromotionalText" type="hidden" value="@Model.PromotionalText" />
 
         <div class="form-group">
             <div class="col-sm-2">

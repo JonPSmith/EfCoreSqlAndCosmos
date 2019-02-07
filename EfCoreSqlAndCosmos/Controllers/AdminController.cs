@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 using GenericServices;
@@ -14,7 +15,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 {
     public class AdminController : BaseTraceController
     {
-        public IActionResult ChangePubDate (int id, [FromServices]ICrudServices service) 
+        public IActionResult ChangePubDate (Guid id, [FromServices]ICrudServices service) 
         {        
             var dto = service.ReadSingle<ChangePubDateDto>(id);
             if (!service.IsValid)
@@ -43,7 +44,7 @@ namespace EfCoreSqlAndCosmos.Controllers
             return View(dto);
         }
 
-        public IActionResult AddPromotion(int id, [FromServices]ICrudServices service)
+        public IActionResult AddPromotion(Guid id, [FromServices]ICrudServices service)
         {
             var dto = service.ReadSingle<AddRemovePromotionDto>(id);
             if (!service.IsValid)
@@ -72,7 +73,7 @@ namespace EfCoreSqlAndCosmos.Controllers
             return View(dto);
         }
 
-        public IActionResult RemovePromotion(int id, [FromServices]ICrudServices service)
+        public IActionResult RemovePromotion(Guid id, [FromServices]ICrudServices service)
         {
             var dto = service.ReadSingle<AddRemovePromotionDto>(id);
             if (!service.IsValid)
@@ -102,7 +103,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         }
 
 
-        public IActionResult AddBookReview(int id, [FromServices]ICrudServices service)
+        public IActionResult AddBookReview(Guid id, [FromServices]ICrudServices service)
         {
             var dto = service.ReadSingle<AddReviewDto>(id);
             if (!service.IsValid)

@@ -13,7 +13,7 @@ namespace DataLayer.SqlCode
         public static void RegisterUdfDefintions(this ModelBuilder modelBuilder)
         {
             modelBuilder.HasDbFunction(
-                    () => AuthorsStringUdf(default(int)))
+                    () => AuthorsStringUdf(default(Guid)))
                 .HasSchema("dbo");
         }
 
@@ -22,7 +22,7 @@ namespace DataLayer.SqlCode
             throw new Exception();
         }
 
-        public static string AuthorsStringUdf(int bookId)
+        public static string AuthorsStringUdf(Guid bookId)
         {
             throw new NotImplementedException(
                 "Called by client vs. server evaluation.");

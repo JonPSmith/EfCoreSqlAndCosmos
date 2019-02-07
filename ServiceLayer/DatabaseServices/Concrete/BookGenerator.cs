@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using DataLayer.EfClasses;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
@@ -80,13 +79,13 @@ namespace ServiceLayer.DatabaseServices.Concrete
                 var title = _loadedBookData[i % _loadedBookData.Count].Title;
                 if (i >= NumBooksInSet && _makeBookTitlesDistinct)
                     title += $" (copy {sectionNum})";
-                var book = new Book(title,
+                var book = Book.CreateBook(title,
                     $"Book{i:D4} Description",
                     _loadedBookData[i % _loadedBookData.Count].PublishDate.AddDays(sectionNum),
                     "Manning",
                     (i + 1),
                     null,
-                    authors);
+                    authors).Result;
 
                 for (int j = 0; j < i % 12; j++)
                 {

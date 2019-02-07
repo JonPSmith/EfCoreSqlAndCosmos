@@ -5,7 +5,7 @@ IF OBJECT_ID('dbo.AuthorsStringUdf') IS NOT NULL
 	DROP FUNCTION dbo.AuthorsStringUdf
 GO
 
-CREATE FUNCTION AuthorsStringUdf (@bookId int)
+CREATE FUNCTION AuthorsStringUdf (@bookId uniqueidentifier)
 RETURNS NVARCHAR(4000)
 AS
 BEGIN

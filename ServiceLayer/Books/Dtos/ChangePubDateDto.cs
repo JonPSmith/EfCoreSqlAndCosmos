@@ -13,7 +13,7 @@ namespace ServiceLayer.Books.Dtos
     public class ChangePubDateDto : ILinkToEntity<Book>
     {
         [HiddenInput]
-        public int BookId { get; set; }
+        public Guid BookId{ get; set; }
 
         [ReadOnly(true)]
         public string Title { get; set; }

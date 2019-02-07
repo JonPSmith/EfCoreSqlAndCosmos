@@ -17,6 +17,5 @@ namespace DataLayer.EfClassesNoSql
         public int ReviewsCount { get; set; }
         public double? ReviewsAverageVotes { get; set; }
 
-
     }
 }

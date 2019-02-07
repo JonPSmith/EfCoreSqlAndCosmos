@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.EfClassesSql
 {
-    public class Book
+    public class Book : IBookId
     {
         public const int PromotionalTextLength = 200;
         private HashSet<BookAuthor> _authorsLink;

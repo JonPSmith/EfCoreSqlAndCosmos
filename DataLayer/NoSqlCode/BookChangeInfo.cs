@@ -15,41 +15,72 @@ namespace DataLayer.NoSqlCode
 {
     internal class BookChangeInfo 
     {
-        private readonly Book _book; 
         public EntityState State { get; }
-        public Guid BookId => _book.BookId;
+        public Guid BookId { get; }
 
-        private BookChangeInfo(EntityEntry entity) 
+        /// <summary>
+        /// This returns the list of books that have changes, and how they have changed
+        /// </summary>
+        /// <param name="changes"></param>
+        /// <returns></returns>
+        public static IImmutableList<BookChangeInfo> FindBookChanges(IEnumerable<EntityEntry> changes)
         {
-            _book = entity.Entity as Book;  
+            var bookChanges = changes
+                .Select(x => new {entity = x, bookRef = x.Entity as IBookId})
+                .Where(x => x.entity.State != EntityState.Unchanged && x.bookRef != null)
+                .Select(x => new BookChangeInfo(x.bookRef.BookId, x.entity));
 
-            if (_book != null) 
+            //This dedups the book changes, with the Book entity State taking preference
+            var booksDict = new Dictionary<Guid, BookChangeInfo>();
+            foreach (var bookChange in bookChanges)
             {
-                var softDeletedProp = entity.Property(nameof(_book.SoftDeleted));         
+                if (booksDict.ContainsKey(bookChange.BookId) && booksDict[bookChange.BookId].State != EntityState.Modified)
+                    continue;
 
-                if (softDeletedProp.IsModified) 
+                booksDict[bookChange.BookId] = bookChange;
+            }
+
+            return booksDict.Values.ToImmutableList();
+        }
+
+        /// <summary>
+        /// This method should be called whenever an entity that has the IBookId interface
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="entity"></param>
+        private BookChangeInfo(Guid bookId, EntityEntry entity)
+        {
+            BookId = bookId;
+            if (entity.Entity is Book book) 
+            {
+                var softDeletedProp = entity.Property(nameof(book.SoftDeleted));         
+
+                if (softDeletedProp.IsModified)
                 {                               
-                    State = _book.SoftDeleted   
+                    State = book.SoftDeleted   
                         ? EntityState.Deleted   
                         : EntityState.Added;    
                 }
                 else if (entity.State == EntityState.Deleted)        
                 {                               
-                    State = _book.SoftDeleted   
+                    State = book.SoftDeleted   
                         ? EntityState.Unchanged 
                         : EntityState.Deleted;  
                 }
                 else
                 {
-                    State = _book.SoftDeleted 
+                    State = book.SoftDeleted 
                         ? EntityState.Unchanged 
-                        : entity.State;         
+                        : entity.State;
                 }
             }
             else
             {
+                //The entity wasn't a book, but is related to a book so we mark the book as updated
                 State = EntityState.Modified; 
             }
         }
+
+
     }
 }

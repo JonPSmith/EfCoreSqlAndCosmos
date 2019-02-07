@@ -5,7 +5,7 @@ using System;
 
 namespace DataLayer.EfClassesSql
 {
-    public class BookAuthor
+    public class BookAuthor : IBookId
     {
         private BookAuthor() { }
 

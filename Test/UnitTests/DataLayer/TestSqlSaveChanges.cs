@@ -104,6 +104,33 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
+        public async Task TestSaveChangesAsyncUpdatesNoSqlFail()
+        {
+            //SETUP
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    "UNKNOWNDATABASENAME");
+
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
+                await sqlContext.Database.EnsureCreatedAsync();
+
+                //ATTEMPT
+                var book = DddEfTestData.CreateDummyBookOneAuthor();
+                sqlContext.Add(book);
+                var ex = await Assert.ThrowsAsync<HttpException>(async () => await sqlContext.SaveChangesAsync());
+
+                //VERIFY
+                sqlContext.Books.Count().ShouldEqual(0);
+            }
+        }
+
+        [Fact]
         public async Task TestNoSqlBookUpdaterWithRetryStrategyOk()
         {
             //SETUP

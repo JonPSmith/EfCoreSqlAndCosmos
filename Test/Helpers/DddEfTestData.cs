@@ -21,7 +21,6 @@ namespace Test.Helpers
 
         public static Book CreateDummyBookOneAuthor()
         {
-
             var book = Book.CreateBook
             (
                 "Book Title",
@@ -32,6 +31,24 @@ namespace Test.Helpers
                 null,
                 new[] { new Author { Name = "Test Author"} }
             );
+
+            return book.Result;
+        }
+
+        public static Book CreateDummyBookTwoAuthorsTwoReviews()
+        {
+            var book = Book.CreateBook
+            (
+                "Book Title",
+                "Book Description",
+                DummyBookStartDate,
+                "Book Publisher",
+                123,
+                null,
+                new[] { new Author { Name = "Author1" }, new Author { Name = "Author2" } }
+            );
+            book.Result.AddReview(5, null, "test1");
+            book.Result.AddReview(1, null, "test2");
 
             return book.Result;
         }
@@ -63,10 +80,12 @@ namespace Test.Helpers
             return result;
         }
 
-        public static void SeedDatabaseFourBooks(this SqlDbContext context)
+        public static List<Book> SeedDatabaseFourBooks(this SqlDbContext context)
         {
-            context.Books.AddRange(CreateFourBooks());
+            var fourBooks = CreateFourBooks();
+            context.Books.AddRange(fourBooks);
             context.SaveChanges();
+            return fourBooks;
         }
 
         public static List<Book> CreateFourBooks()

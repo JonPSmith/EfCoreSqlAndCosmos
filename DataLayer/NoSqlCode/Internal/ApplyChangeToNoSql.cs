@@ -6,6 +6,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DataLayer.EfClassesNoSql;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
@@ -18,6 +20,16 @@ namespace DataLayer.NoSqlCode.Internal
     {
         private readonly DbContext _sqlContext;
         private readonly NoSqlDbContext _noSqlContext;
+
+        private static readonly MapperConfiguration SqlToNoSqlMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<Book, BookListNoSql>()
+                .ForMember(p => p.AuthorsOrdered,
+                    m => m.MapFrom(s => string.Join(", ",
+                        s.AuthorsLink
+                            .OrderBy(q => q.Order)
+                            .Select(q => q.Author.Name))));
+        });
 
         public ApplyChangeToNoSql(DbContext sqlContext, NoSqlDbContext noSqlContext)
         {
@@ -37,16 +49,18 @@ namespace DataLayer.NoSqlCode.Internal
                     {
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
                         _noSqlContext.Remove(noSqlBook);
-                    }
                         break;
+                    }
                     case EntityState.Modified:
                     {
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
-                        noSqlBook = _sqlContext.Set<Book>().ProjectBook(bookToUpdate.BookId);
-                    }
+                        SqlToNoSqlMapper.CreateMapper().Map(_sqlContext.Find<Book>(bookToUpdate.BookId), noSqlBook);
                         break;
+                    }
                     case EntityState.Added:
-                        var newBook = _sqlContext.Set<Book>().ProjectBook(bookToUpdate.BookId);
+                        var newBook = _sqlContext.Set<Book>()
+                            .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)
+                            .Single(x => x.BookId == bookToUpdate.BookId);
                         _noSqlContext.Add(newBook);
                         break;
                     default:
@@ -74,11 +88,13 @@ namespace DataLayer.NoSqlCode.Internal
                     case EntityState.Modified:
                     {
                         var noSqlBook = await _noSqlContext.FindAsync<BookListNoSql>(bookToUpdate.BookId);
-                        noSqlBook = _sqlContext.Set<Book>().ProjectBook(bookToUpdate.BookId);
-                    }
+                        SqlToNoSqlMapper.CreateMapper().Map(_sqlContext.Find<Book>(bookToUpdate.BookId), noSqlBook);
+                        }
                         break;
                     case EntityState.Added:
-                        var newBook = _sqlContext.Set<Book>().ProjectBook(bookToUpdate.BookId);
+                        var newBook = await _sqlContext.Set<Book>()
+                            .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)
+                            .SingleAsync(x => x.BookId == bookToUpdate.BookId);
                         _noSqlContext.Add(newBook);
                         break;
                     default:

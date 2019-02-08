@@ -9,19 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using Test.Helpers;
 using TestSupport.EfHelpers;
 using Xunit;
-using Xunit.Abstractions;
 using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests.DataLayer
 {
     public class TestFindBookChanges
     {
-        public TestFindBookChanges(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
-        private readonly ITestOutputHelper _output;
 
         [Fact]
         public void TestAddBookOk()

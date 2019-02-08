@@ -40,7 +40,7 @@ namespace Test.UnitTests.DataLayer
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
                 var hasUpdates = updater.FoundBookChangesToProjectToNoSql(sqlContext);
-                await updater.ExecuteTransactionToSaveBookUpdatesAsync(sqlContext, true);
+                await updater.CallBaseSaveChangesWithNoSqlWriteAsync(sqlContext, () => sqlContext.SaveChangesAsync());
 
                 //VERIFY
                 hasUpdates.ShouldBeTrue();
@@ -74,7 +74,7 @@ namespace Test.UnitTests.DataLayer
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
                 var hasUpdates = updater.FoundBookChangesToProjectToNoSql(sqlContext);
-                await updater.ExecuteTransactionToSaveBookUpdatesAsync(sqlContext, true);
+                await updater.CallBaseSaveChangesWithNoSqlWriteAsync(sqlContext, () => sqlContext.SaveChangesAsync());
 
                 //VERIFY
                 hasUpdates.ShouldBeTrue();
@@ -105,8 +105,8 @@ namespace Test.UnitTests.DataLayer
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
                 var hasUpdates = updater.FoundBookChangesToProjectToNoSql(sqlContext);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () => 
-                    await updater.ExecuteTransactionToSaveBookUpdatesAsync(sqlContext, true));
+                var ex = await Assert.ThrowsAsync<HttpException>(async () =>
+                    await updater.CallBaseSaveChangesWithNoSqlWriteAsync(sqlContext, () => sqlContext.SaveChangesAsync()));
 
                 //VERIFY
                 ex.Message.ShouldEqual("NotFound");

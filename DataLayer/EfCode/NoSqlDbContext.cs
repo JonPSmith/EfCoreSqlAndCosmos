@@ -18,8 +18,6 @@ namespace DataLayer.EfCode
         {
             //see this for timestamp https://docs.microsoft.com/en-us/azure/cosmos-db/working-with-dates#storing-datetimes
             modelBuilder.Entity<BookListNoSql>().Property<long>("_ts").ValueGeneratedOnAddOrUpdate();
-
-
         }
     }
 }

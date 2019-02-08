@@ -39,11 +39,11 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
-                updater.FindTheChangesBeforeSaveChangesIsCalled();
-                await updater.ExecuteTransactionToSaveBookUpdatesAsync();            
+                var hasUpdates = updater.FoundBookChangesToProjectToNoSql();
+                await updater.ExecuteTransactionToSaveBookUpdatesAsync(true);
 
                 //VERIFY
-                updater.HasUpdatesToApply.ShouldBeTrue();
+                hasUpdates.ShouldBeTrue();
                 sqlContext.Books.Count().ShouldEqual(1);
                 (await noSqlContext.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
             }
@@ -66,18 +66,18 @@ namespace Test.UnitTests.DataLayer
             using (var sqlContext = new SqlDbContext(options))
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
             {
-                await sqlContext.Database.EnsureCreatedAsync();
+                sqlContext.CreateEmptyViaWipe();
                 await noSqlContext.Database.EnsureCreatedAsync();
                 var updater = new NoSqlBookUpdater(sqlContext, noSqlContext);
 
                 //ATTEMPT
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
-                updater.FindTheChangesBeforeSaveChangesIsCalled();
-                await updater.ExecuteTransactionToSaveBookUpdatesAsync();
+                var hasUpdates = updater.FoundBookChangesToProjectToNoSql();
+                await updater.ExecuteTransactionToSaveBookUpdatesAsync(true);
 
                 //VERIFY
-                updater.HasUpdatesToApply.ShouldBeTrue();
+                hasUpdates.ShouldBeTrue();
                 sqlContext.Books.Count().ShouldEqual(1);
                 (await noSqlContext.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
             }
@@ -104,12 +104,12 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
-                updater.FindTheChangesBeforeSaveChangesIsCalled();
-                var ex = await Assert.ThrowsAsync<HttpException>(async () => await updater.ExecuteTransactionToSaveBookUpdatesAsync());
+                var hasUpdates = updater.FoundBookChangesToProjectToNoSql();
+                var ex = await Assert.ThrowsAsync<HttpException>(async () => await updater.ExecuteTransactionToSaveBookUpdatesAsync(true));
 
                 //VERIFY
                 ex.Message.ShouldEqual("NotFound");
-                updater.HasUpdatesToApply.ShouldBeTrue();
+                hasUpdates.ShouldBeTrue();
                 sqlContext.Books.Count().ShouldEqual(0);
             }
         }

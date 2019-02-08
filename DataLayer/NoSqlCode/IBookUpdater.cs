@@ -10,6 +10,6 @@ namespace DataLayer.NoSqlCode
     public interface IBookUpdater
     {
         void FindTheChangesBeforeSaveChangesIsCalled();
-        Task UpdateNoSqlIfBooksHaveChangedAsync();
+        Task ExecuteTransactionToSaveBookUpdatesAsync();
     }
 }

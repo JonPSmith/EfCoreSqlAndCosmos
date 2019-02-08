@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using DataLayer.EfClassesNoSql;
+using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,10 +16,10 @@ namespace DataLayer.NoSqlCode.Internal
 {
     internal class ApplyChangeToNoSql
     {
-        private readonly SqlDbContext _sqlContext;
+        private readonly DbContext _sqlContext;
         private readonly NoSqlDbContext _noSqlContext;
 
-        public ApplyChangeToNoSql(SqlDbContext sqlContext, NoSqlDbContext noSqlContext)
+        public ApplyChangeToNoSql(DbContext sqlContext, NoSqlDbContext noSqlContext)
         {
             _sqlContext = sqlContext ?? throw new ArgumentNullException(nameof(sqlContext));
             _noSqlContext = noSqlContext ?? throw new ArgumentNullException(nameof(noSqlContext)); ;
@@ -41,11 +42,11 @@ namespace DataLayer.NoSqlCode.Internal
                     case EntityState.Modified:
                     {
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
-                        noSqlBook = _sqlContext.Books.ProjectBook(bookToUpdate.BookId);
+                        noSqlBook = _sqlContext.Set<Book>().ProjectBook(bookToUpdate.BookId);
                     }
                         break;
                     case EntityState.Added:
-                        var newBook = _sqlContext.Books.ProjectBook(bookToUpdate.BookId);
+                        var newBook = _sqlContext.Set<Book>().ProjectBook(bookToUpdate.BookId);
                         _noSqlContext.Add(newBook);
                         break;
                     default:
@@ -73,11 +74,11 @@ namespace DataLayer.NoSqlCode.Internal
                     case EntityState.Modified:
                     {
                         var noSqlBook = await _noSqlContext.FindAsync<BookListNoSql>(bookToUpdate.BookId);
-                        noSqlBook = _sqlContext.Books.ProjectBook(bookToUpdate.BookId);
+                        noSqlBook = _sqlContext.Set<Book>().ProjectBook(bookToUpdate.BookId);
                     }
                         break;
                     case EntityState.Added:
-                        var newBook = _sqlContext.Books.ProjectBook(bookToUpdate.BookId);
+                        var newBook = _sqlContext.Set<Book>().ProjectBook(bookToUpdate.BookId);
                         _noSqlContext.Add(newBook);
                         break;
                     default:

@@ -16,26 +16,22 @@ namespace DataLayer.NoSqlCode
 
     public class NoSqlBookUpdater : IBookUpdater
     {
-        private readonly SqlDbContext _sqlContext;
         private readonly NoSqlDbContext _noSqlContext;
-        private readonly ApplyChangeToNoSql _applier;
 
         private IImmutableList<BookChangeInfo> _bookChanges;
 
-        public NoSqlBookUpdater(SqlDbContext sqlContext, NoSqlDbContext noSqlContext)
+        public NoSqlBookUpdater(NoSqlDbContext noSqlContext)
         {
-            _sqlContext = sqlContext ?? throw new ArgumentNullException(nameof(sqlContext));
             _noSqlContext = noSqlContext ?? throw new ArgumentNullException(nameof(noSqlContext));
-            _applier = new ApplyChangeToNoSql(sqlContext, noSqlContext);
         }
 
         /// <summary>
         /// This MUST be called before SavChanges. It finds any Book changes 
         /// </summary>
         /// <returns>true if there are BookChanges that need projecting to NoSQL database</returns>
-        public bool FoundBookChangesToProjectToNoSql()
+        public bool FoundBookChangesToProjectToNoSql(DbContext sqlContext)
         {
-            _bookChanges = BookChangeInfo.FindBookChanges(_sqlContext.ChangeTracker.Entries());
+            _bookChanges = BookChangeInfo.FindBookChanges(sqlContext.ChangeTracker.Entries());
             return _bookChanges.Any();
         }
 
@@ -48,15 +44,15 @@ namespace DataLayer.NoSqlCode
         /// 5) finally commit the transaction
         /// </summary>
         /// <returns></returns>
-        public int ExecuteTransactionToSaveBookUpdates(bool acceptAllChangesOnSuccess)
+        public int ExecuteTransactionToSaveBookUpdates(DbContext sqlContext, bool acceptAllChangesOnSuccess)
         {
-            var strategy = _sqlContext.Database.CreateExecutionStrategy();
+            var strategy = sqlContext.Database.CreateExecutionStrategy();
             if (strategy.RetriesOnFailure)
             {
-                return strategy.Execute(() => RunSqlTransactionWithNoSqlWrite(acceptAllChangesOnSuccess));
+                return strategy.Execute(() => RunSqlTransactionWithNoSqlWrite(sqlContext, acceptAllChangesOnSuccess));
             }
 
-            return RunSqlTransactionWithNoSqlWrite(acceptAllChangesOnSuccess);
+            return RunSqlTransactionWithNoSqlWrite(sqlContext, acceptAllChangesOnSuccess);
         }
 
         /// <summary>
@@ -68,47 +64,49 @@ namespace DataLayer.NoSqlCode
         /// 5) finally commit the transaction
         /// </summary>
         /// <returns></returns>
-        public async Task<int> ExecuteTransactionToSaveBookUpdatesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<int> ExecuteTransactionToSaveBookUpdatesAsync(DbContext sqlContext, bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
-            var strategy = _sqlContext.Database.CreateExecutionStrategy();
+            var strategy = sqlContext.Database.CreateExecutionStrategy();
             if (strategy.RetriesOnFailure)
             {
                 return await strategy.ExecuteAsync(async () => 
-                    await RunSqlTransactionWithNoSqlWriteAsync(acceptAllChangesOnSuccess, cancellationToken));
+                    await RunSqlTransactionWithNoSqlWriteAsync(sqlContext, acceptAllChangesOnSuccess, cancellationToken));
             }
 
-            return await RunSqlTransactionWithNoSqlWriteAsync(acceptAllChangesOnSuccess, cancellationToken);
+            return await RunSqlTransactionWithNoSqlWriteAsync(sqlContext, acceptAllChangesOnSuccess, cancellationToken);
         }
 
         //--------------------------------------------------------------
         //private methods
 
-        private int RunSqlTransactionWithNoSqlWrite(bool acceptAllChangesOnSuccess)
+        private int RunSqlTransactionWithNoSqlWrite(DbContext sqlContext, bool acceptAllChangesOnSuccess)
         {
-            if (_sqlContext.Database.CurrentTransaction != null)
+            if (sqlContext.Database.CurrentTransaction != null)
                 throw new InvalidOperationException("You can't use the NoSqlBookUpdater if you are using transactions.");
 
-            using (var transaction = _sqlContext.Database.BeginTransaction())
+            var applier = new ApplyChangeToNoSql(sqlContext, _noSqlContext);
+            using (var transaction = sqlContext.Database.BeginTransaction())
             {
-                var result =_sqlContext
+                var result =sqlContext
                     .SaveChanges(acceptAllChangesOnSuccess); //Save the SQL changes
-                _applier.UpdateNoSql(_bookChanges);          //apply the book changes to the NoSql database
+                applier.UpdateNoSql(_bookChanges);          //apply the book changes to the NoSql database
                 _noSqlContext.SaveChanges();                 //And Save to NoSql database
                 transaction.Commit();
                 return result;
             }
         }
 
-        private async Task<int> RunSqlTransactionWithNoSqlWriteAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+        private async Task<int> RunSqlTransactionWithNoSqlWriteAsync(DbContext sqlContext, bool acceptAllChangesOnSuccess, CancellationToken cancellationToken)
         {
-            if (_sqlContext.Database.CurrentTransaction != null)
+            if (sqlContext.Database.CurrentTransaction != null)
                 throw new InvalidOperationException("You can't use the NoSqlBookUpdater if you are using transactions.");
 
-            using (var transaction = _sqlContext.Database.BeginTransaction())
+            var applier = new ApplyChangeToNoSql(sqlContext, _noSqlContext);
+            using (var transaction = sqlContext.Database.BeginTransaction())
             {
-                var result = await _sqlContext
+                var result = await sqlContext
                     .SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);//Save the SQL changes
-                await _applier.UpdateNoSqlAsync(_bookChanges);                      //apply the book changes to the NoSql database
+                await applier.UpdateNoSqlAsync(_bookChanges);                      //apply the book changes to the NoSql database
                 await _noSqlContext.SaveChangesAsync(cancellationToken);            //And Save to NoSql database
                 transaction.Commit();
                 return result;

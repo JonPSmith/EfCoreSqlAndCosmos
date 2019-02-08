@@ -38,7 +38,8 @@ namespace ServiceLayer.DatabaseServices.Concrete
             var numBooks = context.Books.Count();
             if (numBooks == 0)
             {
-                //the database is emply so we fill it from a json file
+                //the database is empty so we fill it from a json file
+                //This also sets up the NoSql database IF the IBookUpdater member is registered.
                 var books = BookJsonLoader.LoadBooks(Path.Combine(wwwrootDirectory, SeedFileSubDirectory),
                     SeedDataSearchName).ToList();
                 context.Books.AddRange(books);

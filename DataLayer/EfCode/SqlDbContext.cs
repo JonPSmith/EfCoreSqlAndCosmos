@@ -12,7 +12,7 @@ namespace DataLayer.EfCode
 {
     public class SqlDbContext : DbContext
     {
-        private IBookUpdater _bookUpdater;
+        private readonly IBookUpdater _bookUpdater;
 
         public SqlDbContext(DbContextOptions<SqlDbContext> options, IBookUpdater bookUpdater = null)      
             : base(options)
@@ -26,16 +26,16 @@ namespace DataLayer.EfCode
         //I only have to override these two version of SaveChanges, as the other two versions call these
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            if (_bookUpdater == null || !_bookUpdater.FoundBookChangesToProjectToNoSql())
+            if (_bookUpdater == null || !_bookUpdater.FoundBookChangesToProjectToNoSql(this))
                 return base.SaveChanges(acceptAllChangesOnSuccess);
-            return _bookUpdater.ExecuteTransactionToSaveBookUpdates(acceptAllChangesOnSuccess);
+            return _bookUpdater.ExecuteTransactionToSaveBookUpdates(this, acceptAllChangesOnSuccess);
         }
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (_bookUpdater == null || !_bookUpdater.FoundBookChangesToProjectToNoSql())
+            if (_bookUpdater == null || !_bookUpdater.FoundBookChangesToProjectToNoSql(this))
                 return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-            return await _bookUpdater.ExecuteTransactionToSaveBookUpdatesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            return await _bookUpdater.ExecuteTransactionToSaveBookUpdatesAsync(this, acceptAllChangesOnSuccess, cancellationToken);
         }
 
         protected override void

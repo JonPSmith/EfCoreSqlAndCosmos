@@ -16,7 +16,6 @@ namespace DataLayer.EfClassesSql
             Order = order;
         }
 
-        public Guid BookId { get; private set; }
         public int AuthorId { get; private set; }
         public byte Order { get; private set; }
 
@@ -25,5 +24,7 @@ namespace DataLayer.EfClassesSql
 
         public Book Book { get; private set; }
         public Author Author { get; private set; }
+
+        public Guid BookId { get; private set; }
     }
 }

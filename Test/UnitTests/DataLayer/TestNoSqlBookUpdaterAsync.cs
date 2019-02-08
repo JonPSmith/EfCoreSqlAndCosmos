@@ -18,6 +18,38 @@ namespace Test.UnitTests.DataLayer
     public class TestNoSqlBookUpdaterAsync
     {
         [Fact]
+        public async Task TestNoSqlBookUpdaterFail_NoBookAddedToSqlDatabase()
+        {
+            //SETUP
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    "UNKNOWNDATASBASENAME");
+
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var sqlContext = new SqlDbContext(options))
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            {
+                await sqlContext.Database.EnsureCreatedAsync();
+                var updater = new NoSqlBookUpdater(noSqlContext);
+
+                //ATTEMPT
+                var book = DddEfTestData.CreateDummyBookOneAuthor();
+                sqlContext.Add(book);
+                var hasUpdates = updater.FoundBookChangesToProjectToNoSql(sqlContext);
+                var ex = await Assert.ThrowsAsync<HttpException>(async () =>
+                    await updater.CallBaseSaveChangesWithNoSqlWriteAsync(sqlContext, () => sqlContext.SaveChangesAsync()));
+
+                //VERIFY
+                ex.Message.ShouldEqual("NotFound");
+                hasUpdates.ShouldBeTrue();
+                sqlContext.Books.Count().ShouldEqual(0);
+            }
+        }
+
+        [Fact]
         public async Task TestNoSqlBookUpdaterOk()
         {
             //SETUP
@@ -82,40 +114,5 @@ namespace Test.UnitTests.DataLayer
                 (await noSqlContext.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
             }
         }
-
-        [Fact]
-        public async Task TestNoSqlBookUpdaterFail_NoBookAddedToSqlDatabase()
-        {
-            //SETUP
-            var config = AppSettings.GetConfiguration();
-            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
-                .UseCosmos(
-                    config["endpoint"],
-                    config["authKey"],
-                    "UNKNOWNDATASBASENAME");
-
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var sqlContext = new SqlDbContext(options))
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            {
-                await sqlContext.Database.EnsureCreatedAsync();
-                var updater = new NoSqlBookUpdater(noSqlContext);
-
-                //ATTEMPT
-                var book = DddEfTestData.CreateDummyBookOneAuthor();
-                sqlContext.Add(book);
-                var hasUpdates = updater.FoundBookChangesToProjectToNoSql(sqlContext);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () =>
-                    await updater.CallBaseSaveChangesWithNoSqlWriteAsync(sqlContext, () => sqlContext.SaveChangesAsync()));
-
-                //VERIFY
-                ex.Message.ShouldEqual("NotFound");
-                hasUpdates.ShouldBeTrue();
-                sqlContext.Books.Count().ShouldEqual(0);
-            }
-        }
-
-
-
     }
 }

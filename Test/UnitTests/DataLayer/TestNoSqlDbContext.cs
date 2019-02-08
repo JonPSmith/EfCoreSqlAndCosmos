@@ -1,12 +1,10 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using System.Linq;
 using System.Threading.Tasks;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
-using Microsoft.Extensions.Configuration;
 using Test.Helpers;
 using TestSupport.Helpers;
 using Xunit;
@@ -17,7 +15,7 @@ namespace Test.UnitTests.DataLayer
     public class TestNoSqlDbContext
     {
         [Fact]
-        public async Task TestCosmosDbLocalDbEmulatorCreateDatabaseOk()
+        public async Task TestCosmosDbCatchFailedRequestExecutionStrategyOnOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -25,19 +23,18 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestNoSqlDbContext));
+                    "UNKNOWNDATABASE",
+                    options => options.ExecutionStrategy(c => new CosmosExecutionStrategy(c)));
 
             using (var context = new NoSqlDbContext(builder.Options))
             {
-                await context.Database.EnsureCreatedAsync();
-
                 //ATTEMPT
                 var book = NoSqlTestData.CreateDummyNoSqlBook();
                 context.Add(book);
-                await context.SaveChangesAsync();
+                var ex = await Assert.ThrowsAsync<HttpException>(async () => await context.SaveChangesAsync());
 
                 //VERIFY
-                (await context.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
+                ex.Message.ShouldEqual("NotFound");
             }
         }
 
@@ -65,7 +62,7 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public async Task TestCosmosDbCatchFailedRequestExecutionStrategyOnOk()
+        public async Task TestCosmosDbLocalDbEmulatorCreateDatabaseOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -73,18 +70,19 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    "UNKNOWNDATABASE",
-                    options => options.ExecutionStrategy(c => new CosmosExecutionStrategy(c)));
+                    nameof(TestNoSqlDbContext));
 
             using (var context = new NoSqlDbContext(builder.Options))
             {
+                await context.Database.EnsureCreatedAsync();
+
                 //ATTEMPT
                 var book = NoSqlTestData.CreateDummyNoSqlBook();
                 context.Add(book);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () => await context.SaveChangesAsync());
+                await context.SaveChangesAsync();
 
                 //VERIFY
-                ex.Message.ShouldEqual("NotFound");
+                (await context.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
             }
         }
     }

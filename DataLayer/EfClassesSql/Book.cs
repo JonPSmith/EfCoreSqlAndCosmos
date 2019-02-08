@@ -26,8 +26,6 @@ namespace DataLayer.EfClassesSql
 
         private Book() { }
 
-        public Guid BookId { get; private set; }
-
         [Required(AllowEmptyStrings = false)]
         public string Title { get; private set; }
 
@@ -46,6 +44,8 @@ namespace DataLayer.EfClassesSql
 
         public IEnumerable<Review> Reviews => _reviews?.ToList();
         public IEnumerable<BookAuthor> AuthorsLink => _authorsLink?.ToList();
+
+        public Guid BookId { get; private set; }
 
         public static IStatusGeneric<Book> CreateBook(string title, string description, DateTime publishedOn,
             string publisher, decimal price, string imageUrl, ICollection<Author> authors)

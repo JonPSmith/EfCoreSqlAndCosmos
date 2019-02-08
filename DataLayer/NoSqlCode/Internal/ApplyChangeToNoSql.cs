@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2017 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT licence. See License.txt in the project root for license information.
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
 using System.Collections.Immutable;
@@ -18,9 +18,6 @@ namespace DataLayer.NoSqlCode.Internal
 {
     internal class ApplyChangeToNoSql
     {
-        private readonly DbContext _sqlContext;
-        private readonly NoSqlDbContext _noSqlContext;
-
         private static readonly MapperConfiguration SqlToNoSqlMapper = new MapperConfiguration(cfg =>
         {
             cfg.CreateMap<Book, BookListNoSql>()
@@ -30,6 +27,9 @@ namespace DataLayer.NoSqlCode.Internal
                             .OrderBy(q => q.Order)
                             .Select(q => q.Author.Name))));
         });
+
+        private readonly NoSqlDbContext _noSqlContext;
+        private readonly DbContext _sqlContext;
 
         public ApplyChangeToNoSql(DbContext sqlContext, NoSqlDbContext noSqlContext)
         {

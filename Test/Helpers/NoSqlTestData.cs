@@ -8,7 +8,6 @@ namespace Test.Helpers
 {
     public static class NoSqlTestData
     {
-
         public static BookListNoSql CreateDummyNoSqlBook()
         {
 

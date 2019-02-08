@@ -11,8 +11,6 @@ namespace Test.UnitTests.DataLayer
 {
     public class TestSqlRetryStrategy
     {
-
-
         [Fact]
         public void TestHasRetryEnabledOk()
         {
@@ -51,7 +49,5 @@ namespace Test.UnitTests.DataLayer
                 strategy.RetriesOnFailure.ShouldBeFalse();
             }
         }
-
-
     }
 }

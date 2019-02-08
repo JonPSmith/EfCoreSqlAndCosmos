@@ -10,6 +10,7 @@ namespace DataLayer.EfClassesNoSql
     {
         [Key]
         public Guid BookId { get; set; }
+
         public string Title { get; set; }
         public DateTime PublishedOn { get; set; }
         public decimal OrgPrice { get; set; }

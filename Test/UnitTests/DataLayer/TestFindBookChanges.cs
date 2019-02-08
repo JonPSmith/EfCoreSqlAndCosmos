@@ -15,7 +15,6 @@ namespace Test.UnitTests.DataLayer
 {
     public class TestFindBookChanges
     {
-
         [Fact]
         public void TestAddBookOk()
         {
@@ -33,6 +32,47 @@ namespace Test.UnitTests.DataLayer
                 //VERIFY
                 changes.Single().BookId.ShouldNotEqual(Guid.Empty);
                 changes.Single().State.ShouldEqual(EntityState.Added);
+            }
+        }
+
+        [Fact]
+        public void TestDeleteBookOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(options))
+            {
+                context.Database.EnsureCreated();
+                context.SeedDatabaseFourBooks();
+
+                //ATTEMPT
+                context.Remove(context.Books.First());
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+
+                //VERIFY
+                changes.Single().BookId.ShouldNotEqual(Guid.Empty);
+                changes.Single().State.ShouldEqual(EntityState.Deleted);
+            }
+        }
+
+        [Fact]
+        public void TestSoftDeleteBookOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(options))
+            {
+                context.Database.EnsureCreated();
+                context.SeedDatabaseFourBooks();
+
+                //ATTEMPT
+                var book = context.Books.First();
+                book.SoftDeleted = true;
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+
+                //VERIFY
+                changes.Single().BookId.ShouldNotEqual(Guid.Empty);
+                changes.Single().State.ShouldEqual(EntityState.Deleted);
             }
         }
 
@@ -81,48 +121,5 @@ namespace Test.UnitTests.DataLayer
                 changes.Single().State.ShouldEqual(EntityState.Modified);
             }
         }
-
-        [Fact]
-        public void TestDeleteBookOk()
-        {
-            //SETUP
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var context = new SqlDbContext(options))
-            {
-                context.Database.EnsureCreated();
-                context.SeedDatabaseFourBooks();
-
-                //ATTEMPT
-                context.Remove(context.Books.First());
-                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
-
-                //VERIFY
-                changes.Single().BookId.ShouldNotEqual(Guid.Empty);
-                changes.Single().State.ShouldEqual(EntityState.Deleted);
-            }
-        }
-
-        [Fact]
-        public void TestSoftDeleteBookOk()
-        {
-            //SETUP
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var context = new SqlDbContext(options))
-            {
-                context.Database.EnsureCreated();
-                context.SeedDatabaseFourBooks();
-
-                //ATTEMPT
-                var book = context.Books.First();
-                book.SoftDeleted = true;
-                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
-
-                //VERIFY
-                changes.Single().BookId.ShouldNotEqual(Guid.Empty);
-                changes.Single().State.ShouldEqual(EntityState.Deleted);
-            }
-        }
-
-
     }
 }

@@ -49,6 +49,69 @@ namespace Test.UnitTests.DataLayer
             }
         }
 
+        //--------------------------------------------------------------
+        //error situations
+
+
+        [Fact]
+        public async Task TestSaveChangesAsyncUpdatesNoSqlFail()
+        {
+            //SETUP
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    "UNKNOWNDATABASENAME");
+
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
+                await sqlContext.Database.EnsureCreatedAsync();
+
+                //ATTEMPT
+                var book = DddEfTestData.CreateDummyBookOneAuthor();
+                sqlContext.Add(book);
+                var ex = await Assert.ThrowsAsync<HttpException>(async () => await sqlContext.SaveChangesAsync());
+
+                //VERIFY
+                sqlContext.Books.Count().ShouldEqual(0);
+            }
+        }
+
+        [Fact]
+        public async Task TestSaveChangesDeleteNoSqlOk()
+        {
+            //SETUP
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    nameof(TestSqlSaveChanges));
+
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
+                sqlContext.Database.EnsureCreated();
+                noSqlContext.Database.EnsureCreated();
+                var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
+                sqlContext.Add(book);
+                await sqlContext.SaveChangesAsync();
+
+                //ATTEMPT
+                sqlContext.Remove(book);
+                await sqlContext.SaveChangesAsync();
+
+                //VERIFY
+                sqlContext.Books.Count().ShouldEqual(0);
+                var noSqlBook = noSqlContext.Books.SingleOrDefault(p => p.BookId == book.BookId);
+                noSqlBook.ShouldBeNull();
+            }
+        }
+
         [Fact]
         public async Task TestSaveChangesDirectUpdatesNoSqlOk()
         {
@@ -122,38 +185,6 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public async Task TestSaveChangesDeleteNoSqlOk()
-        {
-            //SETUP
-            var config = AppSettings.GetConfiguration();
-            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
-                .UseCosmos(
-                    config["endpoint"],
-                    config["authKey"],
-                    nameof(TestSqlSaveChanges));
-
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
-            {
-                sqlContext.Database.EnsureCreated();
-                noSqlContext.Database.EnsureCreated();
-                var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
-                sqlContext.Add(book);
-                await sqlContext.SaveChangesAsync();
-
-                //ATTEMPT
-                sqlContext.Remove(book);
-                await sqlContext.SaveChangesAsync();
-
-                //VERIFY
-                sqlContext.Books.Count().ShouldEqual(0);
-                var noSqlBook = noSqlContext.Books.SingleOrDefault(p => p.BookId == book.BookId);
-                noSqlBook.ShouldBeNull();
-            }
-        }
-
-        [Fact]
         public async Task TestSaveChangesSoftDeleteNoSqlOk()
         {
             //SETUP
@@ -185,37 +216,5 @@ namespace Test.UnitTests.DataLayer
                 noSqlBook.ShouldBeNull();
             }
         }
-
-        //--------------------------------------------------------------
-        //error situations
-
-
-        [Fact]
-        public async Task TestSaveChangesAsyncUpdatesNoSqlFail()
-        {
-            //SETUP
-            var config = AppSettings.GetConfiguration();
-            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
-                .UseCosmos(
-                    config["endpoint"],
-                    config["authKey"],
-                    "UNKNOWNDATABASENAME");
-
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
-            {
-                await sqlContext.Database.EnsureCreatedAsync();
-
-                //ATTEMPT
-                var book = DddEfTestData.CreateDummyBookOneAuthor();
-                sqlContext.Add(book);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () => await sqlContext.SaveChangesAsync());
-
-                //VERIFY
-                sqlContext.Books.Count().ShouldEqual(0);
-            }
-        }
-
     }
 }

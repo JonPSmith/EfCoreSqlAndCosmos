@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DataLayer.EfCode
 {
     public class NoSqlDbContext : DbContext
-    { 
+    {
         public NoSqlDbContext(DbContextOptions<NoSqlDbContext> options)
             : base(options) { }
 

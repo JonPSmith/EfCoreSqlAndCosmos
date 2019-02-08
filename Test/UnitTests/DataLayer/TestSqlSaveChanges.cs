@@ -49,6 +49,38 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
+        public void TestSaveChangesDeleteNoSqlOk()
+        {
+            //SETUP
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    nameof(TestSqlSaveChanges));
+
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
+                sqlContext.Database.EnsureCreated();
+                noSqlContext.Database.EnsureCreated();
+                var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
+                sqlContext.Add(book);
+                sqlContext.SaveChanges();
+
+                //ATTEMPT
+                sqlContext.Remove(book);
+                sqlContext.SaveChanges();
+
+                //VERIFY
+                sqlContext.Books.Count().ShouldEqual(0);
+                var noSqlBook = noSqlContext.Books.SingleOrDefault(p => p.BookId == book.BookId);
+                noSqlBook.ShouldBeNull();
+            }
+        }
+
+        [Fact]
         public void TestSaveChangesDirectUpdatesNoSqlOk()
         {
             //SETUP
@@ -121,38 +153,6 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public void TestSaveChangesDeleteNoSqlOk()
-        {
-            //SETUP
-            var config = AppSettings.GetConfiguration();
-            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
-                .UseCosmos(
-                    config["endpoint"],
-                    config["authKey"],
-                    nameof(TestSqlSaveChanges));
-
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
-            {
-                sqlContext.Database.EnsureCreated();
-                noSqlContext.Database.EnsureCreated();
-                var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
-                sqlContext.Add(book);
-                sqlContext.SaveChanges();
-
-                //ATTEMPT
-                sqlContext.Remove(book);
-                sqlContext.SaveChanges();
-
-                //VERIFY
-                sqlContext.Books.Count().ShouldEqual(0);
-                var noSqlBook = noSqlContext.Books.SingleOrDefault(p => p.BookId == book.BookId);
-                noSqlBook.ShouldBeNull();
-            }
-        }
-
-        [Fact]
         public void TestSaveChangesSoftDeleteNoSqlOk()
         {
             //SETUP
@@ -214,6 +214,5 @@ namespace Test.UnitTests.DataLayer
                 sqlContext.Books.Count().ShouldEqual(0);
             }
         }
-
     }
 }

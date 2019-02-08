@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
-// Licensed under MIT licence. See License.txt in the project root for license information.
+﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
+// Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
 using Microsoft.AspNetCore.Http;
@@ -15,12 +15,12 @@ namespace EfCoreSqlAndCosmos.Logger
     {
         private readonly Func<IHttpContextAccessor> _httpAccessor;
 
-        public static LogLevel LogThisAndAbove { get; set; } = LogLevel.Information;
-
         public RequestTransientLogger(Func<IHttpContextAccessor> httpAccessor)
         {
             _httpAccessor = httpAccessor;
         }
+
+        public static LogLevel LogThisAndAbove { get; set; } = LogLevel.Information;
 
         public ILogger CreateLogger(string categoryName)
         {

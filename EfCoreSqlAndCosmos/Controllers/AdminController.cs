@@ -2,6 +2,7 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 using GenericServices;
@@ -28,13 +29,13 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ChangePubDate(ChangePubDateDto dto, [FromServices]ICrudServices service)
+        public async Task<IActionResult> ChangePubDate(ChangePubDateDto dto, [FromServices]ICrudServicesAsync service)
         {
             if (!ModelState.IsValid)
             {
                 return View(dto);
             }
-            service.UpdateAndSave(dto);
+            await service.UpdateAndSaveAsync(dto);
             SetupTraceInfo();
             if (service.IsValid)
                 return View("BookUpdated", service.Message);

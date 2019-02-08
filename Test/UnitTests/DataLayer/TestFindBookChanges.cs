@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using DataLayer.EfCode;
-using DataLayer.NoSqlCode;
 using DataLayer.NoSqlCode.Internal;
 using Microsoft.EntityFrameworkCore;
 using Test.Helpers;
@@ -45,7 +44,30 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public void TestUpdateOk()
+        public void TestUpdateDirectOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(options))
+            {
+                context.Database.EnsureCreated();
+                context.SeedDatabaseFourBooks();
+            }
+            using (var context = new SqlDbContext(options))
+            {
+                //ATTEMPT
+                var book = context.Books.First();
+                book.AddPromotion(123, "now 123");
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+
+                //VERIFY
+                changes.Single().BookId.ShouldNotEqual(Guid.Empty);
+                changes.Single().State.ShouldEqual(EntityState.Modified);
+            }
+        }
+
+        [Fact]
+        public void TestUpdateViaNonBookEntityOk()
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlDbContext>();
@@ -79,6 +101,27 @@ namespace Test.UnitTests.DataLayer
 
                 //ATTEMPT
                 context.Remove(context.Books.First());
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+
+                //VERIFY
+                changes.Single().BookId.ShouldNotEqual(Guid.Empty);
+                changes.Single().State.ShouldEqual(EntityState.Deleted);
+            }
+        }
+
+        [Fact]
+        public void TestSoftDeleteBookOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(options))
+            {
+                context.Database.EnsureCreated();
+                context.SeedDatabaseFourBooks();
+
+                //ATTEMPT
+                var book = context.Books.First();
+                book.SoftDeleted = true;
                 var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
 
                 //VERIFY

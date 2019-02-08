@@ -15,12 +15,14 @@ namespace EfCoreSqlAndCosmos
             using (var scope = serviceProvider.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                using (var context = services.GetRequiredService<SqlDbContext>())
+                using (var sqlContext = services.GetRequiredService<SqlDbContext>())
+                using (var noSqlContext = services.GetRequiredService<NoSqlDbContext>())
                 {
 
-                    context.DevelopmentEnsureCreated(wwwRootPath);
+                    sqlContext.DevelopmentEnsureCreated(wwwRootPath);
+                    noSqlContext.Database.EnsureCreated();
                     if (seedDatabase)
-                        context.SeedDatabase(wwwRootPath);
+                        sqlContext.SeedDatabase(wwwRootPath);
                 }
             }
         }

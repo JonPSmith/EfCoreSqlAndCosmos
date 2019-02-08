@@ -4,6 +4,7 @@
 using System;
 using System.Reflection;
 using DataLayer.EfCode;
+using DataLayer.NoSqlCode;
 using EfCoreSqlAndCosmos.Logger;
 using GenericServices.Setup;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -45,6 +47,14 @@ namespace EfCoreSqlAndCosmos
             services.AddDbContext<SqlDbContext>(options =>
                 options.UseSqlServer(sqlConnection, sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure())
             );
+            services.AddDbContext<NoSqlDbContext>(options =>
+                options.UseCosmos(
+                    Configuration["endpoint"],
+                    Configuration["authKey"],
+                    Configuration["database"],
+                    noSqlOptions => noSqlOptions.ExecutionStrategy(c => new CosmosExecutionStrategy(c))));
+            //This registers the NoSqlBookUpdater and will cause changes to books to be updated in the NoSql database
+            services.AddScoped<IBookUpdater, NoSqlBookUpdater>();
 
             //Setup GenericServices
             services.GenericServicesSimpleSetup<SqlDbContext>(Assembly.GetAssembly(typeof(BookListDto)));

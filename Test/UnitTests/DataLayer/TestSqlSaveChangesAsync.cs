@@ -69,8 +69,12 @@ namespace Test.UnitTests.DataLayer
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
                 await sqlContext.SaveChangesAsync();
-
+            }
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
                 //ATTEMPT
+                var book = sqlContext.Books.Single();
                 book.PublishedOn = DddEfTestData.DummyBookStartDate.AddDays(1);
                 await sqlContext.SaveChangesAsync();
 
@@ -101,8 +105,12 @@ namespace Test.UnitTests.DataLayer
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
                 await sqlContext.SaveChangesAsync();
-
+            }
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
                 //ATTEMPT
+                var book = sqlContext.Books.Single();
                 book.AddReview(5, "xxx","yyy", sqlContext);
                 await sqlContext.SaveChangesAsync();
 

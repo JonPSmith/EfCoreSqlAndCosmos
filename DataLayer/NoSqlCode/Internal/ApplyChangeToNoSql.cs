@@ -54,7 +54,12 @@ namespace DataLayer.NoSqlCode.Internal
                     case EntityState.Modified:
                     {
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
-                        SqlToNoSqlMapper.CreateMapper().Map(_sqlContext.Find<Book>(bookToUpdate.BookId), noSqlBook);
+                        var sqlBook = _sqlContext.Set<Book>()
+                            .Include(x => x.AuthorsLink).ThenInclude(y => y.Author)
+                            .Include(x => x.Reviews)
+                            .Single(x => x.BookId == bookToUpdate.BookId);
+                        SqlToNoSqlMapper.CreateMapper().Map(sqlBook, noSqlBook);
+                            SqlToNoSqlMapper.CreateMapper().Map(_sqlContext.Find<Book>(bookToUpdate.BookId), noSqlBook);
                         break;
                     }
                     case EntityState.Added:
@@ -88,9 +93,13 @@ namespace DataLayer.NoSqlCode.Internal
                     case EntityState.Modified:
                     {
                         var noSqlBook = await _noSqlContext.FindAsync<BookListNoSql>(bookToUpdate.BookId);
-                        SqlToNoSqlMapper.CreateMapper().Map(_sqlContext.Find<Book>(bookToUpdate.BookId), noSqlBook);
-                        }
+                        var sqlBook = await _sqlContext.Set<Book>()
+                            .Include(x => x.AuthorsLink).ThenInclude(y => y.Author)
+                            .Include(x => x.Reviews)
+                            .SingleAsync(x => x.BookId == bookToUpdate.BookId);
+                        SqlToNoSqlMapper.CreateMapper().Map(sqlBook, noSqlBook);
                         break;
+                    }
                     case EntityState.Added:
                         var newBook = await _sqlContext.Set<Book>()
                             .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)

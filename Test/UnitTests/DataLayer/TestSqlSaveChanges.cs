@@ -3,11 +3,9 @@
 
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Test.Helpers;
 using TestSupport.EfHelpers;
 using TestSupport.Helpers;
@@ -70,8 +68,12 @@ namespace Test.UnitTests.DataLayer
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
                 sqlContext.SaveChanges();
-
+            }
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
                 //ATTEMPT
+                var book = sqlContext.Books.Single();
                 book.PublishedOn = DddEfTestData.DummyBookStartDate.AddDays(1);
                 sqlContext.SaveChanges();
 
@@ -102,8 +104,12 @@ namespace Test.UnitTests.DataLayer
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
                 sqlContext.SaveChanges();
-
+            }
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
                 //ATTEMPT
+                var book = sqlContext.Books.Single();
                 book.AddReview(5, "xxx","yyy", sqlContext);
                 sqlContext.SaveChanges();
 

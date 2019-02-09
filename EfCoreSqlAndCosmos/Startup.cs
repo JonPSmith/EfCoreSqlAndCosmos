@@ -49,8 +49,8 @@ namespace EfCoreSqlAndCosmos
             );
             services.AddDbContext<NoSqlDbContext>(options =>
                 options.UseCosmos(
-                    Configuration["endpoint"],
-                    Configuration["authKey"],
+                    Configuration["CosmosUrl"],
+                    Configuration["CosmosKey"],
                     Configuration["database"],
                     noSqlOptions => noSqlOptions.ExecutionStrategy(c => new CosmosExecutionStrategy(c))));
             //This registers the NoSqlBookUpdater and will cause changes to books to be updated in the NoSql database

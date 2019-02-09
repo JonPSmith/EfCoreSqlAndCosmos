@@ -2,6 +2,7 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Linq;
+using System.Threading.Tasks;
 using DataLayer.EfClassesNoSql;
 using DataLayer.EfCode;
 using DataLayer.QueryObjects;
@@ -11,16 +12,16 @@ using ServiceLayer.BooksNoSql.QueryObjects;
 
 namespace ServiceLayer.BooksNoSql.Services
 {
-    public class ListBooksService : IListNoSqlBooksService
+    public class ListNoSqlBooksService : IListNoSqlBooksService
     {
         private readonly NoSqlDbContext _context;
 
-        public ListBooksService(NoSqlDbContext context)
+        public ListNoSqlBooksService(NoSqlDbContext context)
         {
             _context = context;
         }
 
-        public IQueryable<BookListNoSql> SortFilterPage(SortFilterPageOptions options)
+        public async Task<IQueryable<BookListNoSql>> SortFilterPageAsync(SortFilterPageOptions options)
         {
             var booksQuery = _context.Books
                 .AsNoTracking()                                             
@@ -28,7 +29,7 @@ namespace ServiceLayer.BooksNoSql.Services
                 .FilterBooksBy(options.FilterBy,       
                                options.FilterValue);   
 
-            options.SetupRestOfDto(booksQuery);        
+            await options.SetupRestOfDtoAsync(booksQuery);        
 
             return booksQuery.Page(options.PageNum-1,  
                                    options.PageSize);  

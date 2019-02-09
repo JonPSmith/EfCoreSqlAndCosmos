@@ -3,7 +3,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksNoSql;
 using ServiceLayer.BooksSql;
@@ -14,9 +16,9 @@ namespace EfCoreSqlAndCosmos.Controllers
 {
     public class NoSqlController : BaseTraceController
     {
-        public IActionResult Index (SortFilterPageOptions options, [FromServices] IListNoSqlBooksService service)
+        public async Task<IActionResult> Index (SortFilterPageOptions options, [FromServices] IListNoSqlBooksService service)
         {
-            var output = service.SortFilterPage(options).ToList();
+            var output = await (await service.SortFilterPageAsync(options)).ToListAsync();
             SetupTraceInfo();
             return View(new BookListNoSqlCombinedDto(options, output));              
         }

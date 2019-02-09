@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using DataLayer.EfCode;
 using ServiceLayer.BooksCommon;
+using ServiceLayer.BooksNoSql.QueryObjects;
 using ServiceLayer.BooksSql;
-using ServiceLayer.BooksSql.QueryObjects;
 
 namespace ServiceLayer.BooksNoSql.Services
 {

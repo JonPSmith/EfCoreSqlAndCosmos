@@ -4,6 +4,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using ServiceLayer.BooksSql.QueryObjects;
 
 namespace ServiceLayer.BooksCommon
@@ -70,6 +72,20 @@ namespace ServiceLayer.BooksCommon
                 (double) (query.Count())/PageSize);
             PageNum = Math.Min(
                 Math.Max(1, PageNum), NumPages);                                                            
+
+            var newCheckState = GenerateCheckState();
+            if (PrevCheckState != newCheckState)
+                PageNum = 1;
+
+            PrevCheckState = newCheckState;
+        }
+
+        public async Task SetupRestOfDtoAsync<T>(IQueryable<T> query)
+        {
+            NumPages = (int)Math.Ceiling(
+                (double)(await query.CountAsync()) / PageSize);
+            PageNum = Math.Min(
+                Math.Max(1, PageNum), NumPages);
 
             var newCheckState = GenerateCheckState();
             if (PrevCheckState != newCheckState)

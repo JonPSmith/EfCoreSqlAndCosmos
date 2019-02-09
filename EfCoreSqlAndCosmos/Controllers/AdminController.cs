@@ -9,7 +9,7 @@ using GenericServices;
 using GenericServices.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using ServiceLayer.Books.Dtos;
+using ServiceLayer.BooksSql.Dtos;
 using ServiceLayer.DatabaseServices.Concrete;
 
 namespace EfCoreSqlAndCosmos.Controllers

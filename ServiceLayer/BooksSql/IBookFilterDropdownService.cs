@@ -2,9 +2,9 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using ServiceLayer.Books.QueryObjects;
+using ServiceLayer.BooksSql.QueryObjects;
 
-namespace ServiceLayer.Books
+namespace ServiceLayer.BooksSql
 {
     public interface IBookFilterDropdownService
     {

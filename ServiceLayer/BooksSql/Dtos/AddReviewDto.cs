@@ -8,9 +8,9 @@ using DataLayer.EfClassesSql;
 using GenericServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ServiceLayer.Books.Dtos
+namespace ServiceLayer.BooksSql.Dtos
 {
-    public class ChangePubDateDto : ILinkToEntity<Book>
+    public class AddReviewDto : ILinkToEntity<Book>
     {
         [HiddenInput]
         public Guid BookId{ get; set; }
@@ -18,7 +18,10 @@ namespace ServiceLayer.Books.Dtos
         [ReadOnly(true)]
         public string Title { get; set; }
 
-        [DataType(DataType.Date)]               
-        public DateTime PublishedOn { get; set; }
+        [MaxLength(Review.NameLength)]
+        public string VoterName { get; set; }
+
+        public int NumStars { get; set; }
+        public string Comment { get; set; }
     }
 }

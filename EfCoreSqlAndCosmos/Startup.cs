@@ -17,8 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NetCore.AutoRegisterDi;
-using ServiceLayer.Books.Dtos;
-using ServiceLayer.Books.Services;
+using ServiceLayer.BooksSql.Dtos;
+using ServiceLayer.BooksSql.Services;
 
 namespace EfCoreSqlAndCosmos
 {

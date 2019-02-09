@@ -5,10 +5,10 @@ using System.Linq;
 using DataLayer.EfCode;
 using DataLayer.QueryObjects;
 using Microsoft.EntityFrameworkCore;
-using ServiceLayer.Books.Dtos;
-using ServiceLayer.Books.QueryObjects;
+using ServiceLayer.BooksSql.Dtos;
+using ServiceLayer.BooksSql.QueryObjects;
 
-namespace ServiceLayer.Books.Services
+namespace ServiceLayer.BooksSql.Services
 {
     public class ListBooksService : IListBooksService
     {

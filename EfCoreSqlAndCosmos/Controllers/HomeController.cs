@@ -4,8 +4,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using ServiceLayer.Books;
-using ServiceLayer.Books.Dtos;
+using ServiceLayer.BooksSql;
+using ServiceLayer.BooksSql.Dtos;
 using ServiceLayer.Logger;
 
 namespace EfCoreSqlAndCosmos.Controllers

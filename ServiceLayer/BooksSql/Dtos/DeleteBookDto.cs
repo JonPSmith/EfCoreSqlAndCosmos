@@ -5,19 +5,12 @@ using System;
 using DataLayer.EfClassesSql;
 using GenericServices;
 
-namespace ServiceLayer.Books.Dtos
+namespace ServiceLayer.BooksSql.Dtos
 {
-    public class BookListDto : ILinkToEntity<Book>
+    public class DeleteBookDto : ILinkToEntity<Book>
     {
         public Guid BookId{ get; set; }
         public string Title { get; set; }
-        public DateTime PublishedOn { get; set; }
-        public decimal OrgPrice { get; set; }
-        public decimal ActualPrice { get; set; }
-        public string PromotionalText { get; set; }
         public string AuthorsOrdered { get; set; }
-
-        public int ReviewsCount { get; set; }
-        public double? ReviewsAverageVotes { get; set; }
     }
 }

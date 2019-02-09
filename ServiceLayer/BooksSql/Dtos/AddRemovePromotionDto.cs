@@ -7,7 +7,7 @@ using DataLayer.EfClassesSql;
 using GenericServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ServiceLayer.Books.Dtos
+namespace ServiceLayer.BooksSql.Dtos
 {
     public class AddRemovePromotionDto : ILinkToEntity<Book>
     {

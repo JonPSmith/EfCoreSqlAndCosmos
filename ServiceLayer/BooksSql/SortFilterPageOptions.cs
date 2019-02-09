@@ -3,9 +3,9 @@
 
 using System;
 using System.Linq;
-using ServiceLayer.Books.QueryObjects;
+using ServiceLayer.BooksSql.QueryObjects;
 
-namespace ServiceLayer.Books
+namespace ServiceLayer.BooksSql
 {
     public class SortFilterPageOptions
     {

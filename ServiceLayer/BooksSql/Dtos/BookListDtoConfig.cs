@@ -7,7 +7,7 @@ using AutoMapper;
 using DataLayer.EfClassesSql;
 using GenericServices.Configuration;
 
-namespace ServiceLayer.Books.Dtos
+namespace ServiceLayer.BooksSql.Dtos
 {
     class BookListDtoConfig : PerDtoConfig<BookListDto, Book>
     {

@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DataLayer.EfCode;
-using ServiceLayer.Books.QueryObjects;
+using ServiceLayer.BooksSql.QueryObjects;
 
-namespace ServiceLayer.Books.Services
+namespace ServiceLayer.BooksSql.Services
 {
     public class BookFilterDropdownService : IBookFilterDropdownService
     {

@@ -2,9 +2,9 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Linq;
-using ServiceLayer.Books.Dtos;
+using ServiceLayer.BooksSql.Dtos;
 
-namespace ServiceLayer.Books
+namespace ServiceLayer.BooksSql
 {
     public interface IListBooksService
     {

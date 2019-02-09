@@ -14,6 +14,7 @@ namespace DataLayer.EfCode
     {
         private readonly IBookUpdater _bookUpdater;
 
+        //NOTE: if the bookUpdater isn't provided, then it reverts to a normal SaveChanges.
         public SqlDbContext(DbContextOptions<SqlDbContext> options, IBookUpdater bookUpdater = null)      
             : base(options)
         {

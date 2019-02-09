@@ -4,27 +4,17 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksSql.Dtos;
 
 namespace ServiceLayer.BooksSql.QueryObjects
 {
-    public enum OrderByOptions
-    {
-        [Display(Name = "Publication Date ↑")]
-        ByPublicationDate,
-        [Display(Name = "Votes ↑")]
-        ByVotes,
-        [Display(Name = "Price ↓")]
-        ByPriceLowestFirst,
-        [Display(Name = "Price ↑")]
-        ByPriceHigestFirst
-    }
+
 
     public static class BookListDtoSort
     {
         public static IQueryable<BookListDto> OrderBooksBy
-            (this IQueryable<BookListDto> books, 
-             OrderByOptions orderByOptions)
+            (this IQueryable<BookListDto> books, OrderByOptions orderByOptions)
         {
             switch (orderByOptions)
             {              

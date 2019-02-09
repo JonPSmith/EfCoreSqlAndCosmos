@@ -5,19 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.BooksCommon;
+using ServiceLayer.BooksNoSql;
 using ServiceLayer.BooksSql;
 using ServiceLayer.BooksSql.Dtos;
 using ServiceLayer.Logger;
 
 namespace EfCoreSqlAndCosmos.Controllers
 {
-    public class HomeController : BaseTraceController
+    public class NoSqlController : BaseTraceController
     {
-        public IActionResult Index (SortFilterPageOptions options, [FromServices] IListBooksService service)
+        public IActionResult Index (SortFilterPageOptions options, [FromServices] IListNoSqlBooksService service)
         {
             var output = service.SortFilterPage(options).ToList();
             SetupTraceInfo();
-            return View(new BookListCombinedDto(options, output));              
+            return View(new BookListNoSqlCombinedDto(options, output));              
         }
 
 
@@ -29,32 +30,15 @@ namespace EfCoreSqlAndCosmos.Controllers
         /// <returns></returns>
         [HttpGet]
         public JsonResult GetFilterSearchContent    
-            (SortFilterPageOptions options, [FromServices]IBookFilterDropdownService service)         
+            (SortFilterPageOptions options, [FromServices]IBookNoSqlFilterDropdownService service)         
         {
 
             var traceIdent = HttpContext.TraceIdentifier; 
             return Json(                            
                 new TraceIndentGeneric<IEnumerable<DropdownTuple>>(
                 traceIdent,
-                service.GetFilterDropDownValues(  options.FilterBy)));            
+                service.GetFilterDropDownValues(options.FilterBy)));            
         }
 
-
-        public IActionResult About()
-        {
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View();
-        }
     }
 }

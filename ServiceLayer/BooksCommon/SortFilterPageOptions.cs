@@ -2,11 +2,34 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using ServiceLayer.BooksSql.QueryObjects;
 
-namespace ServiceLayer.BooksSql
+namespace ServiceLayer.BooksCommon
 {
+    public enum BooksFilterBy
+    {
+        [Display(Name = "All")]
+        NoFilter = 0,
+        [Display(Name = "By Votes...")]
+        ByVotes,
+        [Display(Name = "By Year published...")]
+        ByPublicationYear
+    }
+
+    public enum OrderByOptions
+    {
+        [Display(Name = "Publication Date ↑")]
+        ByPublicationDate,
+        [Display(Name = "Votes ↑")]
+        ByVotes,
+        [Display(Name = "Price ↓")]
+        ByPriceLowestFirst,
+        [Display(Name = "Price ↑")]
+        ByPriceHigestFirst
+    }
+
     public class SortFilterPageOptions
     {
         public const int DefaultPageSize = 10;   //default page size is 10

@@ -6,15 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using DataLayer.EfCode;
 using ServiceLayer.BooksCommon;
+using ServiceLayer.BooksSql;
 using ServiceLayer.BooksSql.QueryObjects;
 
-namespace ServiceLayer.BooksSql.Services
+namespace ServiceLayer.BooksNoSql.Services
 {
-    public class BookFilterDropdownService : IBookFilterDropdownService
+    public class BookFilterDropdownService : IBookNoSqlFilterDropdownService
     {
-        private readonly SqlDbContext _db;
+        private readonly NoSqlDbContext _db;
 
-        public BookFilterDropdownService(SqlDbContext db)
+        public BookFilterDropdownService(NoSqlDbContext db)
         {
             _db = db;
         }

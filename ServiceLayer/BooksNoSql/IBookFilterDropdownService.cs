@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksSql.QueryObjects;
 
-namespace ServiceLayer.BooksSql
+namespace ServiceLayer.BooksNoSql
 {
-    public interface IBookFilterDropdownService
+    public interface IBookNoSqlFilterDropdownService
     {
         IEnumerable<DropdownTuple> GetFilterDropDownValues(BooksFilterBy filterBy);
     }

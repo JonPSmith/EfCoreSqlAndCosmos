@@ -2,13 +2,13 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Linq;
+using DataLayer.EfClassesNoSql;
 using ServiceLayer.BooksCommon;
-using ServiceLayer.BooksSql.Dtos;
 
-namespace ServiceLayer.BooksSql
+namespace ServiceLayer.BooksNoSql
 {
-    public interface IListBooksService
+    public interface IListNoSqlBooksService
     {
-        IQueryable<BookListDto> SortFilterPage(SortFilterPageOptions options);
+        IQueryable<BookListNoSql> SortFilterPage(SortFilterPageOptions options);
     }
 }

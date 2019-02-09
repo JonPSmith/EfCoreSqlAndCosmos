@@ -4,19 +4,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksSql.Dtos;
 
 namespace ServiceLayer.BooksSql.QueryObjects
 {
-    public enum BooksFilterBy
-    {
-        [Display(Name = "All")]
-        NoFilter = 0,
-        [Display(Name = "By Votes...")]
-        ByVotes,
-        [Display(Name = "By Year published...")]
-        ByPublicationYear
-    }
+
 
     public static class BookListDtoFilter
     {

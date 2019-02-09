@@ -26,6 +26,7 @@ namespace DataLayer.NoSqlCode.Internal
                         s.AuthorsLink
                             .OrderBy(q => q.Order)
                             .Select(q => q.Author.Name))));
+            cfg.CreateMap<BookListNoSql, BookListNoSql>();
         });
 
         private readonly NoSqlDbContext _noSqlContext;
@@ -54,12 +55,10 @@ namespace DataLayer.NoSqlCode.Internal
                     case EntityState.Modified:
                     {
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
-                        var sqlBook = _sqlContext.Set<Book>()
-                            .Include(x => x.AuthorsLink).ThenInclude(y => y.Author)
-                            .Include(x => x.Reviews)
+                        var update = _sqlContext.Set<Book>()
+                            .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)
                             .Single(x => x.BookId == bookToUpdate.BookId);
-                        SqlToNoSqlMapper.CreateMapper().Map(sqlBook, noSqlBook);
-                            SqlToNoSqlMapper.CreateMapper().Map(_sqlContext.Find<Book>(bookToUpdate.BookId), noSqlBook);
+                            SqlToNoSqlMapper.CreateMapper().Map(update, noSqlBook);
                         break;
                     }
                     case EntityState.Added:
@@ -93,11 +92,10 @@ namespace DataLayer.NoSqlCode.Internal
                     case EntityState.Modified:
                     {
                         var noSqlBook = await _noSqlContext.FindAsync<BookListNoSql>(bookToUpdate.BookId);
-                        var sqlBook = await _sqlContext.Set<Book>()
-                            .Include(x => x.AuthorsLink).ThenInclude(y => y.Author)
-                            .Include(x => x.Reviews)
+                        var update = await _sqlContext.Set<Book>()
+                            .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)
                             .SingleAsync(x => x.BookId == bookToUpdate.BookId);
-                        SqlToNoSqlMapper.CreateMapper().Map(sqlBook, noSqlBook);
+                        SqlToNoSqlMapper.CreateMapper().Map(update, noSqlBook);
                         break;
                     }
                     case EntityState.Added:

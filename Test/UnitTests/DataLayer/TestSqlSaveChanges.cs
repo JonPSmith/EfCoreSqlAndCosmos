@@ -113,6 +113,8 @@ namespace Test.UnitTests.DataLayer
                 sqlContext.Books.Count().ShouldEqual(1);
                 var noSqlBook = noSqlContext.Books.Single(p => p.BookId == book.BookId);
                 noSqlBook.PublishedOn.ShouldEqual(DddEfTestData.DummyBookStartDate.AddDays(1));
+                noSqlBook.AuthorsOrdered.ShouldEqual("Author1, Author2");
+                noSqlBook.ReviewsCount.ShouldEqual(2);
             }
         }
 

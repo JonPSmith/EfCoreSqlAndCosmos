@@ -49,37 +49,6 @@ namespace Test.UnitTests.DataLayer
             }
         }
 
-        //--------------------------------------------------------------
-        //error situations
-
-
-        [Fact]
-        public async Task TestSaveChangesAsyncUpdatesNoSqlFail()
-        {
-            //SETUP
-            var config = AppSettings.GetConfiguration();
-            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
-                .UseCosmos(
-                    config["endpoint"],
-                    config["authKey"],
-                    "UNKNOWNDATABASENAME");
-
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
-            {
-                await sqlContext.Database.EnsureCreatedAsync();
-
-                //ATTEMPT
-                var book = DddEfTestData.CreateDummyBookOneAuthor();
-                sqlContext.Add(book);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () => await sqlContext.SaveChangesAsync());
-
-                //VERIFY
-                sqlContext.Books.Count().ShouldEqual(0);
-            }
-        }
-
         [Fact]
         public async Task TestSaveChangesDeleteNoSqlOk()
         {
@@ -145,6 +114,8 @@ namespace Test.UnitTests.DataLayer
                 sqlContext.Books.Count().ShouldEqual(1);
                 var noSqlBook = noSqlContext.Books.Single(p => p.BookId == book.BookId);
                 noSqlBook.PublishedOn.ShouldEqual(DddEfTestData.DummyBookStartDate.AddDays(1));
+                noSqlBook.AuthorsOrdered.ShouldEqual("Author1, Author2");
+                noSqlBook.ReviewsCount.ShouldEqual(2);
             }
         }
 
@@ -180,6 +151,7 @@ namespace Test.UnitTests.DataLayer
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(1);
                 var noSqlBook = noSqlContext.Books.Single(p => p.BookId == book.BookId);
+                noSqlBook.AuthorsOrdered.ShouldEqual("Author1, Author2");
                 noSqlBook.ReviewsCount.ShouldEqual(3);
             }
         }
@@ -214,6 +186,37 @@ namespace Test.UnitTests.DataLayer
                 sqlContext.Books.IgnoreQueryFilters().Count().ShouldEqual(1);
                 var noSqlBook = noSqlContext.Books.SingleOrDefault(p => p.BookId == book.BookId);
                 noSqlBook.ShouldBeNull();
+            }
+        }
+
+        //--------------------------------------------------------------
+        //error situations
+
+
+        [Fact]
+        public async Task TestSaveChangesAsyncUpdatesNoSqlFail()
+        {
+            //SETUP
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    "UNKNOWNDATABASENAME");
+
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            {
+                await sqlContext.Database.EnsureCreatedAsync();
+
+                //ATTEMPT
+                var book = DddEfTestData.CreateDummyBookOneAuthor();
+                sqlContext.Add(book);
+                var ex = await Assert.ThrowsAsync<HttpException>(async () => await sqlContext.SaveChangesAsync());
+
+                //VERIFY
+                sqlContext.Books.Count().ShouldEqual(0);
             }
         }
     }

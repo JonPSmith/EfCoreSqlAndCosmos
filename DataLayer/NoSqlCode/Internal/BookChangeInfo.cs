@@ -16,7 +16,7 @@ namespace DataLayer.NoSqlCode.Internal
     internal class BookChangeInfo 
     {
         /// <summary>
-        /// This method should be called whenever an entity that has the IBookId interface
+        /// This ctor should be called whenever an entity that has the IBookId interface
         /// </summary>
         /// <param name="bookId"></param>
         /// <param name="entity"></param>

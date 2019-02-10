@@ -89,8 +89,8 @@ namespace DataLayer.NoSqlCode.Internal
                     {
                         var noSqlBook = await _noSqlContext.FindAsync<BookListNoSql>(bookToUpdate.BookId);
                         _noSqlContext.Remove(noSqlBook);
-                    }
                         break;
+                    }
                     case EntityState.Modified:
                     {
                         //Note: You need to read the actual Cosmos entity because of the extra columns like id, _rid, etc.

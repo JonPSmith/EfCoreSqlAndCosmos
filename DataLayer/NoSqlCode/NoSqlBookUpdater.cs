@@ -96,6 +96,9 @@ namespace DataLayer.NoSqlCode
 
         private async Task<int> RunSqlTransactionWithNoSqlWriteAsync(DbContext sqlContext, Func<Task<int>> callBaseSaveChangesAsync)
         {
+            if (sqlContext.Database.CurrentTransaction != null)
+                throw new InvalidOperationException("You can't use the NoSqlBookUpdater if you are using transactions.");
+
             var applier = new ApplyChangeToNoSql(sqlContext, _noSqlContext);
             using (var transaction = sqlContext.Database.BeginTransaction())
             {

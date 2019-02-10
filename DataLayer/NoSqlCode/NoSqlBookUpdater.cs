@@ -43,7 +43,7 @@ namespace DataLayer.NoSqlCode
         /// 5) finally commit the transaction
         /// </summary>
         /// <returns></returns>
-        public int CallBaseSaveChangesWithNoSqlWrite(DbContext sqlContext, Func<int> callBaseSaveChanges)
+        public int CallBaseSaveChangesAndNoSqlWriteInTransaction(DbContext sqlContext, Func<int> callBaseSaveChanges)
         {
             var strategy = sqlContext.Database.CreateExecutionStrategy();
             if (strategy.RetriesOnFailure)
@@ -63,7 +63,7 @@ namespace DataLayer.NoSqlCode
         /// 5) finally commit the transaction
         /// </summary>
         /// <returns></returns>
-        public async Task<int> CallBaseSaveChangesWithNoSqlWriteAsync(DbContext sqlContext, Func<Task<int>> callBaseSaveChangesAsync)
+        public async Task<int> CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(DbContext sqlContext, Func<Task<int>> callBaseSaveChangesAsync)
         {
             var strategy = sqlContext.Database.CreateExecutionStrategy();
             if (strategy.RetriesOnFailure)

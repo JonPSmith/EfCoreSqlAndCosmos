@@ -29,14 +29,15 @@ namespace DataLayer.EfCode
         {
             if (_bookUpdater == null || !_bookUpdater.FoundBookChangesToProjectToNoSql(this))
                 return base.SaveChanges(acceptAllChangesOnSuccess);
-            return _bookUpdater.CallBaseSaveChangesWithNoSqlWrite(this, () => base.SaveChanges(acceptAllChangesOnSuccess));
+            return _bookUpdater.CallBaseSaveChangesAndNoSqlWriteInTransaction(this, 
+                () => base.SaveChanges(acceptAllChangesOnSuccess));
         }
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
             if (_bookUpdater == null || !_bookUpdater.FoundBookChangesToProjectToNoSql(this))
                 return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-            return await _bookUpdater.CallBaseSaveChangesWithNoSqlWriteAsync(this,
+            return await _bookUpdater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(this,
                 () => base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken));
         }
 

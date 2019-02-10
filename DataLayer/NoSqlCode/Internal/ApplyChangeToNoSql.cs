@@ -54,11 +54,12 @@ namespace DataLayer.NoSqlCode.Internal
                     }
                     case EntityState.Modified:
                     {
+                        //Note: You need to read the actual Cosmos entity because of the extra columns like _rid, etc.
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
                         var update = _sqlContext.Set<Book>()
-                            .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)
-                            .Single(x => x.BookId == bookToUpdate.BookId);
-                            SqlToNoSqlMapper.CreateMapper().Map(update, noSqlBook);
+                        .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)
+                        .Single(x => x.BookId == bookToUpdate.BookId);
+                        SqlToNoSqlMapper.CreateMapper().Map(update, noSqlBook);
                         break;
                     }
                     case EntityState.Added:
@@ -91,6 +92,7 @@ namespace DataLayer.NoSqlCode.Internal
                         break;
                     case EntityState.Modified:
                     {
+                        //Note: You need to read the actual Cosmos entity because of the extra columns like _rid, etc.
                         var noSqlBook = await _noSqlContext.FindAsync<BookListNoSql>(bookToUpdate.BookId);
                         var update = await _sqlContext.Set<Book>()
                             .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)

@@ -3,14 +3,14 @@
 
 using System.Linq;
 using DataLayer.EfClassesSql;
+using DataLayer.SqlCode;
 using ServiceLayer.BooksSql.Dtos;
 
 namespace ServiceLayer.BooksSql.QueryObjects
 {
     public static class BookListDtoSelect
     {
-        public static IQueryable<BookListDto>             
-            MapBookToDto(this IQueryable<Book> books)     
+        public static IQueryable<BookListDto> MapBookToDto(this IQueryable<Book> books)     
         {
             return books.Select(p => new BookListDto
             {
@@ -20,14 +20,9 @@ namespace ServiceLayer.BooksSql.QueryObjects
                 ActualPrice = p.ActualPrice,
                 OrgPrice = p.OrgPrice,
                 PromotionalText = p.PromotionalText,   
-                AuthorsOrdered = string.Join(", ",        
-                        p.AuthorsLink                         
-                        .OrderBy(q => q.Order)                
-                        .Select(q => q.Author.Name)),
+                AuthorsOrdered = UdfDefinitions.AuthorsStringUdf(p.BookId),
                 ReviewsCount = p.Reviews.Count(),
-                //ReviewsAverageVotes =
-                //    p.Reviews.Select(y =>
-                //        (double?)y.NumStars).Average()
+                ReviewsAverageVotes = UdfDefinitions.AverageVotesUdf(p.BookId)
             });
         }
     }

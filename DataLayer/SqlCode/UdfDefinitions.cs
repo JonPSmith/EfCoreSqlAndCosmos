@@ -17,7 +17,7 @@ namespace DataLayer.SqlCode
                 .HasSchema("dbo");
         }
 
-        public static double? AverageVotesUdf(int bookId)
+        public static double? AverageVotesUdf(Guid bookId)
         {
             throw new Exception();
         }

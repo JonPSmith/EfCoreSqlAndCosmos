@@ -20,3 +20,19 @@ ORDER BY ba.[Order]
 RETURN @Names
 END
 GO
+
+IF OBJECT_ID('dbo.AverageVotesUdf', N'FN') IS NOT NULL 
+	DROP FUNCTION dbo.AverageVotesUdf
+GO
+
+CREATE FUNCTION AverageVotesUdf (@bookId uniqueidentifier)
+RETURNS float
+AS
+BEGIN
+DECLARE @result AS float
+SELECT @result = AVG(CAST([NumStars] AS float)) 
+     FROM dbo.Review AS r
+     WHERE @bookId = r.BookId
+RETURN @result
+END
+GO

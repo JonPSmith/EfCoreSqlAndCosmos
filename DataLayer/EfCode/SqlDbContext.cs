@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode.Configurations;
 using DataLayer.NoSqlCode;
+using DataLayer.SqlCode;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.EfCode
@@ -45,7 +47,10 @@ namespace DataLayer.EfCode
             OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new BookConfig());       
-            modelBuilder.ApplyConfiguration(new BookAuthorConfig()); 
+            modelBuilder.ApplyConfiguration(new BookAuthorConfig());
+
+            modelBuilder.HasDbFunction(() => UdfDefinitions.AverageVotesUdf(default(Guid)));
+            modelBuilder.HasDbFunction(() => UdfDefinitions.AuthorsStringUdf(default(Guid)));
         }
     }
 }

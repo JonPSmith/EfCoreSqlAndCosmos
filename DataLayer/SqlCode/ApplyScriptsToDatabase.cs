@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.SqlCode
 {
-    public static class ApplyScriptExtension
+    public static class ApplyScriptsToDatabase
     {
         /// <summary>
         /// This reads in a SQL script file and executes each command to the database pointed at by the DbContext

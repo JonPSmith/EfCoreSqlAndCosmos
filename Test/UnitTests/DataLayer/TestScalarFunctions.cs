@@ -10,7 +10,6 @@ using TestSupport.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Extensions.AssertExtensions;
-using ApplyScriptExtension = TestSupport.EfHelpers.ApplyScriptExtension;
 
 namespace Test.UnitTests.DataLayer
 {
@@ -27,7 +26,7 @@ namespace Test.UnitTests.DataLayer
             {
                 context.Database.EnsureCreated();
                 var filepath = TestData.GetFilePath(@"..\..\EfCoreSqlAndCosmos\wwwroot\AddUserDefinedFunctions.sql");
-                ApplyScriptExtension.ExecuteScriptFileInTransaction(context, filepath);
+                ApplyScriptsToDatabase.ExecuteScriptFileInTransaction(context, filepath);
                 context.WipeAllDataFromDatabase();
 
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();

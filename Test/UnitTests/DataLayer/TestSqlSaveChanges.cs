@@ -16,6 +16,20 @@ namespace Test.UnitTests.DataLayer
 {
     public class TestSqlSaveChanges
     {
+        private DbContextOptions<SqlDbContext> _sqlOptions;
+        public TestSqlSaveChanges()
+        {
+
+            _sqlOptions = this.CreateUniqueClassOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(_sqlOptions))
+            {
+                context.Database.EnsureCreated();
+                var filepath = TestData.GetFilePath(@"..\..\EfCoreSqlAndCosmos\wwwroot\AddUserDefinedFunctions.sql");
+                context.ExecuteScriptFileInTransaction(filepath);
+                context.WipeAllDataFromDatabase();
+            }
+        }
+
         [Fact]
         public void TestSaveChangesAddNoSqlOk()
         {
@@ -27,9 +41,9 @@ namespace Test.UnitTests.DataLayer
                     config["authKey"],
                     nameof(TestSqlSaveChanges));
 
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 sqlContext.Database.EnsureCreated();
                 noSqlContext.Database.EnsureCreated();
@@ -59,9 +73,9 @@ namespace Test.UnitTests.DataLayer
                     config["authKey"],
                     nameof(TestSqlSaveChanges));
 
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 sqlContext.Database.EnsureCreated();
                 noSqlContext.Database.EnsureCreated();
@@ -91,9 +105,9 @@ namespace Test.UnitTests.DataLayer
                     config["authKey"],
                     nameof(TestSqlSaveChanges));
 
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 sqlContext.Database.EnsureCreated();
                 noSqlContext.Database.EnsureCreated();
@@ -102,7 +116,7 @@ namespace Test.UnitTests.DataLayer
                 sqlContext.SaveChanges();
             }
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 //ATTEMPT
                 var book = sqlContext.Books.Single();
@@ -129,9 +143,9 @@ namespace Test.UnitTests.DataLayer
                     config["authKey"],
                     nameof(TestSqlSaveChanges));
 
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 sqlContext.Database.EnsureCreated();
                 noSqlContext.Database.EnsureCreated();
@@ -140,7 +154,7 @@ namespace Test.UnitTests.DataLayer
                 sqlContext.SaveChanges();
             }
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 //ATTEMPT
                 var book = sqlContext.Books.Single();
@@ -165,9 +179,9 @@ namespace Test.UnitTests.DataLayer
                     config["authKey"],
                     nameof(TestSqlSaveChanges));
 
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 sqlContext.Database.EnsureCreated();
                 noSqlContext.Database.EnsureCreated();
@@ -201,9 +215,9 @@ namespace Test.UnitTests.DataLayer
                     config["authKey"],
                     "UNKNOWNDATABASENAME");
 
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(options, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 sqlContext.Database.EnsureCreated();
 

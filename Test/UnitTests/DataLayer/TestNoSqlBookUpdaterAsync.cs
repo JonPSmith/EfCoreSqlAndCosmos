@@ -17,6 +17,20 @@ namespace Test.UnitTests.DataLayer
 {
     public class TestNoSqlBookUpdaterAsync
     {
+        private DbContextOptions<SqlDbContext> _sqlOptions;
+        public TestNoSqlBookUpdaterAsync()
+        {
+
+            _sqlOptions = this.CreateUniqueClassOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(_sqlOptions))
+            {
+                context.Database.EnsureCreated();
+                var filepath = TestData.GetFilePath(@"..\..\EfCoreSqlAndCosmos\wwwroot\AddUserDefinedFunctions.sql");
+                context.ExecuteScriptFileInTransaction(filepath);
+                context.WipeAllDataFromDatabase();
+            }
+        }
+
         [Fact]
         public async Task TestNoSqlBookUpdaterFail_NoBookAddedToSqlDatabase()
         {
@@ -28,8 +42,8 @@ namespace Test.UnitTests.DataLayer
                     config["authKey"],
                     "UNKNOWNDATASBASENAME");
 
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var sqlContext = new SqlDbContext(options))
+
+            using (var sqlContext = new SqlDbContext(_sqlOptions))
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
             {
                 await sqlContext.Database.EnsureCreatedAsync();
@@ -60,8 +74,8 @@ namespace Test.UnitTests.DataLayer
                     config["authKey"],
                     nameof(TestNoSqlBookUpdaterAsync));
 
-            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
-            using (var sqlContext = new SqlDbContext(options))
+
+            using (var sqlContext = new SqlDbContext(_sqlOptions))
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
             {
                 await sqlContext.Database.EnsureCreatedAsync();
@@ -95,7 +109,7 @@ namespace Test.UnitTests.DataLayer
             var optionsBuilder = new DbContextOptionsBuilder<SqlDbContext>();
             optionsBuilder.UseSqlServer(connection);
             var options = optionsBuilder.Options;
-            using (var sqlContext = new SqlDbContext(options))
+            using (var sqlContext = new SqlDbContext(_sqlOptions))
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
             {
                 sqlContext.CreateEmptyViaWipe();

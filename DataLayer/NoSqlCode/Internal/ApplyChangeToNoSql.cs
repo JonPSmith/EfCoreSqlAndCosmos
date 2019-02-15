@@ -11,6 +11,7 @@ using AutoMapper.QueryableExtensions;
 using DataLayer.EfClassesNoSql;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
+using DataLayer.SqlCode;
 using Microsoft.EntityFrameworkCore;
 
 [assembly: InternalsVisibleTo("Test")]
@@ -22,10 +23,9 @@ namespace DataLayer.NoSqlCode.Internal
         {
             cfg.CreateMap<Book, BookListNoSql>()
                 .ForMember(p => p.AuthorsOrdered,
-                    m => m.MapFrom(s => string.Join(", ",
-                        s.AuthorsLink
-                            .OrderBy(q => q.Order)
-                            .Select(q => q.Author.Name))));
+                    m => m.MapFrom(s => UdfDefinitions.AuthorsStringUdf(s.BookId)))
+                .ForMember(p => p.ReviewsAverageVotes,
+                m => m.MapFrom(s => UdfDefinitions.AverageVotesUdf(s.BookId)));
             cfg.CreateMap<BookListNoSql, BookListNoSql>();
         });
 

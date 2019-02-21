@@ -47,13 +47,14 @@ namespace EfCoreSqlAndCosmos
             services.AddDbContext<SqlDbContext>(options =>
                 options.UseSqlServer(sqlConnection, sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure())
             );
+            //Note you don't need to set an ExecutionStrategy on Cosmos provider 
+            //see https://github.com/aspnet/EntityFrameworkCore/issues/8443#issuecomment-465836181
             services.AddDbContext<NoSqlDbContext>(options =>
                 options.UseCosmos(
                     //I use user secrets to provide the actual Azure Cosmos database, but fall back to local emulator if no secrets set
                     Configuration["CosmosUrl"] ?? Configuration["endpoint"],
                     Configuration["CosmosKey"] ?? Configuration["authKey"],
-                    Configuration["database"],
-                    noSqlOptions => noSqlOptions.ExecutionStrategy(c => new CosmosExecutionStrategy(c))));
+                    Configuration["database"]));
             //This registers the NoSqlBookUpdater and will cause changes to books to be updated in the NoSql database
             services.AddScoped<IBookUpdater, NoSqlBookUpdater>();
 
@@ -93,7 +94,7 @@ namespace EfCoreSqlAndCosmos
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            //I setup the database here, as its easier to get the wwwroot directory
+            //I setup the database here, because there is a problem in ASP.NET Core 2.2 about accessing the root directory
             //see this issue to track this problem https://github.com/aspnet/AspNetCore/issues/4206
             serviceProvider.SetupDevelopmentDatabase(env.WebRootPath);
 

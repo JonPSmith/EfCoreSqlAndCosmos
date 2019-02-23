@@ -33,6 +33,8 @@ namespace ServiceLayer.DatabaseServices.Concrete
 
         public void WriteBooks(int numBooks, DbContextOptions<SqlDbContext> options, Func<int, bool> progessCancel)
         {
+            throw new NotImplementedException("This needs serious rework. I will do that when Version 3 is out");
+
             //Find out how many in db so we can pick up where we left off
             int numBooksInDb;
             using (var context = new SqlDbContext(options))

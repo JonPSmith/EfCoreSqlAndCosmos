@@ -58,8 +58,8 @@ namespace DataLayer.NoSqlCode.Internal
                         //Version 3 might make attach work https://github.com/aspnet/EntityFrameworkCore/issues/13633
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
                         var update = _sqlContext.Set<Book>()
-                        .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)
-                        .Single(x => x.BookId == bookToUpdate.BookId);
+                            .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)
+                            .Single(x => x.BookId == bookToUpdate.BookId);
                         SqlToNoSqlMapper.CreateMapper().Map(update, noSqlBook);
                         break;
                     }

@@ -3,13 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfCoreSqlAndCosmos", "EfCoreSqlAndCosmos\EfCoreSqlAndCosmos.csproj", "{1F30E882-1BE1-46A9-80A1-76DD02B31E9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfCoreSqlAndCosmos", "EfCoreSqlAndCosmos\EfCoreSqlAndCosmos.csproj", "{1F30E882-1BE1-46A9-80A1-76DD02B31E9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLayer", "ServiceLayer\ServiceLayer.csproj", "{718557B8-F1F8-4189-B70A-8A8394249AD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceLayer", "ServiceLayer\ServiceLayer.csproj", "{718557B8-F1F8-4189-B70A-8A8394249AD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{B1B7C1FE-6EC5-4F9C-9146-7735C3DA2760}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLayer", "DataLayer\DataLayer.csproj", "{B1B7C1FE-6EC5-4F9C-9146-7735C3DA2760}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{EDB97F15-5E1A-4A83-BC42-02B28CF2C194}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{EDB97F15-5E1A-4A83-BC42-02B28CF2C194}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3ECE4F2C-DDEB-43CD-BE89-014B83D892D9}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

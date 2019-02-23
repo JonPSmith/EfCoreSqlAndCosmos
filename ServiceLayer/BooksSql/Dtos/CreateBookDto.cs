@@ -59,13 +59,13 @@ namespace ServiceLayer.BooksSql.Dtos
 
         public struct KeyName
         {
-            public KeyName(int authorId, string name)
+            public KeyName(Guid authorId, string name)
             {
                 AuthorId = authorId;
                 Name = name;
             }
 
-            public int AuthorId { get; }
+            public Guid AuthorId { get; }
             public string Name { get; }
         }
     }

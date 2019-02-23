@@ -12,7 +12,7 @@ BEGIN
 -- Thanks to https://stackoverflow.com/a/194887/1434764
 DECLARE @Names AS NVARCHAR(4000)
 SELECT @Names = COALESCE(@Names + ', ', '') + a.Name
-FROM Authors AS a, Books AS b, BookAuthor AS ba 
+FROM Authors AS a, Books AS b, BookAuthors AS ba 
 WHERE ba.BookId = @bookId
       AND ba.AuthorId = a.AuthorId 
 	  AND ba.BookId = b.BookId

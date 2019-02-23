@@ -1,22 +1,20 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataLayer.EfClassesSql
 {
-    //I have styled the Author entity class as a standard-styled entity, 
-    //i.e. it can be created/updated via its property setters. 
-    //Technically it has to have a public, parameterless constructor and all properties should  have public setters
-    public class Author
+    public class Author  : IAuthorId
     {
         public const int NameLength = 100;
         public const int EmailLength = 100;
 
         public Author() { }
 
-        public int AuthorId { get;  set; }
+        public Guid AuthorId { get;  set; }
 
         [Required(AllowEmptyStrings = false)]
         [MaxLength(NameLength)]

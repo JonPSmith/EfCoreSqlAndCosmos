@@ -52,7 +52,7 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
-                var hasUpdates = updater.FoundBookChangesToProjectToNoSql(sqlContext);
+                var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
                 var ex = await Assert.ThrowsAsync<HttpException>(async () =>
                     await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, () => sqlContext.SaveChangesAsync()));
 
@@ -85,7 +85,7 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
-                var hasUpdates = updater.FoundBookChangesToProjectToNoSql(sqlContext);
+                var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
                 await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, () => sqlContext.SaveChangesAsync());
 
                 //VERIFY
@@ -119,7 +119,7 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
-                var hasUpdates = updater.FoundBookChangesToProjectToNoSql(sqlContext);
+                var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
                 await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, () => sqlContext.SaveChangesAsync());
 
                 //VERIFY

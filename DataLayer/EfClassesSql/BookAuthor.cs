@@ -16,7 +16,7 @@ namespace DataLayer.EfClassesSql
             Order = order;
         }
 
-        public int AuthorId { get; private set; }
+        public Guid AuthorId { get; private set; }
         public byte Order { get; private set; }
 
         //-----------------------------

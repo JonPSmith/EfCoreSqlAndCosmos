@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode.Internal;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ namespace Test.UnitTests.DataLayer
 
                 //ATTEMPT
                 context.Add(DddEfTestData.CreateDummyBookOneAuthor());
-                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries().ToList(), context);
 
                 //VERIFY
                 changes.Single().BookId.ShouldNotEqual(Guid.Empty);
@@ -47,7 +48,7 @@ namespace Test.UnitTests.DataLayer
 
                 //ATTEMPT
                 context.Remove(context.Books.First());
-                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries().ToList(), context);
 
                 //VERIFY
                 changes.Single().BookId.ShouldNotEqual(Guid.Empty);
@@ -68,7 +69,7 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = context.Books.First();
                 book.SoftDeleted = true;
-                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries().ToList(), context);
 
                 //VERIFY
                 changes.Single().BookId.ShouldNotEqual(Guid.Empty);
@@ -91,7 +92,7 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = context.Books.First();
                 book.AddPromotion(123, "now 123");
-                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries().ToList(), context);
 
                 //VERIFY
                 changes.Single().BookId.ShouldNotEqual(Guid.Empty);
@@ -114,11 +115,57 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = context.Books.First();
                 book.AddReview(5, "test", "test", context);
-                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries());
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries().ToList(), context);
 
                 //VERIFY
                 changes.Single().BookId.ShouldNotEqual(Guid.Empty);
                 changes.Single().State.ShouldEqual(EntityState.Modified);
+            }
+        }
+
+        [Fact]
+        public void TestUpdateViaAuthorChangeOneBookOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(options))
+            {
+                context.Database.EnsureCreated();
+                context.SeedDatabaseFourBooks();
+            }
+            using (var context = new SqlDbContext(options))
+            {
+                //ATTEMPT
+                var author = context.Authors.Single(x => x.Name == "Future Person");
+                author.Name = "Different Name";
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries().ToList(), context);
+
+                //VERIFY
+                changes.Single().BookId.ShouldNotEqual(Guid.Empty);
+                changes.Single().State.ShouldEqual(EntityState.Modified);
+            }
+        }
+
+        [Fact]
+        public void TestUpdateViaAuthorChangeTwoBooksOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(options))
+            {
+                context.Database.EnsureCreated();
+                context.SeedDatabaseFourBooks();
+            }
+            using (var context = new SqlDbContext(options))
+            {
+                //ATTEMPT
+                var author = context.Authors.Single(x => x.Name == "Martin Fowler");
+                author.Name = "Different Name";
+                var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries().ToList(), context);
+
+                //VERIFY
+                changes.Count.ShouldEqual(2);
+                changes.All(x => x.State == EntityState.Modified).ShouldBeTrue();
             }
         }
     }

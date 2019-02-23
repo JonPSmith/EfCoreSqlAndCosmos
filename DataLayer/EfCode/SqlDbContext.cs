@@ -25,6 +25,7 @@ namespace DataLayer.EfCode
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<BookAuthor> BookAuthors { get; set; }
 
         //I only have to override these two version of SaveChanges, as the other two versions call these
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
@@ -35,10 +36,10 @@ namespace DataLayer.EfCode
 
             try
             {
-                var foundChanges = _bookUpdater.FoundBookChangesToProjectToNoSql(this);
+                var thereAreChanges = _bookUpdater.FindBookChangesToProjectToNoSql(this);
                 //This stops ChangeTracker being called twice
                 ChangeTracker.AutoDetectChangesEnabled = false; 
-                if (!foundChanges)
+                if (!thereAreChanges)
                     return base.SaveChanges(acceptAllChangesOnSuccess);
                 return _bookUpdater.CallBaseSaveChangesAndNoSqlWriteInTransaction(this,
                     () => base.SaveChanges(acceptAllChangesOnSuccess));
@@ -57,10 +58,10 @@ namespace DataLayer.EfCode
 
             try
             {
-                var foundChanges = _bookUpdater.FoundBookChangesToProjectToNoSql(this);
+                var thereAreChanges = _bookUpdater.FindBookChangesToProjectToNoSql(this);
                 //This stops ChangeTracker being called twice
                 ChangeTracker.AutoDetectChangesEnabled = false; 
-                if (!foundChanges)
+                if (!thereAreChanges)
                     return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
                 return await _bookUpdater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(this,
                     () => base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken));

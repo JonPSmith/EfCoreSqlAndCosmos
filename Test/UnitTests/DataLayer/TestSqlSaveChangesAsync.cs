@@ -171,6 +171,44 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
+        public async Task TestSaveChangesChangeAuthorTwoBooksNoSqlOk()
+        {
+            //SETUP
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    nameof(TestSqlSaveChanges));
+
+
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
+            {
+                sqlContext.Database.EnsureCreated();
+                noSqlContext.Database.EnsureCreated();
+                sqlContext.SeedDatabaseFourBooks();
+            }
+            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
+            {
+                //ATTEMPT
+                var author = sqlContext.Authors.Single(x => x.Name == "Martin Fowler");
+                var bookIds = sqlContext.BookAuthors
+                    .Where(x => x.AuthorId == author.AuthorId)
+                    .Select(x => x.BookId).ToList();
+                author.Name = "Different Name";
+                await sqlContext.SaveChangesAsync();
+
+                //VERIFY
+                sqlContext.Books.Count().ShouldEqual(4);
+                var noSqlBooks = noSqlContext.Books.Where(p => bookIds.Contains(p.BookId)).ToList();
+                noSqlBooks.Count.ShouldEqual(2);
+                noSqlBooks.All(x => x.AuthorsOrdered == "Different Name").ShouldBeTrue();
+            }
+        }
+
+        [Fact]
         public async Task TestSaveChangesSoftDeleteNoSqlOk()
         {
             //SETUP

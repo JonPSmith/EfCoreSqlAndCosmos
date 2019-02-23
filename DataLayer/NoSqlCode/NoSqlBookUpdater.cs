@@ -28,9 +28,9 @@ namespace DataLayer.NoSqlCode
         /// This MUST be called before SavChanges. It finds any Book changes 
         /// </summary>
         /// <returns>true if there are BookChanges that need projecting to NoSQL database</returns>
-        public bool FoundBookChangesToProjectToNoSql(DbContext sqlContext)
+        public bool FindBookChangesToProjectToNoSql(SqlDbContext sqlContext)
         {
-            _bookChanges = BookChangeInfo.FindBookChanges(sqlContext.ChangeTracker.Entries());
+            _bookChanges = BookChangeInfo.FindBookChanges(sqlContext.ChangeTracker.Entries().ToList(), sqlContext);
             return _bookChanges.Any();
         }
 

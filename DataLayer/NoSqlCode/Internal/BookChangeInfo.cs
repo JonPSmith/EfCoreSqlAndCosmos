@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using DataLayer.EfClassesSql;
+using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -61,12 +62,15 @@ namespace DataLayer.NoSqlCode.Internal
         /// </summary>
         /// <param name="changes"></param>
         /// <returns></returns>
-        public static IImmutableList<BookChangeInfo> FindBookChanges(IEnumerable<EntityEntry> changes)
+        public static IImmutableList<BookChangeInfo> FindBookChanges(ICollection<EntityEntry> changes, SqlDbContext context)
         {
+            //This finds all the changes using the BookId
             var bookChanges = changes
                 .Select(x => new {entity = x, bookRef = x.Entity as IBookId})
                 .Where(x => x.entity.State != EntityState.Unchanged && x.bookRef != null)
-                .Select(x => new BookChangeInfo(x.bookRef.BookId, x.entity));
+                .Select(x => new BookChangeInfo(x.bookRef.BookId, x.entity)).ToList();
+            //Now add any author name changes
+            bookChanges.AddRange(AddBooksWhereAuthorHasChanged(changes, context));
 
             //This dedups the book changes, with the Book entity State taking preference
             var booksDict = new Dictionary<Guid, BookChangeInfo>();
@@ -79,6 +83,23 @@ namespace DataLayer.NoSqlCode.Internal
             }
 
             return booksDict.Values.ToImmutableList();
+        }
+
+        public static List<BookChangeInfo> AddBooksWhereAuthorHasChanged(ICollection<EntityEntry> changes,
+            SqlDbContext context)
+        {
+            var authorChanges = changes
+                .Select(x => new { entity = x, authorRef = x.Entity as IAuthorId })
+                .Where(x => x.entity.State != EntityState.Unchanged && x.authorRef != null);
+            var result = new List<BookChangeInfo>();
+            foreach (var authorChange in authorChanges)
+            {
+                result.AddRange(context.BookAuthors
+                    .Where(x => x.AuthorId == authorChange.authorRef.AuthorId)
+                    .Select(x => new BookChangeInfo(x.BookId, authorChange.entity)));
+            }
+
+            return result;
         }
     }
 }

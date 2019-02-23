@@ -3,13 +3,14 @@
 
 using System;
 using System.Threading.Tasks;
+using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.NoSqlCode
 {
     public interface IBookUpdater
     {
-        bool FoundBookChangesToProjectToNoSql(DbContext sqlContext);
+        bool FindBookChangesToProjectToNoSql(SqlDbContext sqlContext);
         int CallBaseSaveChangesAndNoSqlWriteInTransaction(DbContext sqlContext, Func<int> callBaseSaveChanges);
         Task<int> CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(DbContext sqlContext, Func<Task<int>> callBaseSaveChangesAsync);
     }

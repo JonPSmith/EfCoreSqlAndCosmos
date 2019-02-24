@@ -67,7 +67,7 @@ namespace DataLayer.NoSqlCode.Internal
             //This finds all the changes using the BookId
             var bookChanges = changes
                 .Select(x => new {entity = x, bookRef = x.Entity as IBookId})
-                .Where(x => x.entity.State != EntityState.Unchanged && x.bookRef != null)
+                .Where(x => x.entity.State != EntityState.Unchanged && x.entity.State != EntityState.Detached && x.bookRef != null)
                 .Select(x => new BookChangeInfo(x.bookRef.BookId, x.entity)).ToList();
             //Now add any author name changes
             bookChanges.AddRange(AddBooksWhereAuthorHasChanged(changes, context));
@@ -82,7 +82,7 @@ namespace DataLayer.NoSqlCode.Internal
                 booksDict[bookChange.BookId] = bookChange;
             }
 
-            return booksDict.Values.ToImmutableList();
+            return booksDict.Values.Where(x => x.State != EntityState.Unchanged).ToImmutableList();
         }
 
         public static List<BookChangeInfo> AddBooksWhereAuthorHasChanged(ICollection<EntityEntry> changes,
@@ -90,7 +90,7 @@ namespace DataLayer.NoSqlCode.Internal
         {
             var authorChanges = changes
                 .Select(x => new { entity = x, authorRef = x.Entity as IAuthorId })
-                .Where(x => x.entity.State != EntityState.Unchanged && x.authorRef != null);
+                .Where(x => x.entity.State != EntityState.Unchanged && x.entity.State != EntityState.Detached && x.authorRef != null);
             var result = new List<BookChangeInfo>();
             foreach (var authorChange in authorChanges)
             {

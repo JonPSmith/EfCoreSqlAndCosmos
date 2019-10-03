@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <UserSecretsId>F4C75B28-1FC0-458E-B2EF-F02013868912</UserSecretsId>
   </PropertyGroup>
@@ -16,13 +16,12 @@
 
 
   <ItemGroup>
-    <PackageReference Include="EfCore.GenericServices" Version="2.0.0" />
+    <PackageReference Include="EfCore.GenericServices" Version="2.0.3" />
     <PackageReference Include="EfCore.GenericServices.AspNetCore" Version="3.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="2.2.0-preview3-35497" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
-    <PackageReference Include="NetCore.AutoRegisterDi" Version="1.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="NetCore.AutoRegisterDi" Version="1.1.0" />
   </ItemGroup>
 
 

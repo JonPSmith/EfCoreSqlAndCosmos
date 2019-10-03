@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NetCore.AutoRegisterDi;
 using ServiceLayer.BooksSql.Dtos;
@@ -41,6 +42,8 @@ namespace EfCoreSqlAndCosmos
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllersWithViews();
+            services.AddRazorPages();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var sqlConnection = Configuration.GetConnectionString("BookSqlConnection");
@@ -68,7 +71,7 @@ namespace EfCoreSqlAndCosmos
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider,
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory, IHttpContextAccessor httpContextAccessor)
         {
             loggerFactory.AddProvider(new RequestTransientLogger(() => httpContextAccessor));
@@ -87,11 +90,12 @@ namespace EfCoreSqlAndCosmos
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
 
             //I setup the database here, because there is a problem in ASP.NET Core 2.2 about accessing the root directory

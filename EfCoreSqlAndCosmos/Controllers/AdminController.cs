@@ -136,7 +136,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         //------------------------------------------------
         //Admin commands that are called from the top menu
 
-        public IActionResult ResetDatabase([FromServices]SqlDbContext context, [FromServices]IHostingEnvironment env)
+        public IActionResult ResetDatabase([FromServices]SqlDbContext context, [FromServices]IWebHostEnvironment env)
         {
            
             context.DevelopmentWipeCreated(env.WebRootPath);

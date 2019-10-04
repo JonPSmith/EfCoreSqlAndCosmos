@@ -8,6 +8,7 @@
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="EfCore.GenericServices" Version="2.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.0.0" />
   </ItemGroup>
 

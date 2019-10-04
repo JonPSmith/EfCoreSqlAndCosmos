@@ -31,7 +31,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         public IActionResult Books(int numBooks, bool wipeDatabase, 
             [FromServices]SqlDbContext context,
             [FromServices]DbContextOptions<SqlDbContext> options,
-            [FromServices]IHostingEnvironment env)
+            [FromServices]IWebHostEnvironment env)
         {
             if (numBooks == 0)
                 return View((object) "Error: should contain the number of books to generate.");

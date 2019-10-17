@@ -22,13 +22,11 @@ namespace Test.UnitTests.DataLayer
         {
 
             _sqlOptions = this.CreateUniqueClassOptions<SqlDbContext>();
-            using (var context = new SqlDbContext(_sqlOptions))
-            {
-                context.Database.EnsureCreated();
-                var filepath = TestData.GetFilePath(@"..\..\EfCoreSqlAndCosmos\wwwroot\AddUserDefinedFunctions.sql");
-                context.ExecuteScriptFileInTransaction(filepath);
-                context.WipeAllDataFromDatabase();
-            }
+            using var context = new SqlDbContext(_sqlOptions);
+            context.Database.EnsureCreated();
+            var filepath = TestData.GetFilePath(@"..\..\EfCoreSqlAndCosmos\wwwroot\AddUserDefinedFunctions.sql");
+            context.ExecuteScriptFileInTransaction(filepath);
+            context.WipeAllDataFromDatabase();
         }
 
         [Fact]
@@ -43,24 +41,22 @@ namespace Test.UnitTests.DataLayer
                     "UNKNOWNDATASBASENAME");
 
 
-            using (var sqlContext = new SqlDbContext(_sqlOptions))
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            {
-                await sqlContext.Database.EnsureCreatedAsync();
-                var updater = new NoSqlBookUpdater(noSqlContext);
+            await using var sqlContext = new SqlDbContext(_sqlOptions);
+            await using var noSqlContext = new NoSqlDbContext(builder.Options);
+            await sqlContext.Database.EnsureCreatedAsync();
+            var updater = new NoSqlBookUpdater(noSqlContext);
 
-                //ATTEMPT
-                var book = DddEfTestData.CreateDummyBookOneAuthor();
-                sqlContext.Add(book);
-                var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () =>
-                    await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, () => sqlContext.SaveChangesAsync()));
+            //ATTEMPT
+            var book = DddEfTestData.CreateDummyBookOneAuthor();
+            sqlContext.Add(book);
+            var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
+            var ex = await Assert.ThrowsAsync<HttpException>(async () =>
+                await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, () => sqlContext.SaveChangesAsync()));
 
-                //VERIFY
-                ex.Message.ShouldEqual("NotFound");
-                hasUpdates.ShouldBeTrue();
-                sqlContext.Books.Count().ShouldEqual(0);
-            }
+            //VERIFY
+            ex.Message.ShouldEqual("NotFound");
+            hasUpdates.ShouldBeTrue();
+            sqlContext.Books.Count().ShouldEqual(0);
         }
 
         [Fact]
@@ -75,24 +71,22 @@ namespace Test.UnitTests.DataLayer
                     nameof(TestNoSqlBookUpdaterAsync));
 
 
-            using (var sqlContext = new SqlDbContext(_sqlOptions))
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            {
-                await sqlContext.Database.EnsureCreatedAsync();
-                await noSqlContext.Database.EnsureCreatedAsync();
-                var updater = new NoSqlBookUpdater(noSqlContext);
+            await using var sqlContext = new SqlDbContext(_sqlOptions);
+            await using var noSqlContext = new NoSqlDbContext(builder.Options);
+            await sqlContext.Database.EnsureCreatedAsync();
+            await noSqlContext.Database.EnsureCreatedAsync();
+            var updater = new NoSqlBookUpdater(noSqlContext);
 
-                //ATTEMPT
-                var book = DddEfTestData.CreateDummyBookOneAuthor();
-                sqlContext.Add(book);
-                var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
-                await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, () => sqlContext.SaveChangesAsync());
+            //ATTEMPT
+            var book = DddEfTestData.CreateDummyBookOneAuthor();
+            sqlContext.Add(book);
+            var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
+            await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, () => sqlContext.SaveChangesAsync());
 
-                //VERIFY
-                hasUpdates.ShouldBeTrue();
-                sqlContext.Books.Count().ShouldEqual(1);
-                (await noSqlContext.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
-            }
+            //VERIFY
+            hasUpdates.ShouldBeTrue();
+            sqlContext.Books.Count().ShouldEqual(1);
+            noSqlContext.Books.Where(p => p.BookId == book.BookId).Count().ShouldEqual(1);
         }
 
         [Fact]
@@ -105,28 +99,24 @@ namespace Test.UnitTests.DataLayer
                     config["endpoint"],
                     config["authKey"],
                     nameof(TestNoSqlBookUpdaterAsync));
-            var connection = this.GetUniqueDatabaseConnectionString();
-            var optionsBuilder = new DbContextOptionsBuilder<SqlDbContext>();
-            optionsBuilder.UseSqlServer(connection);
-            var options = optionsBuilder.Options;
-            using (var sqlContext = new SqlDbContext(_sqlOptions))
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            {
-                sqlContext.CreateEmptyViaWipe();
-                await noSqlContext.Database.EnsureCreatedAsync();
-                var updater = new NoSqlBookUpdater(noSqlContext);
+            await using var sqlContext = new SqlDbContext(_sqlOptions);
+            await using var noSqlContext = new NoSqlDbContext(builder.Options);
+            
+            sqlContext.CreateEmptyViaWipe();
+            await noSqlContext.Database.EnsureCreatedAsync();
+            var updater = new NoSqlBookUpdater(noSqlContext);
 
-                //ATTEMPT
-                var book = DddEfTestData.CreateDummyBookOneAuthor();
-                sqlContext.Add(book);
-                var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
-                await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, () => sqlContext.SaveChangesAsync());
+            //ATTEMPT
+            var book = DddEfTestData.CreateDummyBookOneAuthor();
+            sqlContext.Add(book);
+            var hasUpdates = updater.FindBookChangesToProjectToNoSql(sqlContext);
+            await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext,
+                () => sqlContext.SaveChangesAsync());
 
-                //VERIFY
-                hasUpdates.ShouldBeTrue();
-                sqlContext.Books.Count().ShouldEqual(1);
-                (await noSqlContext.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
-            }
+            //VERIFY
+            hasUpdates.ShouldBeTrue();
+            sqlContext.Books.Count().ShouldEqual(1);
+            (await noSqlContext.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Test.Helpers;
+using TestSupport.Attributes;
 using TestSupport.Helpers;
 using Xunit;
 using Xunit.Extensions.AssertExtensions;
@@ -63,7 +64,9 @@ namespace Test.UnitTests.DataLayer
                 (await context.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
             }
         }
-         [Fact]
+        
+        //This accesses the Cosmos DB instance on Azure
+        [RunnableInDebugOnly]
         public async Task TestCosmosDbAzureCosmosDbOk()
         {
             //SETUP

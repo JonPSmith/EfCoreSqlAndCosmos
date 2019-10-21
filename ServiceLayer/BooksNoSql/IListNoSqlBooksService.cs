@@ -10,6 +10,6 @@ namespace ServiceLayer.BooksNoSql
 {
     public interface IListNoSqlBooksService
     {
-        Task<IQueryable<BookListNoSql>> SortFilterPageAsync(SortFilterPageOptions options);
+        IQueryable<BookListNoSql> SortFilterPage(SortFilterPageOptions options);
     }
 }

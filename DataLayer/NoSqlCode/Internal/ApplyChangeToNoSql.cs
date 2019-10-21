@@ -23,9 +23,9 @@ namespace DataLayer.NoSqlCode.Internal
         {
             cfg.CreateMap<Book, BookListNoSql>()
                 .ForMember(p => p.AuthorsOrdered,
-                    m => m.MapFrom(s => UdfDefinitions.AuthorsStringUdf(s.BookId)))
+                    m => m.MapFrom(s => string.Join(", ", s.AuthorsLink.Select(x => x.Author.Name))))
                 .ForMember(p => p.ReviewsAverageVotes,
-                m => m.MapFrom(s => UdfDefinitions.AverageVotesUdf(s.BookId)));
+                m => m.MapFrom(s => s.Reviews.Select(y => (double?)y.NumStars).Average()));
             cfg.CreateMap<BookListNoSql, BookListNoSql>();
         });
 

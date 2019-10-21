@@ -49,14 +49,16 @@ namespace EfCoreSqlAndCosmos
             services.AddDbContext<SqlDbContext>(options =>
                 options.UseSqlServer(sqlConnection, sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure())
             );
+
+            //The user secrets provides an actual Azure Cosmos database. The takeUserSecrets flag controls this  
+            var takeUserSecrets = false;
+            var cosmosUtl = takeUserSecrets ? Configuration["CosmosUrl"] : Configuration["endpoint"];
+            var cosmosKey = takeUserSecrets ? Configuration["CosmosKey"] : Configuration["authKey"];
             //Note you don't need to set an ExecutionStrategy on Cosmos provider 
             //see https://github.com/aspnet/EntityFrameworkCore/issues/8443#issuecomment-465836181
             services.AddDbContext<NoSqlDbContext>(options =>
                 options.UseCosmos(
-                    //I use user secrets to provide the actual Azure Cosmos database, but fall back to local emulator if no secrets set
-                    Configuration["CosmosUrl"] ?? Configuration["endpoint"],
-                    Configuration["CosmosKey"] ?? Configuration["authKey"],
-                    Configuration["database"]));
+                    cosmosUtl, cosmosKey,Configuration["database"]));
             //This registers the NoSqlBookUpdater and will cause changes to books to be updated in the NoSql database
             services.AddScoped<IBookUpdater, NoSqlBookUpdater>();
 
@@ -89,6 +91,8 @@ namespace EfCoreSqlAndCosmos
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseRouting();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -96,11 +100,6 @@ namespace EfCoreSqlAndCosmos
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
-
-            //I setup the database here, because there is a problem in ASP.NET Core 2.2 about accessing the root directory
-            //see this issue to track this problem https://github.com/aspnet/AspNetCore/issues/4206
-            serviceProvider.SetupDevelopmentDatabase(env.WebRootPath);
-
 
 
         }

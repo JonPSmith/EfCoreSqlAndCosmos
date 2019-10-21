@@ -2,14 +2,11 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksNoSql;
-using ServiceLayer.BooksSql;
-using ServiceLayer.BooksSql.Dtos;
 using ServiceLayer.Logger;
 
 namespace EfCoreSqlAndCosmos.Controllers
@@ -18,7 +15,7 @@ namespace EfCoreSqlAndCosmos.Controllers
     {
         public async Task<IActionResult> Index (SortFilterPageOptions options, [FromServices] IListNoSqlBooksService service)
         {
-            var output = await (await service.SortFilterPageAsync(options)).ToListAsync();
+            var output = await (service.SortFilterPage(options)).ToListAsync();
             SetupTraceInfo();
             return View(new BookListNoSqlCombinedDto(options, output));              
         }

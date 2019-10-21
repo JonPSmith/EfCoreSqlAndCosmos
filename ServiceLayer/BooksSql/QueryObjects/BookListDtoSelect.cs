@@ -3,7 +3,6 @@
 
 using System.Linq;
 using DataLayer.EfClassesSql;
-using DataLayer.SqlCode;
 using ServiceLayer.BooksSql.Dtos;
 
 namespace ServiceLayer.BooksSql.QueryObjects
@@ -20,9 +19,9 @@ namespace ServiceLayer.BooksSql.QueryObjects
                 ActualPrice = p.ActualPrice,
                 OrgPrice = p.OrgPrice,
                 PromotionalText = p.PromotionalText,   
-                AuthorsOrdered = UdfDefinitions.AuthorsStringUdf(p.BookId),
+                AuthorsOrdered = string.Join(", ", p.AuthorsLink.Select(x => x.Author.Name)),
                 ReviewsCount = p.Reviews.Count(),
-                ReviewsAverageVotes = UdfDefinitions.AverageVotesUdf(p.BookId)
+                ReviewsAverageVotes = p.Reviews.Select(y => (double?)y.NumStars).Average()
             });
         }
     }

@@ -70,9 +70,6 @@ namespace DataLayer.EfCode
         {
             modelBuilder.ApplyConfiguration(new BookConfig());       
             modelBuilder.ApplyConfiguration(new BookAuthorConfig());
-
-            modelBuilder.HasDbFunction(() => UdfDefinitions.AverageVotesUdf(default(Guid)));
-            modelBuilder.HasDbFunction(() => UdfDefinitions.AuthorsStringUdf(default(Guid)));
         }
     }
 }

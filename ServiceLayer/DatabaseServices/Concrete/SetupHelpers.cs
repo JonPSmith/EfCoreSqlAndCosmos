@@ -22,8 +22,8 @@ namespace ServiceLayer.DatabaseServices.Concrete
         public static void DevelopmentEnsureCreated(this SqlDbContext db, string wwwrootDirectory)
         {
             db.Database.EnsureCreated();
-            var filepath = Path.Combine(wwwrootDirectory, UdfDefinitions.SqlScriptName);
-            db.ExecuteScriptFileInTransaction(filepath);
+            //var filepath = Path.Combine(wwwrootDirectory, UdfDefinitions.SqlScriptName);
+            //db.ExecuteScriptFileInTransaction(filepath);
         }
 
         public static void DevelopmentWipeCreated(this SqlDbContext db, string wwwrootDirectory)

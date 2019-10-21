@@ -94,6 +94,20 @@ namespace ServiceLayer.BooksCommon
             PrevCheckState = newCheckState;
         }
 
+        public void SetupRestOfDtoCosmosCount<T>(IQueryable<T> query)
+        {
+            NumPages = (int)Math.Ceiling(
+                (query.Select(_ => 1).AsEnumerable().Count() / (double)PageSize));
+            PageNum = Math.Min(
+                Math.Max(1, PageNum), NumPages);
+
+            var newCheckState = GenerateCheckState();
+            if (PrevCheckState != newCheckState)
+                PageNum = 1;
+
+            PrevCheckState = newCheckState;
+        }
+
         //----------------------------------------
         //private methods
 

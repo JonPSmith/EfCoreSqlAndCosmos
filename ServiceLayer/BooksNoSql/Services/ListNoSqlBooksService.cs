@@ -21,7 +21,7 @@ namespace ServiceLayer.BooksNoSql.Services
             _context = context;
         }
 
-        public async Task<IQueryable<BookListNoSql>> SortFilterPageAsync(SortFilterPageOptions options)
+        public IQueryable<BookListNoSql> SortFilterPage(SortFilterPageOptions options)
         {
             var booksQuery = _context.Books
                 .AsNoTracking()                                             
@@ -29,7 +29,7 @@ namespace ServiceLayer.BooksNoSql.Services
                 .FilterBooksBy(options.FilterBy,       
                                options.FilterValue);   
 
-            await options.SetupRestOfDtoAsync(booksQuery);        
+            options.SetupRestOfDtoCosmosCount(booksQuery);        
 
             return booksQuery.Page(options.PageNum-1,  
                                    options.PageSize);  

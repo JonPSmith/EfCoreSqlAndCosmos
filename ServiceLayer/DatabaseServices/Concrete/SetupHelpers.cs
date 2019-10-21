@@ -44,7 +44,8 @@ namespace ServiceLayer.DatabaseServices.Concrete
                     SeedDataSearchName).ToList();
                 context.Books.AddRange(books);
                 context.SaveChanges();
-                //We add this separately so that it has the highest Id. That will make it appear at the top of the default list
+
+                //we add the special book 
                 context.Books.Add(SpecialBook.CreateSpecialBook());
                 context.SaveChanges();
                 numBooks = books.Count + 1;

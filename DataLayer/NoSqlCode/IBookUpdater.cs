@@ -10,8 +10,8 @@ namespace DataLayer.NoSqlCode
 {
     public interface IBookUpdater
     {
-        bool FindBookChangesToProjectToNoSql(SqlDbContext sqlContext);
-        int CallBaseSaveChangesAndNoSqlWriteInTransaction(DbContext sqlContext, Func<int> callBaseSaveChanges);
-        Task<int> CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(DbContext sqlContext, Func<Task<int>> callBaseSaveChangesAsync);
+        int FindNumBooksChanged(SqlDbContext sqlContext);
+        int CallBaseSaveChangesAndNoSqlWriteInTransaction(DbContext sqlContext, int bookChanges, Func<int> callBaseSaveChanges);
+        Task<int> CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(DbContext sqlContext, int bookChanges, Func<Task<int>> callBaseSaveChangesAsync);
     }
 }

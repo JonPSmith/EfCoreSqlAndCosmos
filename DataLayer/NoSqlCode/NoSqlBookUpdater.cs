@@ -28,10 +28,10 @@ namespace DataLayer.NoSqlCode
         /// This MUST be called before SavChanges. It finds any Book changes 
         /// </summary>
         /// <returns>true if there are BookChanges that need projecting to NoSQL database</returns>
-        public bool FindBookChangesToProjectToNoSql(SqlDbContext sqlContext)
+        public int FindNumBooksChanged(SqlDbContext sqlContext)
         {
-            _bookChanges = BookChangeInfo.FindBookChanges(sqlContext.ChangeTracker.Entries().ToList(), sqlContext);
-            return _bookChanges.Any();
+            _bookChanges =  BookChangeInfo.FindBookChanges(sqlContext.ChangeTracker.Entries().ToList(), sqlContext);
+            return _bookChanges.Count();
         }
 
         /// <summary>
@@ -43,15 +43,15 @@ namespace DataLayer.NoSqlCode
         /// 5) finally commit the transaction
         /// </summary>
         /// <returns></returns>
-        public int CallBaseSaveChangesAndNoSqlWriteInTransaction(DbContext sqlContext, Func<int> callBaseSaveChanges)
+        public int CallBaseSaveChangesAndNoSqlWriteInTransaction(DbContext sqlContext, int bookChanges, Func<int> callBaseSaveChanges)
         {
             var strategy = sqlContext.Database.CreateExecutionStrategy();
             if (strategy.RetriesOnFailure)
             {
-                return strategy.Execute(() => RunSqlTransactionWithNoSqlWrite(sqlContext, callBaseSaveChanges));
+                return strategy.Execute(() => RunSqlTransactionWithNoSqlWrite(sqlContext, bookChanges, callBaseSaveChanges));
             }
 
-            return RunSqlTransactionWithNoSqlWrite(sqlContext, callBaseSaveChanges);
+            return RunSqlTransactionWithNoSqlWrite(sqlContext, bookChanges, callBaseSaveChanges);
         }
 
         /// <summary>
@@ -63,22 +63,22 @@ namespace DataLayer.NoSqlCode
         /// 5) finally commit the transaction
         /// </summary>
         /// <returns></returns>
-        public async Task<int> CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(DbContext sqlContext, Func<Task<int>> callBaseSaveChangesAsync)
+        public async Task<int> CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(DbContext sqlContext, int bookChanges, Func<Task<int>> callBaseSaveChangesAsync)
         {
             var strategy = sqlContext.Database.CreateExecutionStrategy();
             if (strategy.RetriesOnFailure)
             {
                 return await strategy.ExecuteAsync(async () => 
-                    await RunSqlTransactionWithNoSqlWriteAsync(sqlContext, callBaseSaveChangesAsync));
+                    await RunSqlTransactionWithNoSqlWriteAsync(sqlContext, bookChanges, callBaseSaveChangesAsync));
             }
 
-            return await RunSqlTransactionWithNoSqlWriteAsync(sqlContext, callBaseSaveChangesAsync);
+            return await RunSqlTransactionWithNoSqlWriteAsync(sqlContext, bookChanges, callBaseSaveChangesAsync);
         }
 
         //--------------------------------------------------------------
         //private methods
 
-        private int RunSqlTransactionWithNoSqlWrite(DbContext sqlContext, Func<int> callBaseSaveChanges)
+        private int RunSqlTransactionWithNoSqlWrite(DbContext sqlContext, int bookChanges, Func<int> callBaseSaveChanges)
         {
             if (sqlContext.Database.CurrentTransaction != null)
                 throw new InvalidOperationException("You can't use the NoSqlBookUpdater if you are using transactions.");
@@ -86,15 +86,17 @@ namespace DataLayer.NoSqlCode
             var applier = new ApplyChangeToNoSql(sqlContext, _noSqlContext);
             using (var transaction = sqlContext.Database.BeginTransaction())
             {
-                var result = callBaseSaveChanges(); //Save the SQL changes
-                applier.UpdateNoSql(_bookChanges);  //apply the book changes to the NoSql database
-                _noSqlContext.SaveChanges();        //And Save to NoSql database
+                var result = callBaseSaveChanges();            //Save the SQL changes
+                applier.UpdateNoSql(_bookChanges);                 //apply the book changes to the NoSql database
+                var numNoSqlChanges = _noSqlContext.SaveChanges(); //And Save to NoSql database
+                if (bookChanges != numNoSqlChanges)
+                    throw new InvalidOperationException($"{bookChanges} books were changed in SQL, but the NoSQL changed {numNoSqlChanges}");
                 transaction.Commit();
                 return result;
             }
         }
 
-        private async Task<int> RunSqlTransactionWithNoSqlWriteAsync(DbContext sqlContext, Func<Task<int>> callBaseSaveChangesAsync)
+        private async Task<int> RunSqlTransactionWithNoSqlWriteAsync(DbContext sqlContext, int bookChanges, Func<Task<int>> callBaseSaveChangesAsync)
         {
             if (sqlContext.Database.CurrentTransaction != null)
                 throw new InvalidOperationException("You can't use the NoSqlBookUpdater if you are using transactions.");
@@ -102,9 +104,11 @@ namespace DataLayer.NoSqlCode
             var applier = new ApplyChangeToNoSql(sqlContext, _noSqlContext);
             using (var transaction = sqlContext.Database.BeginTransaction())
             {
-                var result = await callBaseSaveChangesAsync();//Save the SQL changes
-                await applier.UpdateNoSqlAsync(_bookChanges); //apply the book changes to the NoSql database
-                await _noSqlContext.SaveChangesAsync();       //And Save to NoSql database
+                var result = await callBaseSaveChangesAsync();                //Save the SQL changes
+                await applier.UpdateNoSqlAsync(_bookChanges);                 //apply the book changes to the NoSql database
+                var numNoSqlChanges = await _noSqlContext.SaveChangesAsync(); //And Save to NoSql database
+                if (bookChanges != numNoSqlChanges)
+                    throw new InvalidOperationException($"{bookChanges} books were changed in SQL, but the NoSQL changed {numNoSqlChanges}");
                 transaction.Commit();
                 return result;
             }

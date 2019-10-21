@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Test.Helpers;
+using TestSupport.Attributes;
 using TestSupport.Helpers;
 using Xunit;
 using Xunit.Extensions.AssertExtensions;
@@ -17,7 +18,7 @@ namespace Test.UnitTests.DataLayer
     public class TestNoSqlDbContext
     {
         [Fact]
-        public async Task TestCosmosDbCatchFailedRequestOk()
+        public void TestCosmosDbCatchFailedRequestOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -32,10 +33,10 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = NoSqlTestData.CreateDummyNoSqlBook();
                 context.Add(book);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () => await context.SaveChangesAsync());
+                var numNoSqlChanges = context.SaveChanges();
 
                 //VERIFY
-                ex.Message.ShouldEqual("NotFound");
+                numNoSqlChanges.ShouldEqual(0);
             }
         }
 
@@ -60,10 +61,11 @@ namespace Test.UnitTests.DataLayer
                 await context.SaveChangesAsync();
 
                 //VERIFY
-                (await context.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
+                context.Books.Find(book.BookId).ShouldNotBeNull();
             }
         }
-         [Fact]
+
+        [RunnableInDebugOnly]
         public async Task TestCosmosDbAzureCosmosDbOk()
         {
             //SETUP
@@ -86,7 +88,7 @@ namespace Test.UnitTests.DataLayer
                 await context.SaveChangesAsync();
 
                 //VERIFY
-                (await context.Books.CountAsync(p => p.BookId == book.BookId)).ShouldEqual(1);
+                context.Books.Find(book.BookId).ShouldNotBeNull();
             }
         }
     }

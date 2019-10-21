@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 [assembly: InternalsVisibleTo("Test")]
 namespace DataLayer.NoSqlCode.Internal
 {
-    internal class BookChangeInfo 
+    public class BookChangeInfo 
     {
         /// <summary>
         /// This ctor should be called whenever an entity that has the IBookId interface

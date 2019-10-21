@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DataLayer.EfCode;
@@ -265,10 +266,11 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
-                var ex = await Assert.ThrowsAsync<HttpException>(async () => await sqlContext.SaveChangesAsync());
+                var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () => await sqlContext.SaveChangesAsync());
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(0);
+                ex.Message.ShouldEqual("1 books were changed in SQL, but the NoSQL changed 0");
             }
         }
     }

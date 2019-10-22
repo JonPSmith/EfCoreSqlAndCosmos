@@ -35,6 +35,8 @@ namespace Test.UnitTests.ServiceLayer
                 //ATTEMPT
                 var dtos = context.Books.MapBookToDto().OrderBy(x => x.PublishedOn).ToList();
 
+                
+
                 //VERIFY
                 dtos.Select(x => x.AuthorsOrdered).ShouldEqual(new [] { "Martin Fowler", "Martin Fowler", "Eric Evans", "Future Person" });
                 dtos.Select(x => x.ReviewsAverageVotes).ShouldEqual(new double? [] { null, null, null, 5 });

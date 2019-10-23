@@ -43,7 +43,7 @@ namespace EfCoreSqlAndCosmos
             });
             services.AddControllersWithViews();
             services.AddRazorPages();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
 
             var sqlConnection = Configuration.GetConnectionString("BookSqlConnection");
             services.AddDbContext<SqlDbContext>(options =>
@@ -72,7 +72,7 @@ namespace EfCoreSqlAndCosmos
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             ILoggerFactory loggerFactory, IHttpContextAccessor httpContextAccessor)
         {
             loggerFactory.AddProvider(new RequestTransientLogger(() => httpContextAccessor));

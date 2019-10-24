@@ -68,36 +68,26 @@ namespace ServiceLayer.BooksCommon
 
         public void SetupRestOfDto<T>(IQueryable<T> query)
         {
-            NumPages = (int) Math.Ceiling(
-                (double) (query.Count())/PageSize);
-            PageNum = Math.Min(
-                Math.Max(1, PageNum), NumPages);                                                            
-
-            var newCheckState = GenerateCheckState();
-            if (PrevCheckState != newCheckState)
-                PageNum = 1;
-
-            PrevCheckState = newCheckState;
+            SetupRestOfDtoGivenCount(query.Count());
         }
 
         public async Task SetupRestOfDtoAsync<T>(IQueryable<T> query)
         {
-            NumPages = (int)Math.Ceiling(
-                (double)(await query.CountAsync()) / PageSize);
-            PageNum = Math.Min(
-                Math.Max(1, PageNum), NumPages);
-
-            var newCheckState = GenerateCheckState();
-            if (PrevCheckState != newCheckState)
-                PageNum = 1;
-
-            PrevCheckState = newCheckState;
+            SetupRestOfDtoGivenCount((await query.CountAsync()));
         }
 
         public void SetupRestOfDtoCosmosCount<T>(IQueryable<T> query)
         {
+            SetupRestOfDtoGivenCount(query.Select(_ => 1).AsEnumerable().Count());
+        }
+
+        //----------------------------------------
+        //private methods
+
+        private void SetupRestOfDtoGivenCount(int totalEntries)
+        {
             NumPages = (int)Math.Ceiling(
-                (query.Select(_ => 1).AsEnumerable().Count() / (double)PageSize));
+                (double)totalEntries / PageSize);
             PageNum = Math.Min(
                 Math.Max(1, PageNum), NumPages);
 
@@ -107,9 +97,6 @@ namespace ServiceLayer.BooksCommon
 
             PrevCheckState = newCheckState;
         }
-
-        //----------------------------------------
-        //private methods
 
         /// <summary>
         /// This returns a string containing the state of the SortFilterPage data

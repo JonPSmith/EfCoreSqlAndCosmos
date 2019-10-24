@@ -11,7 +11,6 @@ using AutoMapper.QueryableExtensions;
 using DataLayer.EfClassesNoSql;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
-using DataLayer.SqlCode;
 using Microsoft.EntityFrameworkCore;
 
 [assembly: InternalsVisibleTo("Test")]
@@ -22,10 +21,13 @@ namespace DataLayer.NoSqlCode.Internal
         private static readonly MapperConfiguration SqlToNoSqlMapper = new MapperConfiguration(cfg =>
         {
             cfg.CreateMap<Book, BookListNoSql>()
+                .ForMember(p => p.YearPublished,
+                    m => m.MapFrom(s => s.PublishedOn.Year))
                 .ForMember(p => p.AuthorsOrdered,
                     m => m.MapFrom(s => string.Join(", ", s.AuthorsLink.Select(x => x.Author.Name))))
                 .ForMember(p => p.ReviewsAverageVotes,
                 m => m.MapFrom(s => s.Reviews.Select(y => (double?)y.NumStars).Average()));
+
             cfg.CreateMap<BookListNoSql, BookListNoSql>();
         });
 

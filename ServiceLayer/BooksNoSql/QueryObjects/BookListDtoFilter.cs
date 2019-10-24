@@ -28,10 +28,13 @@ namespace ServiceLayer.BooksNoSql.QueryObjects
                     return books.Where(x => x.ReviewsAverageVotes > filterVote);   
                 case BooksFilterBy.ByPublicationYear:             
                     if (filterValue == AllBooksNotPublishedString)
-                        return books.Where(x => x.PublishedOn > DateTime.UtcNow);
+                    {
+                        var now = DateTime.UtcNow;
+                        return books.Where(x => x.PublishedOn > now);
+                    }
 
                     var filterYear = int.Parse(filterValue);      
-                    return books.Where(x => x.PublishedOn.Year == filterYear && x.PublishedOn <= DateTime.UtcNow);   
+                    return books.Where(x => x.YearPublished == filterYear);   
                 default:
                     throw new ArgumentOutOfRangeException
                         (nameof(filterBy), filterBy, null);

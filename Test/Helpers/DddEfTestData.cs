@@ -11,7 +11,7 @@ namespace Test.Helpers
     public static class DddEfTestData
     {
         public const string DummyUserId = "UnitTestUserId";
-        public static readonly DateTime DummyBookStartDate = new DateTime(2010, 1, 1);
+        public static readonly DateTime DummyBookStartDate = new DateTime(2018, 1, 1);
 
         public static void SeedDatabaseDummyBooks(this SqlDbContext context, int numBooks = 10)
         {

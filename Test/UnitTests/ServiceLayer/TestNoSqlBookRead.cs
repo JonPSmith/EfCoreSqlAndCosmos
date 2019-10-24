@@ -30,7 +30,7 @@ namespace Test.UnitTests.ServiceLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestNoSqlBookRead));
+                    GetType().Name);
             _options = builder.Options;
 
             using var context = new NoSqlDbContext(_options);

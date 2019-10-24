@@ -49,7 +49,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestNoSqlDbContext));
+                    GetType().Name);
 
             using (var context = new NoSqlDbContext(builder.Options))
             {
@@ -76,7 +76,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["CosmosUrl"],
                     config["CosmosKey"],
-                    nameof(TestNoSqlDbContext));
+                    GetType().Name);
 
             using (var context = new NoSqlDbContext(builder.Options))
             {

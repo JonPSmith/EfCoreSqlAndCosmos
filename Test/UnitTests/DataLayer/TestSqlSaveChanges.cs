@@ -40,7 +40,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestSqlSaveChanges));
+                    GetType().Name);
 
 
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
@@ -72,7 +72,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestSqlSaveChanges));
+                    GetType().Name);
 
 
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
@@ -104,7 +104,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestSqlSaveChanges));
+                    GetType().Name);
 
 
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
@@ -142,7 +142,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestSqlSaveChanges));
+                    GetType().Name);
 
 
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
@@ -178,7 +178,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestSqlSaveChanges));
+                    GetType().Name);
 
 
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
@@ -216,7 +216,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestSqlSaveChanges));
+                    GetType().Name);
 
 
             using (var noSqlContext = new NoSqlDbContext(builder.Options))

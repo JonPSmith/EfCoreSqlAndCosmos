@@ -9,6 +9,7 @@ using DataLayer.NoSqlCode;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Test.Helpers;
+using TestSupport.Attributes;
 using TestSupport.EfHelpers;
 using TestSupport.Helpers;
 using Xunit;
@@ -30,6 +31,19 @@ namespace Test.UnitTests.DataLayer
                 context.ExecuteScriptFileInTransaction(filepath);
                 context.WipeAllDataFromDatabase();
             }
+        }
+
+        [RunnableInDebugOnly]
+        public async Task DeleteNoSqlDatabase()
+        {
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    GetType().Name);
+            using var context = new NoSqlDbContext(builder.Options);
+            await context.Database.EnsureDeletedAsync();
         }
 
         [Fact]
@@ -74,7 +88,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestNoSqlBookUpdaterAsync));
+                    GetType().Name);
 
 
             using var sqlContext = new SqlDbContext(_sqlOptions);
@@ -106,7 +120,7 @@ namespace Test.UnitTests.DataLayer
                 .UseCosmos(
                     config["endpoint"],
                     config["authKey"],
-                    nameof(TestNoSqlBookUpdaterAsync));
+                    GetType().Name);
             var connection = this.GetUniqueDatabaseConnectionString();
             var optionsBuilder = new DbContextOptionsBuilder<SqlDbContext>();
             optionsBuilder.UseSqlServer(connection);

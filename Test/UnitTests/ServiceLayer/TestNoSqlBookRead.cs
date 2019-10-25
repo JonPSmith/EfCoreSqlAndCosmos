@@ -43,6 +43,24 @@ namespace Test.UnitTests.ServiceLayer
             }
         }
 
+        [Fact]
+        public async Task TestDateFilterFailsDateTimeUtcNow()
+        {
+            //SETUP
+            using (var context = new NoSqlDbContext(_options))
+            {
+                //ATTEMPT
+                var now = DateTime.UtcNow;
+                var books = await context.Books.Where(x => x.PublishedOn < now).ToListAsync();
+                var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                    await context.Books.Where(x => x.PublishedOn < DateTime.UtcNow).ToListAsync());
+
+                //VERIFY
+                books.Any().ShouldBeTrue();
+                ex.Message.ShouldContain("could not be translated.");
+            }
+        }
+
         [RunnableInDebugOnly]
         public async Task DeleteNoSqlDatabase()
         {

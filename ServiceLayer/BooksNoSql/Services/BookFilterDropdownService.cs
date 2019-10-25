@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DataLayer.EfCode;
+using Microsoft.EntityFrameworkCore;
 using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksNoSql.QueryObjects;
 using ServiceLayer.BooksSql;
@@ -25,7 +27,7 @@ namespace ServiceLayer.BooksNoSql.Services
         /// </summary>
         /// <param name="filterBy"></param>
         /// <returns></returns>
-        public IEnumerable<DropdownTuple> GetFilterDropDownValues(BooksFilterBy filterBy)
+        public async Task<IEnumerable<DropdownTuple>> GetFilterDropDownValuesAsync(BooksFilterBy filterBy)
         {
             switch (filterBy)
             {
@@ -35,13 +37,14 @@ namespace ServiceLayer.BooksNoSql.Services
                 case BooksFilterBy.ByVotes:
                     return FormVotesDropDown();
                 case BooksFilterBy.ByPublicationYear:
-                    var comingSoon = _db.Books.                     
-                        Any(x => x.PublishedOn > DateTime.UtcNow);  
+                    var now = DateTime.UtcNow;
+                    var comingSoon = _db.Books.Where(x => x.PublishedOn > now).Select(_ => 1).AsEnumerable().Any();  
                     var nextYear = DateTime.UtcNow.AddYears(1).Year;
-                    var result = _db.Books                          
-                        .Select(x => x.PublishedOn.Year)            
-                        .Distinct()                                 
-                        .Where(x => x < nextYear)                   
+                    var allYears = await _db.Books
+                        .Select(x => x.YearPublished)
+                        .Distinct().ToListAsync();
+                    //see this issue in EF Core about why I had to split the query - https://github.com/aspnet/EntityFrameworkCore/issues/16156
+                    var result = allYears.Where(x => x < nextYear)                   
                         .OrderByDescending(x => x)                  
                         .Select(x => new DropdownTuple              
                         {                                           

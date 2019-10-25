@@ -28,7 +28,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         /// <param name="service"></param>
         /// <returns></returns>
         [HttpGet]
-        public JsonResult GetFilterSearchContent    
+        public async Task<JsonResult> GetFilterSearchContent    
             (SortFilterPageOptions options, [FromServices]IBookNoSqlFilterDropdownService service)         
         {
 
@@ -36,7 +36,7 @@ namespace EfCoreSqlAndCosmos.Controllers
             return Json(                            
                 new TraceIndentGeneric<IEnumerable<DropdownTuple>>(
                 traceIdent,
-                service.GetFilterDropDownValues(options.FilterBy)));            
+                await service.GetFilterDropDownValuesAsync(options.FilterBy)));            
         }
 
     }

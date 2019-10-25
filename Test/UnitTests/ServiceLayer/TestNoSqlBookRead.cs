@@ -81,12 +81,13 @@ namespace Test.UnitTests.ServiceLayer
                 var service = new ListNoSqlBooksService(context);
 
                 //ATTEMPT
-                var books = await service.SortFilterPage(new SortFilterPageOptions
+                var books = await (service.SortFilterPage(new SortFilterPageOptions
                 {
                     OrderByOptions = orderBy
-                }).ToListAsync();
+                })).ToListAsync();
 
                 //VERIFY
+                books.Any().ShouldBeTrue();
             }
         }
 

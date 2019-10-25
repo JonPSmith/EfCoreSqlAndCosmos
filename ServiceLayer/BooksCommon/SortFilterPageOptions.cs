@@ -78,7 +78,8 @@ namespace ServiceLayer.BooksCommon
 
         public void SetupRestOfDtoCosmosCount<T>(IQueryable<T> query)
         {
-            SetupRestOfDtoGivenCount(query.Select(_ => 1).AsEnumerable().Count());
+            var numFound = query.Select(_ => 1).AsEnumerable().ToList().Count();
+            SetupRestOfDtoGivenCount(numFound);
         }
 
         //----------------------------------------

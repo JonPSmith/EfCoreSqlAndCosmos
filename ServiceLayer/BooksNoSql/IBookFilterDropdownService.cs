@@ -2,6 +2,7 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksSql.QueryObjects;
 
@@ -9,6 +10,6 @@ namespace ServiceLayer.BooksNoSql
 {
     public interface IBookNoSqlFilterDropdownService
     {
-        IEnumerable<DropdownTuple> GetFilterDropDownValues(BooksFilterBy filterBy);
+        Task<IEnumerable<DropdownTuple>> GetFilterDropDownValuesAsync(BooksFilterBy filterBy);
     }
 }

@@ -10,7 +10,7 @@ namespace Test.Helpers
 {
     public static class NoSqlTestData
     {
-        public static BookListNoSql CreateDummyNoSqlBook()
+        public static BookListNoSql CreateDummyNoSqlBook(double votes = 0)
         {
 
             var book = new BookListNoSql
@@ -22,7 +22,7 @@ namespace Test.Helpers
                 OrgPrice = 1,
                 PublishedOn = new DateTime(2000, 1, 1),
                 YearPublished = 2000,
-                ReviewsAverageVotes = 5,
+                ReviewsAverageVotes = votes,
                 ReviewsCount = 1
             };
 

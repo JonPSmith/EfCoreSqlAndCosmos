@@ -18,6 +18,6 @@ namespace DataLayer.EfClassesNoSql
         public string PromotionalText { get; set; }
         public string AuthorsOrdered { get; set; }
         public int ReviewsCount { get; set; }
-        public double? ReviewsAverageVotes { get; set; }
+        public double ReviewsAverageVotes { get; set; }
     }
 }

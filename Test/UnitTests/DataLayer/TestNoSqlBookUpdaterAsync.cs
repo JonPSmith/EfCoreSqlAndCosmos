@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Test.Helpers;
 using TestSupport.Attributes;
 using TestSupport.EfHelpers;

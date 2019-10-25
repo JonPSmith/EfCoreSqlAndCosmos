@@ -2,8 +2,10 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataLayer.EfClassesNoSql;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using ServiceLayer.BooksCommon;
@@ -90,6 +92,41 @@ namespace Test.UnitTests.ServiceLayer
                 books.Any().ShouldBeTrue();
             }
         }
+
+        //[Fact]
+        //public async Task TestOrderByVotesOneNullOk()
+        //{
+        //    //SETUP
+        //    var config = AppSettings.GetConfiguration();
+        //    var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+        //        .UseCosmos(
+        //            config["endpoint"],
+        //            config["authKey"],
+        //            GetType().Name+nameof(TestOrderByVotesOneNullOk));
+
+        //    using (var context = new NoSqlDbContext(builder.Options))
+        //    {
+        //        await context.Database.EnsureCreatedAsync();
+        //        var books = new List<BookListNoSql>
+        //        {
+        //            NoSqlTestData.CreateDummyNoSqlBook(),
+        //            NoSqlTestData.CreateDummyNoSqlBook(5)
+        //        };
+        //        context.AddRange(books);
+        //        await context.SaveChangesAsync();
+
+        //        var service = new ListNoSqlBooksService(context);
+
+        //        //ATTEMPT
+        //        var foundBooks = await (service.SortFilterPage(new SortFilterPageOptions
+        //        {
+        //            OrderByOptions = OrderByOptions.ByVotes
+        //        })).ToListAsync();
+
+        //        //VERIFY
+        //        context.Books.Select(x => x.ReviewsAverageVotes).ToArray().ShouldEqual(new double []{ 0, 5 });
+        //    }
+        //}
 
         [Theory]
         [InlineData(100,1)]

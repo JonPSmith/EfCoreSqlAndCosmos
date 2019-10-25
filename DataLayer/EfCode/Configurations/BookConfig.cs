@@ -16,8 +16,7 @@ namespace DataLayer.EfCode.Configurations
             entity.Property(p => p.OrgPrice).HasColumnType("decimal(9,2)");
             entity.Property(p => p.ActualPrice).HasColumnType("decimal(9,2)");
 
-            entity.Property(x => x.ImageUrl)
-                .IsUnicode(false);
+            entity.Property(x => x.ImageUrl).IsUnicode(false);
 
             entity.HasIndex(x => x.PublishedOn);
             entity.HasIndex(x => x.ActualPrice);

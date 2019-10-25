@@ -105,7 +105,7 @@ namespace Test.UnitTests.ServiceLayer
         public async Task TestFilterDatesOk()
         {
             //SETUP
-            var year = DddEfTestData.DummyBookStartDate.AddYears(5).Year;
+            var year = Math.Min(DateTime.UtcNow.Year, DddEfTestData.DummyBookStartDate.AddYears(5).Year);
             using (var context = new NoSqlDbContext(_options))
             {
                 var service = new ListNoSqlBooksService(context);
@@ -127,7 +127,6 @@ namespace Test.UnitTests.ServiceLayer
         public async Task TestFilterDatesFutureOk()
         {
             //SETUP
-            var year = DddEfTestData.DummyBookStartDate.AddYears(5).Year;
             using (var context = new NoSqlDbContext(_options))
             {
                 var service = new ListNoSqlBooksService(context);
@@ -144,6 +143,7 @@ namespace Test.UnitTests.ServiceLayer
                 books.All(x => x.PublishedOn > DateTime.UtcNow).ShouldBeTrue();
             }
         }
+
         [Fact]
         public async Task TestFilterVotesOk()
         {

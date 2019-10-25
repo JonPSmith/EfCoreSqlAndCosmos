@@ -11,11 +11,11 @@ namespace Test.Helpers
     public static class DddEfTestData
     {
         public const string DummyUserId = "UnitTestUserId";
-        public static readonly DateTime DummyBookStartDate = new DateTime(2018, 1, 1);
+        public static readonly DateTime DummyBookStartDate = new DateTime(2017, 1, 1);
 
-        public static void SeedDatabaseDummyBooks(this SqlDbContext context, int numBooks = 10)
+        public static void SeedDatabaseDummyBooks(this SqlDbContext context, int numBooks = 10, bool stepByYears = false)
         {
-            context.Books.AddRange(CreateDummyBooks(numBooks));
+            context.Books.AddRange(CreateDummyBooks(numBooks, stepByYears));
             context.SaveChanges();
         }
 

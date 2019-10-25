@@ -27,8 +27,6 @@ namespace Test.UnitTests.DataLayer
             using (var context = new SqlDbContext(_sqlOptions))
             {
                 context.Database.EnsureCreated();
-                var filepath = TestData.GetFilePath(@"..\..\EfCoreSqlAndCosmos\wwwroot\AddUserDefinedFunctions.sql");
-                context.ExecuteScriptFileInTransaction(filepath);
                 context.WipeAllDataFromDatabase();
             }
         }

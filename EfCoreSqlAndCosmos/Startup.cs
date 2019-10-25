@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using System;
 using System.Reflection;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
@@ -10,9 +9,7 @@ using GenericServices.Setup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using NetCore.AutoRegisterDi;
 using ServiceLayer.BooksSql.Dtos;
 using ServiceLayer.BooksSql.Services;
+using ServiceLayer.DatabaseServices.Concrete;
 
 namespace EfCoreSqlAndCosmos
 {
@@ -69,6 +67,7 @@ namespace EfCoreSqlAndCosmos
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(ListBooksService)))
                 .Where(c => c.Name.EndsWith("Service"))
                 .AsPublicImplementedInterfaces();
+            services.AddTransient<BookGenerator>();
 
         }
 

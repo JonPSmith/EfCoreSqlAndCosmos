@@ -20,8 +20,7 @@ namespace EfCoreSqlAndCosmos
             using var noSqlContext = services.GetRequiredService<NoSqlDbContext>();
 
             var wwwRootPath = Path.Combine(currDirectory, "wwwroot\\");
-            sqlContext.DevelopmentEnsureCreated(wwwRootPath);
-            noSqlContext.Database.EnsureCreated();
+            sqlContext.DevelopmentEnsureCreated(noSqlContext);
             if (seedDatabase)
                 sqlContext.SeedDatabase(wwwRootPath);
         }

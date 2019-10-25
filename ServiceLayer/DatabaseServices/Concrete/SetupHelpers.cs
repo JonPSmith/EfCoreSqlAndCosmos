@@ -19,18 +19,17 @@ namespace ServiceLayer.DatabaseServices.Concrete
         public const string TemplateFileName = "Manning books.json";
         public const string SeedFileSubDirectory = "seedData";
 
-        public static void DevelopmentEnsureCreated(this SqlDbContext db, string wwwrootDirectory)
+        public static void DevelopmentEnsureCreated(this SqlDbContext sqlDbContext, NoSqlDbContext noSqlDbContext)
         {
-            db.Database.EnsureCreated();
-            //var filepath = Path.Combine(wwwrootDirectory, UdfDefinitions.SqlScriptName);
-            //db.ExecuteScriptFileInTransaction(filepath);
+            sqlDbContext.Database.EnsureCreated();
+            noSqlDbContext.Database.EnsureCreated();
         }
 
-        public static void DevelopmentWipeCreated(this SqlDbContext db, string wwwrootDirectory)
+        public static void DevelopmentWipeCreated(this SqlDbContext sqlDbContext, NoSqlDbContext noSqlDbContext)
         {
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
-            db.DevelopmentEnsureCreated(wwwrootDirectory);
+            sqlDbContext.Database.EnsureDeleted();
+            noSqlDbContext.Database.EnsureDeleted();
+            sqlDbContext.DevelopmentEnsureCreated(noSqlDbContext);
         }
 
         public static int SeedDatabase(this SqlDbContext context, string wwwrootDirectory)
@@ -54,12 +53,5 @@ namespace ServiceLayer.DatabaseServices.Concrete
             return numBooks;
         }
 
-        public static void GenerateBooks(this DbContextOptions<SqlDbContext> options,
-            int numBooksToAdd, string wwwrootDirectory, Func<int, bool> progessCancel)
-        {
-            //add generated books
-            var gen = new BookGenerator(Path.Combine(wwwrootDirectory, SeedFileSubDirectory, TemplateFileName),true);
-            gen.WriteBooks(numBooksToAdd, options, progessCancel);
-        }
     }
 }

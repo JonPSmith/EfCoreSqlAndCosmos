@@ -136,10 +136,13 @@ namespace EfCoreSqlAndCosmos.Controllers
         //------------------------------------------------
         //Admin commands that are called from the top menu
 
-        public IActionResult ResetDatabase([FromServices]SqlDbContext context, [FromServices]IWebHostEnvironment env)
+        public IActionResult ResetDatabase(
+            [FromServices]SqlDbContext context, 
+            [FromServices]NoSqlDbContext noSqlDbContext, 
+            [FromServices]IWebHostEnvironment env)
         {
            
-            context.DevelopmentWipeCreated(env.WebRootPath);
+            context.DevelopmentWipeCreated(noSqlDbContext);
             var numBooks = context.SeedDatabase(env.WebRootPath);
             SetupTraceInfo();
             return View("BookUpdated", $"Successfully reset the database and added {numBooks} books.");

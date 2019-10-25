@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
+using DataLayer.NoSqlCode;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -17,45 +19,46 @@ namespace ServiceLayer.DatabaseServices.Concrete
     {
         private readonly Dictionary<string, Author> _authorDict = new Dictionary<string, Author>();
 
-        private readonly ImmutableList<BookData> _loadedBookData;
-        private readonly bool _makeBookTitlesDistinct;
-
-        public BookGenerator(string filePath, bool makeBookTitlesDistinct)
-        {
-            _makeBookTitlesDistinct = makeBookTitlesDistinct;
-            _loadedBookData = JsonConvert.DeserializeObject<List<BookData>>(File.ReadAllText(filePath))
-                .ToImmutableList();
-        }
-
+        private readonly DbContextOptions<SqlDbContext> _options;
+        private readonly IBookUpdater _bookUpdater;
+        private ImmutableList<BookData> _loadedBookData;
         private int NumBooksInSet => _loadedBookData.Count;
 
         public ImmutableDictionary<string, Author> AuthorDict => _authorDict.ToImmutableDictionary();
 
-        public void WriteBooks(int numBooks, DbContextOptions<SqlDbContext> options, Func<int, bool> progessCancel)
+        public BookGenerator(DbContextOptions<SqlDbContext> options, IBookUpdater bookUpdater)
         {
-            throw new NotImplementedException("This needs serious rework. I will do that when Version 3 is out");
+            _options = options;
+            _bookUpdater = bookUpdater;
+        }
+
+
+        public async Task WriteBooksAsync(string filePath, int numBooks, bool makeBookTitlesDistinct, Func<int, bool> progressCancel)
+        {
+            _loadedBookData = JsonConvert.DeserializeObject<List<BookData>>(File.ReadAllText(filePath))
+                .ToImmutableList();
 
             //Find out how many in db so we can pick up where we left off
             int numBooksInDb;
-            using (var context = new SqlDbContext(options))
+            using (var context = new SqlDbContext(_options,_bookUpdater))
             {
                 numBooksInDb = context.Books.IgnoreQueryFilters().Count();
             }
 
             var numWritten = 0;
             var batch = new List<Book>();
-            foreach (var book in GenerateBooks(numBooks, numBooksInDb))
+            foreach (var book in GenerateBooks(numBooks, numBooksInDb, makeBookTitlesDistinct))
             {
                 batch.Add(book);
                 if (batch.Count < NumBooksInSet) continue;
 
                 //have a batch to write out
-                if (progessCancel(numWritten))
+                if (progressCancel(numWritten))
                 {
                     return;
                 }
 
-                CreateContextAndWriteBatch(options, batch);
+                await CreateContextAndWriteBatchAsync(batch);
                 numWritten += batch.Count;
                 batch.Clear();
             }
@@ -63,13 +66,13 @@ namespace ServiceLayer.DatabaseServices.Concrete
             //write any final batch out
             if (batch.Count > 0)
             {
-                CreateContextAndWriteBatch(options, batch);
+                await CreateContextAndWriteBatchAsync(batch);
                 numWritten += batch.Count;
             }
-            progessCancel(numWritten);
+            progressCancel(numWritten);
         }
 
-        public IEnumerable<Book> GenerateBooks(int numBooks, int numBooksInDb)
+        private IEnumerable<Book> GenerateBooks(int numBooks, int numBooksInDb, bool makeBookTitlesDistinct)
         {
             for (int i = numBooksInDb; i < numBooksInDb + numBooks; i++)
             {
@@ -79,7 +82,7 @@ namespace ServiceLayer.DatabaseServices.Concrete
 
                 var authors = GetAuthorsOfThisBook(_loadedBookData[i % _loadedBookData.Count].Authors).ToList();
                 var title = _loadedBookData[i % _loadedBookData.Count].Title;
-                if (i >= NumBooksInSet && _makeBookTitlesDistinct)
+                if (i >= NumBooksInSet && makeBookTitlesDistinct)
                     title += $" (copy {sectionNum})";
                 var book = Book.CreateBook(title,
                     $"Book{i:D4} Description",
@@ -105,13 +108,13 @@ namespace ServiceLayer.DatabaseServices.Concrete
         //------------------------------------------------------------------
         //private methods
 
-        private void CreateContextAndWriteBatch(DbContextOptions<SqlDbContext> options, List<Book> batch)
+        private async Task CreateContextAndWriteBatchAsync(List<Book> batch)
         {
-            //if (_updater == null)
-            //    throw new InvalidOperationException("The NoSql updater is null. This can be caused by the NoSql connection string being null or empty.");
-            using (var context = new SqlDbContext(options, null))
+            if (_bookUpdater == null)
+                throw new InvalidOperationException("The NoSql updater is null. This can be caused by the NoSql connection string being null or empty.");
+            using (var context = new SqlDbContext(_options, _bookUpdater))
             {
-                //need to set the key of the authors entities. They aren't tarcked but the add will sort out whether to add/Unchanged based on primary key
+                //need to set the key of the authors entities. They aren't tracked but the add will sort out whether to add/Unchanged based on primary key
                 foreach (var dbAuthor in context.Authors.ToList())
                 {
                     if (_authorDict.ContainsKey(dbAuthor.Name))
@@ -120,16 +123,9 @@ namespace ServiceLayer.DatabaseServices.Concrete
                     }
                 }            
                 context.AddRange(batch);
-                context.SaveChanges();
-                //Now we update the NoSql database
-                //SendBatchToNoSql(batch);
+                await context.SaveChangesAsync();
             }
         }
-
-        //private void SendBatchToNoSql(List<Book> batch)
-        //{
-        //    _updater.BulkLoad(batch.AsQueryable().ProjectBooks());
-        //}
 
         private IEnumerable<Author> GetAuthorsOfThisBook(string authors)
         {

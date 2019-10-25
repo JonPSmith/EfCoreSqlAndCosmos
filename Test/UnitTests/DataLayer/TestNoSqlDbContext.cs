@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using DataLayer.EfCode;
 using EfCoreSqlAndCosmos;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Test.Helpers;
 using TestSupport.Attributes;
@@ -18,7 +17,7 @@ namespace Test.UnitTests.DataLayer
     public class TestNoSqlDbContext
     {
         [Fact]
-        public void TestCosmosDbCatchFailedRequestOk()
+        public async Task TestCosmosDbCatchFailedRequestOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -33,7 +32,7 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = NoSqlTestData.CreateDummyNoSqlBook();
                 context.Add(book);
-                var numNoSqlChanges = context.SaveChanges();
+                var numNoSqlChanges = await context.SaveChangesAsync();
 
                 //VERIFY
                 numNoSqlChanges.ShouldEqual(0);

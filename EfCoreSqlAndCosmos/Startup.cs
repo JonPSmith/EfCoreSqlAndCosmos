@@ -41,7 +41,8 @@ namespace EfCoreSqlAndCosmos
                 options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddRazorRuntimeCompilation();
             services.AddRazorPages();
             services.AddHttpContextAccessor();
 

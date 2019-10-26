@@ -14,6 +14,11 @@ namespace Test.Helpers
             var databaseName = callingClass.GetType().Name;
             if (makeMethodUnique)
                 databaseName += callingMember;
+            return databaseName.GetCosmosDbToEmulatorOptions<T>();
+        }
+
+        public static DbContextOptions<T> GetCosmosDbToEmulatorOptions<T>(this string databaseName) where T : DbContext
+        {
             var builder = new DbContextOptionsBuilder<T>()
                 .UseCosmos(
                     "https://localhost:8081",

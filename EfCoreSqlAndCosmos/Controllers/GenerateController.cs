@@ -21,8 +21,6 @@ namespace EfCoreSqlAndCosmos.Controllers
         // GET
         public IActionResult Index([FromServices]SqlDbContext context)
         {
-
-
             _progress = 0;
             _cancel = false;
             return View(context.Books.Count());
@@ -42,7 +40,9 @@ namespace EfCoreSqlAndCosmos.Controllers
             if (wipeDatabase)
                 sqlContext.DevelopmentWipeCreated(noSqlContext);
 
-            await generator.WriteBooksAsync(Path.Combine(env.WebRootPath, SetupHelpers.SeedFileSubDirectory, SetupHelpers.TemplateFileName),
+            var filepath = Path.Combine(env.WebRootPath, SetupHelpers.SeedFileSubDirectory,
+                SetupHelpers.TemplateFileName);
+            await generator.WriteBooksAsync(filepath,
                 numBooks, true, numWritten =>
             {
                 _progress = numWritten * 100.0 / numBooks;

@@ -29,15 +29,9 @@ namespace Test.UnitTests.ServiceLayer
         public async Task TestSaveChangesAddNoSqlOk(int numBooks)
         {
             //SETUP
-            var config = AppSettings.GetConfiguration();
-            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
-                .UseCosmos(
-                    config["endpoint"],
-                    config["authKey"],
-                    GetType().Name);
-
+            var noSqlOptions = this.GetCosmosDbToEmulatorOptions<NoSqlDbContext>();
             var sqlOptions = this.CreateUniqueClassOptions<SqlDbContext>();
-            using (var noSqlContext = new NoSqlDbContext(builder.Options))
+            using (var noSqlContext = new NoSqlDbContext(noSqlOptions))
             using (var sqlContext = new SqlDbContext(sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 sqlContext.Database.EnsureCreated();

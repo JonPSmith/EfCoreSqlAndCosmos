@@ -48,6 +48,11 @@ namespace ServiceLayer.DatabaseServices.Concrete
             var numToWrite = numBooks - numBooksInDb;
             while (numWritten < numToWrite)
             {
+                if (progressCancel(numWritten))
+                {
+                    return;
+                }
+
                 using (var context = new SqlDbContext(_options, _bookUpdater))
                 {
                     var authorsFinder = new AuthorFinder(context);

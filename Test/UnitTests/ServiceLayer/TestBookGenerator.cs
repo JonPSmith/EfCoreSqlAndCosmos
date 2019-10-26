@@ -21,20 +21,12 @@ namespace Test.UnitTests.ServiceLayer
 {
     public class TestBookGenerator
     {
-        private DbContextOptions<SqlDbContext> _sqlOptions;
-        public TestBookGenerator()
-        {
 
-            _sqlOptions = this.CreateUniqueClassOptions<SqlDbContext>();
-            using (var context = new SqlDbContext(_sqlOptions))
-            {
-                context.Database.EnsureCreated();
-                context.WipeAllDataFromDatabase();
-            }
-        }
-
-        [Fact]
-        public async Task TestSaveChangesAddNoSqlOk()
+        [Theory]
+        [InlineData(5)]
+        [InlineData(15)]
+        [InlineData(20)]
+        public async Task TestSaveChangesAddNoSqlOk(int numBooks)
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -44,26 +36,25 @@ namespace Test.UnitTests.ServiceLayer
                     config["authKey"],
                     GetType().Name);
 
-
+            var sqlOptions = this.CreateUniqueClassOptions<SqlDbContext>();
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
-            using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
+            using (var sqlContext = new SqlDbContext(sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 sqlContext.Database.EnsureCreated();
+                sqlContext.WipeAllDataFromDatabase();
                 await noSqlContext.Database.EnsureDeletedAsync();
                 await noSqlContext.Database.EnsureCreatedAsync();
 
-                var aspNetAppDir = TestData.GetCallingAssemblyTopLevelDir();
-                var filepath = Path.GetFullPath(Path.Combine(aspNetAppDir, "..\\EfCoreSqlAndCosmos\\wwwroot", 
-                    SetupHelpers.SeedFileSubDirectory, SetupHelpers.TemplateFileName));
+                var filepath = TestData.GetFilePath("10ManningBooks.json");
 
-                var generator = new BookGenerator(_sqlOptions, new NoSqlBookUpdater(noSqlContext));
+                var generator = new BookGenerator(sqlOptions, new NoSqlBookUpdater(noSqlContext));
 
                 //ATTEMPT
-                await generator.WriteBooksAsync(filepath, 100, true, numWritten => false);
+                await generator.WriteBooksAsync(filepath, numBooks, true, numWritten => false);
 
                 //VERIFY
-                sqlContext.Books.Count().ShouldEqual(100);
-                noSqlContext.Books.Select(_ => 1).AsEnumerable().Count().ShouldEqual(100);
+                sqlContext.Books.Count().ShouldEqual(numBooks);
+                noSqlContext.Books.Select(_ => 1).AsEnumerable().Count().ShouldEqual(numBooks);
             }
         }
 

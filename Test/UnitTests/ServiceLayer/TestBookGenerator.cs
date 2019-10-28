@@ -26,7 +26,7 @@ namespace Test.UnitTests.ServiceLayer
         [InlineData(5)]
         [InlineData(15)]
         [InlineData(20)]
-        public async Task TestSaveChangesAddNoSqlOk(int numBooks)
+        public async Task TestWriteBooksAsyncOk(int numBooks)
         {
             //SETUP
             var noSqlOptions = this.GetCosmosDbToEmulatorOptions<NoSqlDbContext>();
@@ -52,6 +52,28 @@ namespace Test.UnitTests.ServiceLayer
             }
         }
 
-        
+        [Fact]
+        public async Task TestWriteBooksAsyncCalledTwiceOk()
+        {
+            //SETUP
+            var sqlOptions = this.CreateUniqueClassOptions<SqlDbContext>();
+            using (var sqlContext = new SqlDbContext(sqlOptions, null))
+            {
+                sqlContext.Database.EnsureCreated();
+                sqlContext.WipeAllDataFromDatabase();
+
+                var filepath = TestData.GetFilePath("10ManningBooks.json");
+
+                var generator = new BookGenerator(sqlOptions, null);
+
+                //ATTEMPT
+                await generator.WriteBooksAsync(filepath, 8, true, numWritten => false);
+                await generator.WriteBooksAsync(filepath, 12, true, numWritten => false);
+
+                //VERIFY
+                sqlContext.Books.Count().ShouldEqual(12);
+            }
+        }
+
     }
 }

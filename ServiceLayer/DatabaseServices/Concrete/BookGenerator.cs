@@ -18,7 +18,6 @@ namespace ServiceLayer.DatabaseServices.Concrete
 {
     public class BookGenerator
     {
-
         private readonly DbContextOptions<SqlDbContext> _options;
         private readonly IBookUpdater _bookUpdater;
         private ImmutableList<BookData> _loadedBookData;
@@ -30,8 +29,7 @@ namespace ServiceLayer.DatabaseServices.Concrete
             _bookUpdater = bookUpdater;
         }
 
-
-        public async Task WriteBooksAsync(string filePath, int numBooks, bool makeBookTitlesDistinct, Func<int, bool> progressCancel)
+        public async Task WriteBooksAsync(string filePath, int totalBooksNeeded, bool makeBookTitlesDistinct, Func<int, bool> progressCancel)
         {
             _loadedBookData = JsonConvert.DeserializeObject<List<BookData>>(File.ReadAllText(filePath))
                 .ToImmutableList();
@@ -45,7 +43,7 @@ namespace ServiceLayer.DatabaseServices.Concrete
             }
 
             var numWritten = 0;
-            var numToWrite = numBooks - numBooksInDb;
+            var numToWrite = totalBooksNeeded - numBooksInDb;
             while (numWritten < numToWrite)
             {
                 if (progressCancel(numWritten))
@@ -56,7 +54,7 @@ namespace ServiceLayer.DatabaseServices.Concrete
                 using (var context = new SqlDbContext(_options, _bookUpdater))
                 {
                     var authorsFinder = new AuthorFinder(context);
-                    var batch = GenerateBooks(numBooks, numBooksInDb, makeBookTitlesDistinct, authorsFinder).ToList();
+                    var batch = GenerateBooks(totalBooksNeeded, numBooksInDb, makeBookTitlesDistinct, authorsFinder).ToList();
                     context.AddRange(batch);
                     await context.SaveChangesAsync();
                     numWritten += batch.Count;
@@ -71,9 +69,9 @@ namespace ServiceLayer.DatabaseServices.Concrete
             progressCancel(numWritten);
         }
 
-        private IEnumerable<Book> GenerateBooks(int numBooks, int numBooksInDb, bool makeBookTitlesDistinct, AuthorFinder authorsFinder)
+        private IEnumerable<Book> GenerateBooks(int totalBooksNeeded, int numBooksInDb, bool makeBookTitlesDistinct, AuthorFinder authorsFinder)
         {
-            for (int i = numBooksInDb; i < numBooksInDb + numBooks; i++)
+            for (int i = numBooksInDb; i < totalBooksNeeded; i++)
             {
                 var sectionNum = Math.Truncate(i * 1.0 / NumBooksInSet);
                 var reviews = new List<Review>();

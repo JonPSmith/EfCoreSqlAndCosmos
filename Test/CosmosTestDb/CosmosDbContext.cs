@@ -1,16 +1,15 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using DataLayer.EfClassesNoSql;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataLayer.EfCode
+namespace Test.CosmosTestDb
 {
-    public class NoSqlDbContext : DbContext
+    public class CosmosDbContext : DbContext
     {
-        public DbSet<BookListNoSql> Books { get; set; }
+        public DbSet<CosmosBook> Books { get; set; }
 
-        public NoSqlDbContext(DbContextOptions<NoSqlDbContext> options)
+        public CosmosDbContext(DbContextOptions<CosmosDbContext> options)
             : base(options) { }
     }
 }

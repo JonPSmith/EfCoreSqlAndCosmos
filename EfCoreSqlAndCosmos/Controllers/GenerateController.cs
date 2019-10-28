@@ -28,13 +28,13 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Books(int numBooks, bool wipeDatabase, 
+        public async Task<IActionResult> Books(int totalBooksNeeded, bool wipeDatabase, 
             [FromServices]SqlDbContext sqlContext,
             [FromServices]NoSqlDbContext noSqlContext,
             [FromServices]BookGenerator generator,
             [FromServices]IWebHostEnvironment env)
         {
-            if (numBooks == 0)
+            if (totalBooksNeeded == 0)
                 return View((object) "Error: should contain the number of books to generate.");
 
             if (wipeDatabase)
@@ -43,9 +43,9 @@ namespace EfCoreSqlAndCosmos.Controllers
             var filepath = Path.Combine(env.WebRootPath, SetupHelpers.SeedFileSubDirectory,
                 SetupHelpers.TemplateFileName);
             await generator.WriteBooksAsync(filepath,
-                numBooks, true, numWritten =>
+                totalBooksNeeded, true, numWritten =>
             {
-                _progress = numWritten * 100.0 / numBooks;
+                _progress = numWritten * 100.0 / totalBooksNeeded;
                 return _cancel;
             });
 
@@ -57,10 +57,10 @@ namespace EfCoreSqlAndCosmos.Controllers
         }
 
         [HttpPost]
-        public ActionResult Progress(bool cancel)
+        public ActionResult Progress(bool cancel, [FromServices]SqlDbContext context)
         {
             _cancel = cancel;
-            return Content(_progress.ToString());
+            return Content("999");
         }
     }
 }

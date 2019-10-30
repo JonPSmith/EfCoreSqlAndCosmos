@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Test.CosmosTestDb;
 using Test.Helpers;
 using Xunit;
@@ -36,6 +38,27 @@ namespace Test.UnitTests.ExploreCosmosDb
 
                 //VERIFY
                 ex.Message.ShouldStartWith("The 'CosmosBookId' on entity type 'CosmosBook' does not have a value set and no value generator is available for properties of type 'int'.");
+            }
+        }
+
+        [Fact]
+        public async Task TestAnyOk()
+        {
+            //SETUP
+            var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
+            using (var context = new CosmosDbContext(options))
+            {
+                await context.Database.EnsureCreatedAsync();
+                var cBook1 = new CosmosBook { CosmosBookId = 1, Title = "Book1" };
+                var cBook2 = new CosmosBook { CosmosBookId = 2, Title = "Book2" };
+                context.AddRange(cBook1, cBook2);
+                await context.SaveChangesAsync();
+
+                //ATTEMPT
+                var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => context.Books.AnyAsync(x => x.Title == "Book2"));
+
+                //VERIFY
+                ex.Message.ShouldStartWith("The LINQ expression 'Any<CosmosBook>(\r\n    source: DbSet<CosmosBook>, \r\n    predicate: (c) => c.Title == \"Book2\")' could not be translated.");
             }
         }
 

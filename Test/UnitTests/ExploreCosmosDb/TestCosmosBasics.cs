@@ -63,7 +63,7 @@ namespace Test.UnitTests.ExploreCosmosDb
         }
 
         [Fact]
-        public async Task TestAddCosmosBookKeyRulesOk()
+        public async Task TestAddCosmosBookHowToUpdateOk()
         {
             //SETUP
             var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
@@ -80,17 +80,19 @@ namespace Test.UnitTests.ExploreCosmosDb
             using (var context = new CosmosDbContext(options))
             {
                 //ATTEMPT
-                var cBook = new CosmosBook { CosmosBookId = 1, Title = "Book2" };
-                context.Add(cBook);
+                var cBook = await context.Books.FindAsync(1); //You must read to get the "id"
+                cBook.Title = "Book2";
                 await context.SaveChangesAsync();
-
+            }
+            using (var context = new CosmosDbContext(options))
+            {
                 //VERIFY
                 context.Books.Find(1).Title.ShouldEqual("Book2");
             }
         }
 
         [Fact]
-        public async Task TestAddCosmosBookWithReviewsOk()
+        public async Task TestAddCosmosBookAddSameKeyOk()
         {
             //SETUP
             var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
@@ -99,22 +101,53 @@ namespace Test.UnitTests.ExploreCosmosDb
                 await context.Database.EnsureDeletedAsync();
                 await context.Database.EnsureCreatedAsync();
 
-                //ATTEMPT
-                var cBook = new CosmosBook
-                {
-                    CosmosBookId = 1, Title = "Book",
-                    Reviews = new List<CosmosReview>
-                    {
-                        new CosmosReview{Comment = "Great!", NumStars = 5, VoterName = "Reviewer1"},
-                        new CosmosReview{Comment = "Hated it", NumStars = 1, VoterName = "Reviewer2"}
-                    }
-                };
+                var cBook = new CosmosBook { CosmosBookId = 1, Title = "Book1" };
                 context.Add(cBook);
                 await context.SaveChangesAsync();
 
-                //VERIFY
-                context.Books.Find(1).Reviews.Count.ShouldEqual(2);
             }
+            using (var context = new CosmosDbContext(options))
+            {
+                //ATTEMPT
+                var cBook = new CosmosBook { CosmosBookId = 1, Title = "Book2" };
+                context.Add(cBook);
+                var changes = await context.SaveChangesAsync();
+
+                //VERIFY
+                changes.ShouldEqual(0);
+            }
+            using (var context = new CosmosDbContext(options))
+            {
+                context.Books.Find(1).Title.ShouldEqual("Book1");
+            }
+        }
+
+        [Fact]
+        public async Task TestAddCosmosBookWithReviewsOk()
+        {
+            //SETUP
+            var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
+            using var context = new CosmosDbContext(options);
+            await context.Database.EnsureDeletedAsync();
+            await context.Database.EnsureCreatedAsync();
+
+            //ATTEMPT
+            var cBook = new CosmosBook
+            {
+                CosmosBookId = 1,      //NOTE: You have to provide a key value!
+                Title = "Book Title",
+                PublishedDate = new DateTime(2019, 1,1),
+                Reviews = new List<CosmosReview>
+                {
+                    new CosmosReview{Comment = "Great!", NumStars = 5, VoterName = "Reviewer1"},
+                    new CosmosReview{Comment = "Hated it", NumStars = 1, VoterName = "Reviewer2"}
+                }
+            };
+            context.Add(cBook);
+            await context.SaveChangesAsync();
+
+            //VERIFY
+            (await context.Books.FindAsync(1)).Reviews.Count.ShouldEqual(2);
         }
     }
 }

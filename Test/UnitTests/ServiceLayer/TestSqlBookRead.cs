@@ -66,7 +66,7 @@ namespace Test.UnitTests.ServiceLayer
             //SETUP
             using (var context = new SqlDbContext(_options))
             {
-                var service = new SqlSqlListBooksService(context);
+                var service = new SqlListBooksService(context);
 
                 //ATTEMPT
                 var books = await service.SortFilterPage(new SqlSortFilterPageOptions
@@ -87,7 +87,7 @@ namespace Test.UnitTests.ServiceLayer
             //SETUP
             using (var context = new SqlDbContext(_options))
             {
-                var service = new SqlSqlListBooksService(context);
+                var service = new SqlListBooksService(context);
 
                 //ATTEMPT
                 var filterPageOptions = new SqlSortFilterPageOptions
@@ -113,7 +113,7 @@ namespace Test.UnitTests.ServiceLayer
             var year = Math.Min(DateTime.UtcNow.Year, DddEfTestData.DummyBookStartDate.AddYears(5).Year);
             using (var context = new SqlDbContext(_options))
             {
-                var service = new SqlSqlListBooksService(context);
+                var service = new SqlListBooksService(context);
 
                 //ATTEMPT
                 var books = await service.SortFilterPage(new SqlSortFilterPageOptions
@@ -135,7 +135,7 @@ namespace Test.UnitTests.ServiceLayer
             var year = Math.Min(DateTime.UtcNow.Year, DddEfTestData.DummyBookStartDate.AddYears(5).Year);
             using (var context = new SqlDbContext(_options))
             {
-                var service = new SqlSqlListBooksService(context);
+                var service = new SqlListBooksService(context);
 
                 //ATTEMPT
                 var books = await service.SortFilterPage(new SqlSortFilterPageOptions
@@ -156,7 +156,7 @@ namespace Test.UnitTests.ServiceLayer
             //SETUP
             using (var context = new SqlDbContext(_options))
             {
-                var service = new SqlSqlListBooksService(context);
+                var service = new SqlListBooksService(context);
 
                 //ATTEMPT
                 var books = await service.SortFilterPage(new SqlSortFilterPageOptions

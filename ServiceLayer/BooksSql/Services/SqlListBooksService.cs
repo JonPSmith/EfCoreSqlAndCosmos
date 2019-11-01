@@ -11,11 +11,11 @@ using ServiceLayer.BooksSql.QueryObjects;
 
 namespace ServiceLayer.BooksSql.Services
 {
-    public class SqlSqlListBooksService : ISqlListBooksService
+    public class SqlListBooksService : ISqlListBooksService
     {
         private readonly SqlDbContext _context;
 
-        public SqlSqlListBooksService(SqlDbContext context)
+        public SqlListBooksService(SqlDbContext context)
         {
             _context = context;
         }

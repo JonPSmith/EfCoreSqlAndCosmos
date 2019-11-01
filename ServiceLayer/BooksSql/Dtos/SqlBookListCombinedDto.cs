@@ -2,21 +2,20 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using DataLayer.EfClassesNoSql;
 using ServiceLayer.BooksCommon;
 
-namespace ServiceLayer.BooksNoSql
+namespace ServiceLayer.BooksSql.Dtos
 {
-    public class BookListNoSqlCombinedDto
+    public class SqlBookListCombinedDto
     {
-        public BookListNoSqlCombinedDto(SortFilterPageOptions sortFilterPageData, IEnumerable<BookListNoSql> booksList)
+        public SqlBookListCombinedDto(SqlSortFilterPageOptions sortFilterPageData, IEnumerable<BookListDto> booksList)
         {
             SortFilterPageData = sortFilterPageData;
             BooksList = booksList;
         }
 
-        public SortFilterPageOptions SortFilterPageData { get; private set; }
+        public SqlSortFilterPageOptions SortFilterPageData { get; private set; }
 
-        public IEnumerable<BookListNoSql> BooksList { get; private set; }
+        public IEnumerable<BookListDto> BooksList { get; private set; }
     }
 }

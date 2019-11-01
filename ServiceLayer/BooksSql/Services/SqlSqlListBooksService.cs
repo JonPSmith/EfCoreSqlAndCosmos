@@ -11,16 +11,16 @@ using ServiceLayer.BooksSql.QueryObjects;
 
 namespace ServiceLayer.BooksSql.Services
 {
-    public class ListBooksService : IListBooksService
+    public class SqlSqlListBooksService : ISqlListBooksService
     {
         private readonly SqlDbContext _context;
 
-        public ListBooksService(SqlDbContext context)
+        public SqlSqlListBooksService(SqlDbContext context)
         {
             _context = context;
         }
 
-        public IQueryable<BookListDto> SortFilterPage(SortFilterPageOptions options)
+        public IQueryable<BookListDto> SortFilterPage(SqlSortFilterPageOptions options)
         {
             var booksQuery = _context.Books            
                 .AsNoTracking()                        

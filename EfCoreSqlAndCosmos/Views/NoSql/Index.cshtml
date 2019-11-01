@@ -1,5 +1,5 @@
 ﻿@using ServiceLayer.BooksCommon
-@model ServiceLayer.BooksNoSql.BookListNoSqlCombinedDto
+@model ServiceLayer.BooksNoSql.NoSqlBookListCombinedDto
 @{
     ViewData["Title"] = "Nooks (NoSql)";
 }
@@ -16,7 +16,7 @@
                     onchange="BookList.sendForm(this)"></select>
         </div>
 
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <label class="control-label">Filter Type</label>
             <select asp-for="SortFilterPageData.FilterBy" name="FilterBy"
                     asp-items="Html.GetEnumSelectList<BooksFilterBy>()"
@@ -24,7 +24,7 @@
                     onchange="BookList.filterByHasChanged(this)"></select>
         </div>
 
-        <div class="col-sm-3 dim-filter-value" id="filter-value-group">
+        <div class="col-sm-2 dim-filter-value" id="filter-value-group">
             <label class="control-label">Filter By</label>
             <select asp-for="SortFilterPageData.FilterValue" name="FilterValue"
                     id="filter-value-dropdown"
@@ -35,27 +35,27 @@
             </select>
         </div>
 
-        <div class="col-sm-2">
-            <label class="control-label">Page</label>
+        <div class="col-sm-3">
+            <label class="control-label">Paging</label>
             <div>
-                <input asp-for="SortFilterPageData.PageNum" name="PageNum"
-                       class="form-control page-control-width page-num-input"
-                       onchange="BookList.sendForm(this)">
-                <span class="num-pages-text">of @Model.SortFilterPageData.NumPages.ToString("##,###")</span>
+                <button type="button" onclick="stepPageNum(this,-1)" class="btn btn-default" @(Model.SortFilterPageData.PrevPageValid ? "" : "disabled")>Prev</button>
+                <button type="button" class="btn btn-default">Page @Model.SortFilterPageData.PageNum</button>
+                <button type="button" onclick="stepPageNum(this,+1)" class="btn btn-default" @(Model.SortFilterPageData.NextPageValid ? "" : "disabled")>Next</button>
             </div>
         </div>
 
         <div class="col-sm-1">
-            <label class="control-label">Page&nbsp;Size</label>
+            <label class="control-label">Page size</label>
             <select asp-for="SortFilterPageData.PageSize" name="PageSize"
                     asp-items="Model.SortFilterPageData.PageSizes.Select(x => new SelectListItem {Text = x.ToString(), Value = x.ToString()})"
                     class="form-control page-control-width"
                     onchange="BookList.sendForm(this)"></select>
         </div>
-    </div>
 
-    <input id="PrevCheckState" name="PrevCheckState" type="hidden" value=@Model.SortFilterPageData.PrevCheckState>
-    @*@Html.Hidden("PrevCheckState", @Model.SortFilterPageData.PrevCheckState) -- this didn't work for some reason*@
+        <input id="PageNum" name="PageNum" type="hidden" value=@Model.SortFilterPageData.PageNum>
+        <input id="PrevCheckState" name="PrevCheckState" type="hidden" value=@Model.SortFilterPageData.PrevCheckState>
+        @*@Html.Hidden("PrevCheckState", @Model.SortFilterPageData.PrevCheckState) -- this didn't work for some reason*@
+    </div>
 </form>
 <br />
 
@@ -109,5 +109,17 @@
                 BookList.initialise('@Model.SortFilterPageData.FilterBy', '@Model.SortFilterPageData.FilterValue',
                     '@Url.Action("GetFilterSearchContent")');
             });
+
+        function stepPageNum(inputElem, delta) {
+            var currentPageNum = @Model.SortFilterPageData.PageNum;
+            $('#PageNum').val(currentPageNum + parseInt(delta));
+            var form = $(inputElem).parents('form');
+            form.submit();
+            //Disable the items to stop second request before first request has finished (has to come after form submit for some reason)
+            //... otherwise you get the EF Core error
+            //A second operation started on this context before a previous operation completed. Any instance members are not guaranteed to be thread safe.
+            $('.form-control').prop('disabled', true);
+        }
+
     </script>
 }

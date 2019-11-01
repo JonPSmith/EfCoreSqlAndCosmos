@@ -7,8 +7,8 @@ using ServiceLayer.BooksSql.Dtos;
 
 namespace ServiceLayer.BooksSql
 {
-    public interface IListBooksService
+    public interface ISqlListBooksService
     {
-        IQueryable<BookListDto> SortFilterPage(SortFilterPageOptions options);
+        IQueryable<BookListDto> SortFilterPage(SqlSortFilterPageOptions options);
     }
 }

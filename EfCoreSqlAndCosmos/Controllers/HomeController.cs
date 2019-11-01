@@ -13,13 +13,12 @@ namespace EfCoreSqlAndCosmos.Controllers
 {
     public class HomeController : BaseTraceController
     {
-        public IActionResult Index (SortFilterPageOptions options, [FromServices] IListBooksService service)
+        public IActionResult Index (SqlSortFilterPageOptions options, [FromServices] ISqlListBooksService service)
         {
             var output = service.SortFilterPage(options).ToList();
             SetupTraceInfo();
-            return View(new BookListCombinedDto(options, output));              
+            return View(new SqlBookListCombinedDto(options, output));              
         }
-
 
         /// <summary>
         /// This provides the filter search dropdown content
@@ -29,7 +28,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         /// <returns></returns>
         [HttpGet]
         public JsonResult GetFilterSearchContent    
-            (SortFilterPageOptions options, [FromServices]IBookFilterDropdownService service)         
+            (SqlSortFilterPageOptions options, [FromServices]IBookFilterDropdownService service)         
         {
 
             var traceIdent = HttpContext.TraceIdentifier; 
@@ -38,7 +37,6 @@ namespace EfCoreSqlAndCosmos.Controllers
                 traceIdent,
                 service.GetFilterDropDownValues(  options.FilterBy)));            
         }
-
 
         public IActionResult About()
         {

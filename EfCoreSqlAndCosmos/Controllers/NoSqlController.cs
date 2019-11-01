@@ -13,11 +13,11 @@ namespace EfCoreSqlAndCosmos.Controllers
 {
     public class NoSqlController : BaseTraceController
     {
-        public async Task<IActionResult> Index (SortFilterPageOptions options, [FromServices] IListNoSqlBooksService service)
+        public async Task<IActionResult> Index (NoSqlSortFilterPageOptions options, [FromServices] IListNoSqlBooksService service)
         {
-            var output = await (service.SortFilterPage(options)).ToListAsync();
+            var output = await service.SortFilterPageAsync(options);
             SetupTraceInfo();
-            return View(new BookListNoSqlCombinedDto(options, output));              
+            return View(new NoSqlBookListCombinedDto(options, output));              
         }
 
 
@@ -29,7 +29,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         /// <returns></returns>
         [HttpGet]
         public async Task<JsonResult> GetFilterSearchContent    
-            (SortFilterPageOptions options, [FromServices]IBookNoSqlFilterDropdownService service)         
+            (NoSqlSortFilterPageOptions options, [FromServices]IBookNoSqlFilterDropdownService service)         
         {
 
             var traceIdent = HttpContext.TraceIdentifier; 

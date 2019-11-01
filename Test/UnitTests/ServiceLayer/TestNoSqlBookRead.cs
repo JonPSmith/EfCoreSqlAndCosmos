@@ -2,13 +2,12 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataLayer.EfClassesNoSql;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using ServiceLayer.BooksCommon;
+using ServiceLayer.BooksNoSql;
 using ServiceLayer.BooksNoSql.Services;
 using Test.Helpers;
 using TestSupport.Attributes;
@@ -83,10 +82,10 @@ namespace Test.UnitTests.ServiceLayer
                 var service = new ListNoSqlBooksService(context);
 
                 //ATTEMPT
-                var books = await (service.SortFilterPage(new SortFilterPageOptions
+                var books = await (service.SortFilterPageAsync(new NoSqlSortFilterPageOptions
                 {
                     OrderByOptions = orderBy
-                })).ToListAsync();
+                }));
 
                 //VERIFY
                 books.Any().ShouldBeTrue();
@@ -118,7 +117,7 @@ namespace Test.UnitTests.ServiceLayer
         //        var service = new ListNoSqlBooksService(context);
 
         //        //ATTEMPT
-        //        var foundBooks = await (service.SortFilterPage(new SortFilterPageOptions
+        //        var foundBooks = await (service.SortFilterPageAsync(new NoSqlSortFilterPageOptions
         //        {
         //            OrderByOptions = OrderByOptions.ByVotes
         //        })).ToListAsync();
@@ -141,15 +140,15 @@ namespace Test.UnitTests.ServiceLayer
                 var service = new ListNoSqlBooksService(context);
 
                 //ATTEMPT
-                var filterPageOptions = new SortFilterPageOptions
+                var filterPageOptions = new NoSqlSortFilterPageOptions
                 {
                     OrderByOptions = OrderByOptions.ByPriceLowestFirst,
                     PageSize = pageSize,
                     PageNum = pageNum
                 };
-                var temp = service.SortFilterPage(filterPageOptions); //to set the PrevCheckState
+                var temp = await service.SortFilterPageAsync(filterPageOptions); //to set the PrevCheckState
                 filterPageOptions.PageNum = pageNum;
-                var books = await service.SortFilterPage(filterPageOptions).ToListAsync();
+                var books = await service.SortFilterPageAsync(filterPageOptions);
 
                 //VERIFY
                 books.Count.ShouldEqual(Math.Min(pageSize, books.Count));
@@ -167,12 +166,12 @@ namespace Test.UnitTests.ServiceLayer
                 var service = new ListNoSqlBooksService(context);
 
                 //ATTEMPT
-                var books = await service.SortFilterPage(new SortFilterPageOptions
+                var books = await service.SortFilterPageAsync(new NoSqlSortFilterPageOptions
                 {
                     OrderByOptions = OrderByOptions.ByPublicationDate,
                     FilterBy = BooksFilterBy.ByPublicationYear,
                     FilterValue = year.ToString()
-                }).ToListAsync();
+                });
 
                 //VERIFY
                 books.Single().PublishedOn.Year.ShouldEqual(year);
@@ -188,12 +187,12 @@ namespace Test.UnitTests.ServiceLayer
                 var service = new ListNoSqlBooksService(context);
 
                 //ATTEMPT
-                var books = await service.SortFilterPage(new SortFilterPageOptions
+                var books = await service.SortFilterPageAsync(new NoSqlSortFilterPageOptions
                 {
                     OrderByOptions = OrderByOptions.ByPublicationDate,
                     FilterBy = BooksFilterBy.ByPublicationYear,
                     FilterValue = "Coming Soon"
-                }).ToListAsync();
+                });
 
                 //VERIFY
                 books.All(x => x.PublishedOn > DateTime.UtcNow).ShouldBeTrue();
@@ -210,12 +209,12 @@ namespace Test.UnitTests.ServiceLayer
                 var service = new ListNoSqlBooksService(context);
 
                 //ATTEMPT
-                var books = await service.SortFilterPage(new SortFilterPageOptions
+                var books = await service.SortFilterPageAsync(new NoSqlSortFilterPageOptions
                 {
                     OrderByOptions = OrderByOptions.ByVotes,
                     FilterBy = BooksFilterBy.ByVotes,
                     FilterValue = "2"
-                }).ToListAsync();
+                });
 
                 //VERIFY
                 books.All(x => x.ReviewsAverageVotes > 2).ShouldBeTrue();

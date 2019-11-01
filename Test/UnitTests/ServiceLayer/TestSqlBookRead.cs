@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DataLayer.EfCode;
 using Microsoft.EntityFrameworkCore;
 using ServiceLayer.BooksCommon;
+using ServiceLayer.BooksSql;
 using ServiceLayer.BooksSql.QueryObjects;
 using ServiceLayer.BooksSql.Services;
 using Test.Helpers;
@@ -65,10 +66,10 @@ namespace Test.UnitTests.ServiceLayer
             //SETUP
             using (var context = new SqlDbContext(_options))
             {
-                var service = new ListBooksService(context);
+                var service = new SqlSqlListBooksService(context);
 
                 //ATTEMPT
-                var books = await service.SortFilterPage(new SortFilterPageOptions
+                var books = await service.SortFilterPage(new SqlSortFilterPageOptions
                 {
                     OrderByOptions = orderBy
                 }).ToListAsync();
@@ -86,10 +87,10 @@ namespace Test.UnitTests.ServiceLayer
             //SETUP
             using (var context = new SqlDbContext(_options))
             {
-                var service = new ListBooksService(context);
+                var service = new SqlSqlListBooksService(context);
 
                 //ATTEMPT
-                var filterPageOptions = new SortFilterPageOptions
+                var filterPageOptions = new SqlSortFilterPageOptions
                 {
                     OrderByOptions = OrderByOptions.ByPriceLowestFirst,
                     PageSize = pageSize,
@@ -112,10 +113,10 @@ namespace Test.UnitTests.ServiceLayer
             var year = Math.Min(DateTime.UtcNow.Year, DddEfTestData.DummyBookStartDate.AddYears(5).Year);
             using (var context = new SqlDbContext(_options))
             {
-                var service = new ListBooksService(context);
+                var service = new SqlSqlListBooksService(context);
 
                 //ATTEMPT
-                var books = await service.SortFilterPage(new SortFilterPageOptions
+                var books = await service.SortFilterPage(new SqlSortFilterPageOptions
                 {
                     OrderByOptions = OrderByOptions.ByPublicationDate,
                     FilterBy = BooksFilterBy.ByPublicationYear,
@@ -134,10 +135,10 @@ namespace Test.UnitTests.ServiceLayer
             var year = Math.Min(DateTime.UtcNow.Year, DddEfTestData.DummyBookStartDate.AddYears(5).Year);
             using (var context = new SqlDbContext(_options))
             {
-                var service = new ListBooksService(context);
+                var service = new SqlSqlListBooksService(context);
 
                 //ATTEMPT
-                var books = await service.SortFilterPage(new SortFilterPageOptions
+                var books = await service.SortFilterPage(new SqlSortFilterPageOptions
                 {
                     OrderByOptions = OrderByOptions.ByPublicationDate,
                     FilterBy = BooksFilterBy.ByPublicationYear,
@@ -155,10 +156,10 @@ namespace Test.UnitTests.ServiceLayer
             //SETUP
             using (var context = new SqlDbContext(_options))
             {
-                var service = new ListBooksService(context);
+                var service = new SqlSqlListBooksService(context);
 
                 //ATTEMPT
-                var books = await service.SortFilterPage(new SortFilterPageOptions
+                var books = await service.SortFilterPage(new SqlSortFilterPageOptions
                 {
                     OrderByOptions = OrderByOptions.ByVotes,
                     FilterBy = BooksFilterBy.ByVotes,

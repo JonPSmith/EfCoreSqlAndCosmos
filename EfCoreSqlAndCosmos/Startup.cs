@@ -64,7 +64,7 @@ namespace EfCoreSqlAndCosmos
             //Setup GenericServices
             services.GenericServicesSimpleSetup<SqlDbContext>(Assembly.GetAssembly(typeof(BookListDto)));
             //register other services in the ServiceLayer
-            services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(ListBooksService)))
+            services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(SqlSqlListBooksService)))
                 .Where(c => c.Name.EndsWith("Service"))
                 .AsPublicImplementedInterfaces();
             services.AddTransient<BookGenerator>();

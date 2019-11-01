@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataLayer.EfClassesNoSql;
@@ -21,18 +22,19 @@ namespace ServiceLayer.BooksNoSql.Services
             _context = context;
         }
 
-        public IQueryable<BookListNoSql> SortFilterPage(SortFilterPageOptions options)
+        public async Task<IList<BookListNoSql>> SortFilterPageAsync(NoSqlSortFilterPageOptions options)
         {
-            var booksQuery = _context.Books
+            var booksFound = await _context.Books
                 .AsNoTracking()                                             
                 .OrderBooksBy(options.OrderByOptions)  
                 .FilterBooksBy(options.FilterBy,       
-                               options.FilterValue);   
+                               options.FilterValue)
+                .Page(options.PageNum - 1,options.PageSize)
+                .ToListAsync();   
 
-            options.SetupRestOfDtoCosmosCount(booksQuery);        
+            options.SetupRestOfDto(booksFound.Count);
 
-            return booksQuery.Page(options.PageNum-1,  
-                                   options.PageSize);  
+            return booksFound;
         }
     }
 

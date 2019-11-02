@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Test.CosmosTestDb;
-using Test.Helpers;
+using TestSupport.Attributes;
 using TestSupport.EfHelpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -255,6 +255,20 @@ namespace Test.UnitTests.ExploreCosmosDb
 
             //VERIFY
             (await context.Books.FindAsync(1)).Reviews.Count.ShouldEqual(2);
+        }
+
+        [RunnableInDebugOnly]
+        public async Task TestReadCurrentDbOk()
+        {
+            //SETUP
+            var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
+            using var context = new CosmosDbContext(options);
+
+            //ATTEMPT
+            var book = await context.Books.FindAsync(2);
+
+            //VERIFY
+
         }
     }
 }

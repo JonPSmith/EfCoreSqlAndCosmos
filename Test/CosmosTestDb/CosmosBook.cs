@@ -13,6 +13,9 @@ namespace Test.CosmosTestDb
         public double Price { get; set; }
         public DateTime PublishedDate { get; set; }
 
+        //Used for checking on null handling
+        public int? NullableInt { get; set; }
+
         //----------------------------------
         //relationships 
 

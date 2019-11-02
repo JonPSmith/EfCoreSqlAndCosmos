@@ -93,6 +93,112 @@ namespace Test.UnitTests.ExploreCosmosDb
         }
 
         [Fact]
+        public async Task TestNullableIntOk()
+        {
+            //SETUP
+            var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
+            using (var context = new CosmosDbContext(options))
+            {
+                await context.Database.EnsureDeletedAsync();
+                await context.Database.EnsureCreatedAsync();
+
+                var cBook1 = new CosmosBook { CosmosBookId = 1, NullableInt = null};
+                var cBook2 = new CosmosBook { CosmosBookId = 2, NullableInt = 1 };
+                context.AddRange(cBook1, cBook2);
+                await context.SaveChangesAsync();
+            }
+            using (var context = new CosmosDbContext(options))
+            {
+                //ATTEMPT
+                var cBook1 = await context.Books.FindAsync(1);
+                var cBook2 = await context.Books.FindAsync(2);
+
+                //VERIFY
+                cBook1.NullableInt.ShouldBeNull();
+                cBook2.NullableInt.ShouldEqual(1);
+            }
+        }
+
+        [Fact]
+        public async Task TestNullableIntOrderByOk()
+        {
+            //SETUP
+            var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
+            using (var context = new CosmosDbContext(options))
+            {
+                await context.Database.EnsureDeletedAsync();
+                await context.Database.EnsureCreatedAsync();
+
+                var cBook1 = new CosmosBook { CosmosBookId = 1, NullableInt = null };
+                var cBook2 = new CosmosBook { CosmosBookId = 2, NullableInt = 1 };
+                context.AddRange(cBook1, cBook2);
+                await context.SaveChangesAsync();
+            }
+            using (var context = new CosmosDbContext(options))
+            {
+                //ATTEMPT
+                var ex = await Assert.ThrowsAsync<NotSupportedException>(async ()
+                    => await context.Books.OrderBy(x => x.NullableInt).ToListAsync());
+
+                //VERIFY
+                ex.Message.ShouldStartWith("Cannot execute cross partition order-by queries on mix types. " +
+                                           "Consider using IS_STRING/IS_NUMBER to get around this exception.");
+            }
+        }
+
+        [Fact]
+        public async Task TestStringWithNullOrderByOk()
+        {
+            //SETUP
+            var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
+            using (var context = new CosmosDbContext(options))
+            {
+                await context.Database.EnsureDeletedAsync();
+                await context.Database.EnsureCreatedAsync();
+
+                var cBook1 = new CosmosBook { CosmosBookId = 1,  };
+                var cBook2 = new CosmosBook { CosmosBookId = 2, Title = "Book2"};
+                context.AddRange(cBook1, cBook2);
+                await context.SaveChangesAsync();
+            }
+            using (var context = new CosmosDbContext(options))
+            {
+                //ATTEMPT
+                var ex = await Assert.ThrowsAsync<NotSupportedException>(async () =>
+                    await context.Books.OrderBy(x => x.Title).ToListAsync());
+
+                //VERIFY
+                ex.Message.ShouldStartWith("Cannot execute cross partition order-by queries on mix types. " +
+                                           "Consider using IS_STRING/IS_NUMBER to get around this exception.");
+            }
+        }
+
+        [Fact]
+        public async Task TestNullableIntWhereOk()
+        {
+            //SETUP
+            var options = this.GetCosmosDbToEmulatorOptions<CosmosDbContext>();
+            using (var context = new CosmosDbContext(options))
+            {
+                await context.Database.EnsureDeletedAsync();
+                await context.Database.EnsureCreatedAsync();
+
+                var cBook1 = new CosmosBook { CosmosBookId = 1, NullableInt = null };
+                var cBook2 = new CosmosBook { CosmosBookId = 2, NullableInt = 1 };
+                context.AddRange(cBook1, cBook2);
+                await context.SaveChangesAsync();
+            }
+            using (var context = new CosmosDbContext(options))
+            {
+                //ATTEMPT
+                var book = await context.Books.SingleOrDefaultAsync(x => x.NullableInt > 0);
+
+                //VERIFY
+                book.CosmosBookId.ShouldEqual(2);
+            }
+        }
+
+        [Fact]
         public async Task TestAddCosmosBookAddSameKeyOk()
         {
             //SETUP

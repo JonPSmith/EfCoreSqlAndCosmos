@@ -218,9 +218,11 @@ namespace Test.UnitTests.ExploreCosmosDb
                 //ATTEMPT
                 var cBook = new CosmosBook { CosmosBookId = 1, Title = "Book2" };
                 context.Add(cBook);
+                context.Entry(cBook).State.ShouldEqual(EntityState.Added);
                 var changes = await context.SaveChangesAsync();
 
                 //VERIFY
+                context.Entry(cBook).State.ShouldEqual(EntityState.Unchanged);
                 changes.ShouldEqual(0);
             }
             using (var context = new CosmosDbContext(options))

@@ -1,8 +1,10 @@
 # EfCoreSqlAndCosmos
 
 This example application goes with the following articles:
-* An in-depth study of Cosmos DB and EF Core 3.0 database provider - waiting for link!
-* [Building a robust CQRS database with EF Core and Cosmos DB](https://www.thereformedprogrammer.net/building-a-robust-cqrs-database-with-ef-core-and-cosmos-db/).
+* [Building a robust CQRS database with EF Core and Cosmos DB](https://www.thereformedprogrammer.net/building-a-robust-cqrs-database-with-ef-core-and-cosmos-db/).  
+This explains how the two-database CQRS works (its written with old EF Core 2.2 Cosmos provider, but the ideas are the same as in the real thing - see next article.).
+* [An in-depth study of Cosmos DB and EF Core 3.0 database provider](https://www.thereformedprogrammer.net/an-in-depth-study-of-cosmos-db-and-ef-core-3-0-database-provider/)  
+This looks at the issues I had when when I upgraded to the first, proper EF Core Cosmos database provider in EF Core 3.0.
 
 ## How to build and run this application
 

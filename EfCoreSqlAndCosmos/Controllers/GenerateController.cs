@@ -3,32 +3,30 @@
 
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using ServiceLayer.DatabaseServices.Concrete;
 
 namespace EfCoreSqlAndCosmos.Controllers
 {
     public class GenerateController : BaseTraceController
     {
-        //This is a hack. Shouldn't use static variables like this! Not multi-user safe!!
-        private static double _progress;
-        private static bool _cancel;
 
         // GET
         public IActionResult Index([FromServices]SqlDbContext context)
         {
-            _progress = 0;
-            _cancel = false;
             return View(context.Books.Count());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Books(int totalBooksNeeded, bool wipeDatabase, 
+        public async Task<IActionResult> Books(int totalBooksNeeded, bool wipeDatabase, CancellationToken cancellationToken,
             [FromServices]SqlDbContext sqlContext,
             [FromServices]NoSqlDbContext noSqlContext,
             [FromServices]BookGenerator generator,
@@ -42,25 +40,21 @@ namespace EfCoreSqlAndCosmos.Controllers
 
             var filepath = Path.Combine(env.WebRootPath, SetupHelpers.SeedFileSubDirectory,
                 SetupHelpers.TemplateFileName);
-            await generator.WriteBooksAsync(filepath,
-                totalBooksNeeded, true, numWritten =>
-            {
-                _progress = numWritten * 100.0 / totalBooksNeeded;
-                return _cancel;
-            });
+            await generator.WriteBooksAsync(filepath, totalBooksNeeded, true, cancellationToken);
 
             SetupTraceInfo();
 
             return
-                View((object) ((_cancel ? "Cancelled" : "Successful") +
+                View((object) ((cancellationToken.IsCancellationRequested ? "Cancelled" : "Successful") +
                      $" generate. Num books in database = {sqlContext.Books.Count()}."));
         }
 
         [HttpPost]
-        public ActionResult Progress(bool cancel, [FromServices]SqlDbContext context)
+        public ActionResult NumBooks([FromServices]SqlDbContext context)
         {
-            _cancel = cancel;
-            return Content("999");
+            var dbExists = (context.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
+            var message = dbExists ? $"Num books = {context.Books.Count()}" : "database being wiped.";
+            return Content(message);
         }
     }
 }

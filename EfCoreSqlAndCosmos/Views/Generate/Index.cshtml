@@ -6,7 +6,7 @@
 
 <h3 class="text-danger">WARNING!</h3>
 <p class="text-danger">
-    This can take a LONG time! On my (fast) PC it takes 2 minutes to generate 100,000 books.
+    This can take a LONG time! On my (fast) PC it takes 2 minutes to generate 10,000 books with associated NoSQL entries.
     I have added a web.config file with a requestTimeout of 20 minutes, so that it doesn't time out the action
 </p>
 
@@ -43,44 +43,30 @@
 
 </div>
 
-<button href="#" onclick="cancelGenerate()">Cancel generate</button>
+<p>
+    <strong>NOTE:</strong> to stop the generator refresh this page, or go to a different page. It stops at the next batch update.
+    <br/>
+    <i>Thanks to Andrew Lock's <a href="https://andrewlock.net/using-cancellationtokens-in-asp-net-core-mvc-controllers/">Using CancellationTokens in ASP.NET Core MVC controllers</a> article for how to do that.</i>
+</p>
 <hr/>
-<div class="progress">
-    <div class="progress-bar hidden" role="progressbar" aria-valuenow="0"
-         aria-valuemin="0" aria-valuemax="100" style="width:70%">
-    </div>
-</div> 
+<H4 id="show-num-books" class="hidden">
+
+</H4> 
 
 <script>
     function startGenerate() {
         var form = $('#input-form');
-        var totalBooks = $('#totalBooksNeeded').val();
-        $('.progress-bar').attr('aria-valuemax', totalBooks);
         startUpdatingProgressIndicator();
-        $.ajax(
-            {
-                url: form.attr('action'),
-                data: new FormData(form[0]),
-                //processData: false,
-                //contentType: false,
-                type: "POST",
-                success: function (data) {
-                    stopUpdatingProgressIndicator();
-                }
-            }
+        $.post(
+            form.attr('action'),
+            form.serialize
         );
-    }
-
-    var cancelFlag = false;
-
-    function cancelGenerate() {
-        cancelFlag = true;
     }
 
     var intervalId;
 
     function startUpdatingProgressIndicator() {
-        var $progress = $(".progress-bar");
+        var $progress = $("#show-num-books");
         $progress.removeClass('hidden');
 
         var skipFirst = true;
@@ -88,14 +74,14 @@
             function () {
                 // We use the POST requests here to avoid caching problems (we could use the GET requests and disable the cache instead)
                 $.post(
-                    '@Url.Action("Progress")',
-                    {cancel: cancelFlag},
-                    function (progress) {
+                    '@Url.Action("NumBooks")',
+                    {},
+                    function (data, status) {
                         if (skipFirst) {
                             skipFirst = false;
                             return;
                         }
-                        $progress.attr('aria-valuenow', progress);
+                        $progress.html(data);
                     }
                 );
             },

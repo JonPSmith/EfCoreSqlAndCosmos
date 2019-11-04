@@ -9,7 +9,7 @@ namespace ServiceLayer.BooksNoSql
 {
     public class NoSqlBookListCombinedDto
     {
-        public NoSqlBookListCombinedDto(NoSqlSortFilterPageOptions sortFilterPageData, IEnumerable<BookListNoSql> booksList)
+        public NoSqlBookListCombinedDto(NoSqlSortFilterPageOptions sortFilterPageData, IList<BookListNoSql> booksList)
         {
             SortFilterPageData = sortFilterPageData;
             BooksList = booksList;
@@ -17,6 +17,6 @@ namespace ServiceLayer.BooksNoSql
 
         public NoSqlSortFilterPageOptions SortFilterPageData { get; private set; }
 
-        public IEnumerable<BookListNoSql> BooksList { get; private set; }
+        public IList<BookListNoSql> BooksList { get; private set; }
     }
 }

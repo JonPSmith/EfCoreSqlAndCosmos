@@ -60,44 +60,59 @@
 <br />
 
 <table class="table">
-    @foreach (var item in Model.BooksList)
+    @if (Model.BooksList.Count <= 0)
     {
-        <tr>
-            <td>
-                <h3>@Html.DisplayFor(modelItem => item.Title)</h3>
-                <div>
-                    <small>by</small>&nbsp;@Html.DisplayFor(m => item.AuthorsOrdered)
-                </div>
-                <div>
-                    @(item.ReviewsCount == 0 ? "Be the first to review this book" : $"Votes: {item.ReviewsAverageVotes:F1} by {item.ReviewsCount} customers")
-                </div>
-                <div>
-                    <span class="h4">@(item.ActualPrice < 0 ? "- not for sale - " : $"Price: ${item.ActualPrice:##,###.00}")</span>
-                    @if (item.PromotionalText != null)
-                    {
-                        <span class="text-danger">
-                            <strong >&nbsp;<del>$@($"{item.ActualPrice:F}")</del>&nbsp;<i>@(item.PromotionalText)</i></strong>
-                        </span>
-                    }                    
-                </div>
-            </td>
-            <td class="vert-align">
-                
+        if (Model.SortFilterPageData.PageNum == 1)
+        {
+            <p>No books in the database.</p>
+        }
+        else
+        {
+            <p>You are at the end of the books data.</p>
+        }
+
+    }
+    else
+    {
+        @foreach (var item in Model.BooksList)
+        {
+            <tr>
+                <td>
+                    <h3>@Html.DisplayFor(modelItem => item.Title)</h3>
+                    <div>
+                        <small>by</small>&nbsp;@Html.DisplayFor(m => item.AuthorsOrdered)
+                    </div>
+                    <div>
+                        @(item.ReviewsCount == 0 ? "Be the first to review this book" : $"Votes: {item.ReviewsAverageVotes:F1} by {item.ReviewsCount} customers")
+                    </div>
+                    <div>
+                        <span class="h4">@(item.ActualPrice < 0 ? "- not for sale - " : $"Price: ${item.ActualPrice:##,###.00}")</span>
+                        @if (item.PromotionalText != null)
+                        {
+                            <span class="text-danger">
+                                <strong >&nbsp;<del>$@($"{item.ActualPrice:F}")</del>&nbsp;<i>@(item.PromotionalText)</i></strong>
+                            </span>
+                        }
+                    </div>
+                </td>
+                <td class="vert-align">
+
                     <div class="dropdown">
                         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                             Admin
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                            <li>@Html.ActionLink("Change Pub Date", "ChangePubDate", "Admin", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Add Price Promotion", "AddPromotion", "Admin", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Remove Promotion", "RemovePromotion", "Admin", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Add Review", "AddBookReview", "Admin", new { id = item.BookId })</li>
+                            <li>@Html.ActionLink("Change Pub Date", "ChangePubDate", "Admin", new {id = item.BookId})</li>
+                            <li>@Html.ActionLink("Add Price Promotion", "AddPromotion", "Admin", new {id = item.BookId})</li>
+                            <li>@Html.ActionLink("Remove Promotion", "RemovePromotion", "Admin", new {id = item.BookId})</li>
+                            <li>@Html.ActionLink("Add Review", "AddBookReview", "Admin", new {id = item.BookId})</li>
                         </ul>
-                    </div>           
-                
-            </td>
-        </tr>
+                    </div>
+
+                </td>
+            </tr>
+        }
     }
 </table>
 

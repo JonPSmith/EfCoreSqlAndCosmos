@@ -19,15 +19,15 @@ namespace ServiceLayer.DatabaseServices.Concrete
 {
     public class BookGenerator
     {
-        private readonly DbContextOptions<SqlDbContext> _options;
-        private readonly IBookUpdater _bookUpdater;
+        private readonly DbContextOptions<SqlDbContext> _sqlOptions;
+        private readonly DbContextOptions<NoSqlDbContext> _noSqlOptions;
         private ImmutableList<BookData> _loadedBookData;
         private int NumBooksInSet => _loadedBookData.Count;
 
-        public BookGenerator(DbContextOptions<SqlDbContext> options, IBookUpdater bookUpdater)
+        public BookGenerator(DbContextOptions<SqlDbContext> sqlOptions, DbContextOptions<NoSqlDbContext> noSqlOptions)
         {
-            _options = options;
-            _bookUpdater = bookUpdater;
+            _sqlOptions = sqlOptions;
+            _noSqlOptions = noSqlOptions;
         }
 
         public async Task WriteBooksAsync(string filePath, int totalBooksNeeded, bool makeBookTitlesDistinct, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ namespace ServiceLayer.DatabaseServices.Concrete
             
             //Find out how many in db so we can pick up where we left off
             int numBooksInDb;
-            using (var context = new SqlDbContext(_options,_bookUpdater))
+            using (var context = new SqlDbContext(_sqlOptions,null))
             {
                 numBooksInDb = await context.Books.IgnoreQueryFilters().CountAsync();
             }
@@ -50,13 +50,14 @@ namespace ServiceLayer.DatabaseServices.Concrete
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                using (var context = new SqlDbContext(_options, _bookUpdater))
+                using( var noSqlContext = new NoSqlDbContext(_noSqlOptions))
+                using (var sqlDbContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
                 {
-                    var authorsFinder = new AuthorFinder(context);
-                    var batchToAdd = Math.Min(_loadedBookData.Count, totalBooksNeeded - numWritten);
+                    var authorsFinder = new AuthorFinder(sqlDbContext);
+                    var batchToAdd = Math.Min(_loadedBookData.Count, numToWrite - numWritten);
                     var batch = GenerateBooks(batchToAdd, numBooksInDb, makeBookTitlesDistinct, authorsFinder).ToList();
-                    context.AddRange(batch);
-                    await context.SaveChangesAsync();
+                    sqlDbContext.AddRange(batch);
+                    await sqlDbContext.SaveChangesAsync();
                     numWritten += batch.Count;
                 }
             }

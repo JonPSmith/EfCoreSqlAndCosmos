@@ -35,7 +35,7 @@ namespace Test.UnitTests.ServiceLayer
 
                 var filepath = TestData.GetFilePath("10ManningBooks.json");
 
-                var generator = new BookGenerator(sqlOptions, new NoSqlBookUpdater(noSqlContext));
+                var generator = new BookGenerator(sqlOptions, noSqlOptions);
 
                 //ATTEMPT
                 await generator.WriteBooksAsync(filepath, numBooks, true, default(CancellationToken));
@@ -50,6 +50,7 @@ namespace Test.UnitTests.ServiceLayer
         public async Task TestWriteBooksAsyncCalledTwiceOk()
         {
             //SETUP
+            var noSqlOptions = this.GetCosmosDbToEmulatorOptions<NoSqlDbContext>();
             var sqlOptions = SqliteInMemory.CreateOptions<SqlDbContext>();
             using (var sqlContext = new SqlDbContext(sqlOptions, null))
             {
@@ -57,7 +58,7 @@ namespace Test.UnitTests.ServiceLayer
 
                 var filepath = TestData.GetFilePath("10ManningBooks.json");
 
-                var generator = new BookGenerator(sqlOptions, null);
+                var generator = new BookGenerator(sqlOptions, noSqlOptions);
 
                 //ATTEMPT
                 await generator.WriteBooksAsync(filepath, 8, true, default(CancellationToken));
@@ -72,6 +73,7 @@ namespace Test.UnitTests.ServiceLayer
         public async Task TestWriteBooksAsyncCancelOk()
         {
             //SETUP
+            var noSqlOptions = this.GetCosmosDbToEmulatorOptions<NoSqlDbContext>();
             var sqlOptions = SqliteInMemory.CreateOptions<SqlDbContext>();
             using (var sqlContext = new SqlDbContext(sqlOptions, null))
             {
@@ -79,7 +81,7 @@ namespace Test.UnitTests.ServiceLayer
 
                 var filepath = TestData.GetFilePath("10ManningBooks.json");
 
-                var generator = new BookGenerator(sqlOptions, null);
+                var generator = new BookGenerator(sqlOptions, noSqlOptions);
 
                 //ATTEMPT
                 await generator.WriteBooksAsync(filepath, 8, true, default(CancellationToken));

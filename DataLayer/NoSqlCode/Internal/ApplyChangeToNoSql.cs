@@ -56,8 +56,6 @@ namespace DataLayer.NoSqlCode.Internal
                     }
                     case EntityState.Modified:
                     {
-                        //Note: You need to read the actual Cosmos entity because of the extra columns like id, _rid, etc.
-                        //Version 3 might make attach work https://github.com/aspnet/EntityFrameworkCore/issues/13633
                         var noSqlBook = _noSqlContext.Find<BookListNoSql>(bookToUpdate.BookId);
                         var update = _sqlContext.Set<Book>()
                             .ProjectTo<BookListNoSql>(SqlToNoSqlMapper)

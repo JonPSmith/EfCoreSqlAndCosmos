@@ -18,6 +18,7 @@ namespace DataLayer.EfClassesWithEvents
 
         public AuthorWithEvents() { }
 
+        [Key]
         public Guid AuthorId { get;  set; }
 
         [Required(AllowEmptyStrings = false)]

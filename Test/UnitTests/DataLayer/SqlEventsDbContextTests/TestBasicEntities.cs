@@ -78,13 +78,13 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
                 var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 context.Add(book);
                 context.SaveChanges();
-                book.ReturnEventsAndThenClear();
+                book.GetTransactionEventsThenClear();
 
                 //ATTEMPT
                 book.AddReview(5, "test", "someone");
 
                 //VERIFY
-                var dEvent = book.ReturnEventsAndThenClear().Single();
+                var dEvent = book.GetTransactionEventsThenClear().Single();
                 dEvent.ShouldBeType<BookReviewsChangedEvent>();
             }
         }
@@ -100,13 +100,13 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
                 var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 context.Add(book);
                 context.SaveChanges();
-                book.ReturnEventsAndThenClear();
+                book.GetTransactionEventsThenClear();
 
                 //ATTEMPT
                 book.RemoveReview(book.Reviews.First());
 
                 //VERIFY
-                var dEvent = book.ReturnEventsAndThenClear().Single();
+                var dEvent = book.GetTransactionEventsThenClear().Single();
                 dEvent.ShouldBeType<BookReviewsChangedEvent>();
             }
         }
@@ -123,13 +123,13 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
                 context.Add(book);
                 context.SaveChanges();
                 var author = book.AuthorsLink.First().Author;
-                author.ReturnEventsAndThenClear();
+                author.GetTransactionEventsThenClear();
 
                 //ATTEMPT
                 author.Name = "new name";
 
                 //VERIFY
-                var dEvent = author.ReturnEventsAndThenClear().Single();
+                var dEvent = author.GetTransactionEventsThenClear().Single();
                 dEvent.ShouldBeType<AuthorNameUpdatedEvent>();
             }
         }

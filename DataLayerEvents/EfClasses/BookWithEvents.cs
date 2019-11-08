@@ -114,7 +114,7 @@ namespace DataLayerEvents.EfClasses
                 throw new InvalidOperationException("Could not add a new review.");  
             }
 
-            AddTransactionEvent(new BookReviewsChangedEvent());
+            AddBeforeSaveEvent(new BookReviewsChangedEvent());
         }
 
         public void RemoveReview(ReviewWithEvents review, DbContext context = null)
@@ -140,7 +140,7 @@ namespace DataLayerEvents.EfClasses
                 context.Remove(review);
             }
 
-            AddTransactionEvent(new BookReviewsChangedEvent());
+            AddBeforeSaveEvent(new BookReviewsChangedEvent());
         }
 
         public IStatusGeneric AddPromotion(decimal actualPrice, string promotionalText)                  

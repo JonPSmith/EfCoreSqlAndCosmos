@@ -14,11 +14,11 @@ using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
 {
-    public class TestBasicEntities
+    public class TestBasicEntitiesNoRunner
     {
         private readonly ITestOutputHelper _output;
 
-        public TestBasicEntities(ITestOutputHelper output)
+        public TestBasicEntitiesNoRunner(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -28,7 +28,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptionsWithLogging<SqlEventsDbContext>(x => _output.WriteLine(x.Message));
-            using (var context = new SqlEventsDbContext(options))
+            using (var context = new SqlEventsDbContext(options, null))
             {
                 context.Database.EnsureCreated();
 
@@ -45,14 +45,14 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptionsWithLogging<SqlEventsDbContext>(x => _output.WriteLine(x.Message));
-            using (var context = new SqlEventsDbContext(options))
+            using (var context = new SqlEventsDbContext(options, null))
             {
                 context.Database.EnsureCreated();
                 var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 context.Add(book);
                 context.SaveChanges();
             }
-            using (var context = new SqlEventsDbContext(options))
+            using (var context = new SqlEventsDbContext(options, null))
             {
                 //ATTEMPT
                 var bookWithRelationships = context.Books
@@ -72,19 +72,19 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            using (var context = new SqlEventsDbContext(options))
+            using (var context = new SqlEventsDbContext(options, null))
             {
                 context.Database.EnsureCreated();
                 var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 context.Add(book);
                 context.SaveChanges();
-                book.GetTransactionEventsThenClear();
+                book.GetBeforeSaveEventsThenClear();
 
                 //ATTEMPT
                 book.AddReview(5, "test", "someone");
 
                 //VERIFY
-                var dEvent = book.GetTransactionEventsThenClear().Single();
+                var dEvent = book.GetBeforeSaveEventsThenClear().Single();
                 dEvent.ShouldBeType<BookReviewsChangedEvent>();
             }
         }
@@ -94,19 +94,19 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            using (var context = new SqlEventsDbContext(options))
+            using (var context = new SqlEventsDbContext(options, null))
             {
                 context.Database.EnsureCreated();
                 var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 context.Add(book);
                 context.SaveChanges();
-                book.GetTransactionEventsThenClear();
+                book.GetBeforeSaveEventsThenClear();
 
                 //ATTEMPT
                 book.RemoveReview(book.Reviews.First());
 
                 //VERIFY
-                var dEvent = book.GetTransactionEventsThenClear().Single();
+                var dEvent = book.GetBeforeSaveEventsThenClear().Single();
                 dEvent.ShouldBeType<BookReviewsChangedEvent>();
             }
         }
@@ -116,20 +116,20 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            using (var context = new SqlEventsDbContext(options))
+            using (var context = new SqlEventsDbContext(options, null))
             {
                 context.Database.EnsureCreated();
                 var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 context.Add(book);
                 context.SaveChanges();
                 var author = book.AuthorsLink.First().Author;
-                author.GetTransactionEventsThenClear();
+                author.GetBeforeSaveEventsThenClear();
 
                 //ATTEMPT
                 author.Name = "new name";
 
                 //VERIFY
-                var dEvent = author.GetTransactionEventsThenClear().Single();
+                var dEvent = author.GetBeforeSaveEventsThenClear().Single();
                 dEvent.ShouldBeType<AuthorNameUpdatedEvent>();
             }
         }

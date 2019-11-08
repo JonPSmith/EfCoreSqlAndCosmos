@@ -15,29 +15,29 @@ namespace DataLayerEvents.DomainEventCode
         //Events are created within a single DBContext and are cleared every time SaveChanges/SaveChangesAsync is called
         
         //This holds events that are run before SaveChanges is called
-        private readonly List<IDomainEvent> _transactionEvents = new List<IDomainEvent>();
+        private readonly List<IDomainEvent> _beforeSaveEvents = new List<IDomainEvent>();
 
         //This holds events that are run after SaveChanges finishes successfully
         private readonly List<IDomainEvent> _afterSaveChangesEvents = new List<IDomainEvent>();
 
-        public void AddTransactionEvent(IDomainEvent dEvent)
+        public void AddBeforeSaveEvent(IDomainEvent dEvent)
         {
-            _transactionEvents.Add(dEvent);
+            _beforeSaveEvents.Add(dEvent);
         }
 
-        public void AddAfterSaveChangesEvent(IDomainEvent dEvent)
+        public void AddAfterSaveEvent(IDomainEvent dEvent)
         {
             _afterSaveChangesEvents.Add(dEvent);
         }
 
-        public ICollection<IDomainEvent> GetTransactionEventsThenClear()
+        public ICollection<IDomainEvent> GetBeforeSaveEventsThenClear()
         {
-            var eventCopy = _transactionEvents.ToList();
-            _transactionEvents.Clear();
+            var eventCopy = _beforeSaveEvents.ToList();
+            _beforeSaveEvents.Clear();
             return eventCopy;
         }
 
-        public ICollection<IDomainEvent> GetAfterSaveChangesEventsThenClear()
+        public ICollection<IDomainEvent> GetAfterSaveEventsThenClear()
         {
             var eventCopy = _afterSaveChangesEvents.ToList();
             _afterSaveChangesEvents.Clear();

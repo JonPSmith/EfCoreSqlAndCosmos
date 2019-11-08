@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using Infrastructure.EventRunnerCode;
 using Microsoft.Extensions.DependencyInjection;
-using NetCore.AutoRegisterDi;
 
 namespace Infrastructure.AppStart
 {
@@ -11,11 +11,11 @@ namespace Infrastructure.AppStart
         public static void RegisterInfrastructureDi(this IServiceCollection services)
         {
 
-            services.RegisterAssemblyPublicNonGenericClasses()
-                .Where(c => c.Name.EndsWith("Service"))
-                .AsPublicImplementedInterfaces();
+            //Now we register all the Before/After event handlers in this assembly 
+            services.RegisterEventHandlers();
+            //This registers the code that will create and call the specific handlers
+            services.RegisterEventRunner();
 
-            //Hand register classes that don't end in Service
         }
     }
 }

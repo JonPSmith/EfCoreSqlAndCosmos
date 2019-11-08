@@ -37,7 +37,9 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\DataLayerEvents\DataLayerEvents.csproj" />
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\ServiceLayer\ServiceLayer.csproj" />
   </ItemGroup>
 

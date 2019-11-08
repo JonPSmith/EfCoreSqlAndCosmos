@@ -6,6 +6,7 @@ using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
 using EfCoreSqlAndCosmos.Logger;
 using GenericServices.Setup;
+using Infrastructure.AppStart;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NetCore.AutoRegisterDi;
+using ServiceLayer.AppStart;
 using ServiceLayer.BooksSql.Dtos;
 using ServiceLayer.BooksSql.Services;
 using ServiceLayer.DatabaseServices.Concrete;
@@ -63,11 +65,11 @@ namespace EfCoreSqlAndCosmos
 
             //Setup GenericServices
             services.GenericServicesSimpleSetup<SqlDbContext>(Assembly.GetAssembly(typeof(BookListDto)));
-            //register other services in the ServiceLayer
-            services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(SqlListBooksService)))
-                .Where(c => c.Name.EndsWith("Service"))
-                .AsPublicImplementedInterfaces();
-            services.AddTransient<BookGenerator>();
+
+            //The other projects that need DI have their own extension methods to handle that
+            services.RegisterInfrastructureDi();
+            services.RegisterServiceLayerDi();
+
 
         }
 

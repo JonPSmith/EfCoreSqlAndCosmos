@@ -11,6 +11,8 @@ namespace DataLayerEvents.EfCode.Configurations
     {
         public void Configure (EntityTypeBuilder<BookWithEvents> entity)
         {
+            entity.HasKey(p => p.BookId);
+
             entity.Property(p => p.PublishedOn).HasColumnType("date");
             entity.Property(p => p.OrgPrice).HasColumnType("decimal(9,2)");
             entity.Property(p => p.ActualPrice).HasColumnType("decimal(9,2)");

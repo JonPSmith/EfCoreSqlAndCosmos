@@ -47,7 +47,6 @@ namespace DataLayerEvents.EfClasses
         public IEnumerable<ReviewWithEvents> Reviews => _reviews?.ToList();
         public IEnumerable<BookAuthorWithEvents> AuthorsLink => _authorsLink?.ToList();
 
-        [Key]
         public Guid BookId { get; private set; }
 
         //----------------------------------------------

@@ -16,6 +16,7 @@ namespace DataLayerEvents.EfClasses
             Order = order;
         }
 
+        public Guid BookId { get; private set; }
         public Guid AuthorId { get; private set; }
         public byte Order { get; private set; }
 
@@ -24,7 +25,5 @@ namespace DataLayerEvents.EfClasses
 
         public BookWithEvents Book { get; private set; }
         public AuthorWithEvents Author { get; private set; }
-
-        public Guid BookId { get; private set; }
     }
 }

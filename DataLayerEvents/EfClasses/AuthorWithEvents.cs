@@ -18,7 +18,6 @@ namespace DataLayerEvents.EfClasses
 
         public AuthorWithEvents() { }
 
-        [Key]
         public Guid AuthorId { get;  set; }
 
         [Required(AllowEmptyStrings = false)]
@@ -28,7 +27,7 @@ namespace DataLayerEvents.EfClasses
             get => _name;
             set
             {
-                if (value != Name)
+                if (value != _name)
                     AddEvent(new AuthorNameUpdatedEvent());
                 _name = value;
             }

@@ -35,4 +35,8 @@
     <ProjectReference Include="..\ServiceLayer\ServiceLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UnitTests\DataLayer\SqlEventsDbContextTests\" />
+  </ItemGroup>
+
 </Project>

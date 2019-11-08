@@ -3,7 +3,6 @@
 
 using System;
 using System.Linq;
-using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode.Internal;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +11,7 @@ using TestSupport.EfHelpers;
 using Xunit;
 using Xunit.Extensions.AssertExtensions;
 
-namespace Test.UnitTests.DataLayer
+namespace Test.UnitTests.DataLayer.SqlDbContextTests
 {
     public class TestFindBookChanges
     {

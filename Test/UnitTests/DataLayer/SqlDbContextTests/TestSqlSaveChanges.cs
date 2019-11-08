@@ -3,23 +3,21 @@
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal;
 using Test.Helpers;
 using TestSupport.EfHelpers;
 using TestSupport.Helpers;
 using Xunit;
 using Xunit.Extensions.AssertExtensions;
 
-namespace Test.UnitTests.DataLayer
+namespace Test.UnitTests.DataLayer.SqlDbContextTests
 {
-    public class TestSqlSaveChangesAsync
+    public class TestSqlSaveChanges
     {
         private DbContextOptions<SqlDbContext> _sqlOptions;
-        public TestSqlSaveChangesAsync()
+        public TestSqlSaveChanges()
         {
 
             _sqlOptions = this.CreateUniqueClassOptions<SqlDbContext>();
@@ -31,7 +29,7 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public async Task TestSaveChangesAsyncAddNoSqlOk()
+        public void TestSaveChangesAddNoSqlOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -45,13 +43,13 @@ namespace Test.UnitTests.DataLayer
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
             using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
-                await sqlContext.Database.EnsureCreatedAsync();
-                await noSqlContext.Database.EnsureCreatedAsync();
+                sqlContext.Database.EnsureCreated();
+                noSqlContext.Database.EnsureCreated();
 
                 //ATTEMPT
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(1);
@@ -63,7 +61,7 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public async Task TestSaveChangesDeleteNoSqlOk()
+        public void TestSaveChangesDeleteNoSqlOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -81,11 +79,11 @@ namespace Test.UnitTests.DataLayer
                 noSqlContext.Database.EnsureCreated();
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
 
                 //ATTEMPT
                 sqlContext.Remove(book);
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(0);
@@ -95,7 +93,7 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public async Task TestSaveChangesDirectUpdatesNoSqlOk()
+        public void TestSaveChangesDirectUpdatesNoSqlOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -113,7 +111,7 @@ namespace Test.UnitTests.DataLayer
                 noSqlContext.Database.EnsureCreated();
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
             }
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
             using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
@@ -121,7 +119,7 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = sqlContext.Books.Single();
                 book.PublishedOn = DddEfTestData.DummyBookStartDate.AddDays(1);
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(1);
@@ -133,7 +131,7 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public async Task TestSaveChangesIndirectUpdatesNoSqlOk()
+        public void TestSaveChangesIndirectUpdatesNoSqlOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -151,7 +149,7 @@ namespace Test.UnitTests.DataLayer
                 noSqlContext.Database.EnsureCreated();
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
             }
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
             using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
@@ -159,18 +157,17 @@ namespace Test.UnitTests.DataLayer
                 //ATTEMPT
                 var book = sqlContext.Books.Single();
                 book.AddReview(5, "xxx","yyy", sqlContext);
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(1);
                 var noSqlBook = noSqlContext.Books.Single(p => p.BookId == book.BookId);
-                noSqlBook.AuthorsOrdered.ShouldEqual("Author1, Author2");
                 noSqlBook.ReviewsCount.ShouldEqual(3);
             }
         }
 
         [Fact]
-        public async Task TestSaveChangesChangeAuthorTwoBooksNoSqlOk()
+        public void TestSaveChangesChangeAuthorTwoBooksNoSqlOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -197,7 +194,7 @@ namespace Test.UnitTests.DataLayer
                     .Where(x => x.AuthorId == author.AuthorId)
                     .Select(x => x.BookId).ToList();
                 author.Name = "Different Name";
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(4);
@@ -208,7 +205,7 @@ namespace Test.UnitTests.DataLayer
         }
 
         [Fact]
-        public async Task TestSaveChangesSoftDeleteNoSqlOk()
+        public void TestSaveChangesSoftDeleteNoSqlOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -226,11 +223,11 @@ namespace Test.UnitTests.DataLayer
                 noSqlContext.Database.EnsureCreated();
                 var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
 
                 //ATTEMPT
                 book.SoftDeleted = true;
-                await sqlContext.SaveChangesAsync();
+                sqlContext.SaveChanges();
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(0);
@@ -243,9 +240,8 @@ namespace Test.UnitTests.DataLayer
         //--------------------------------------------------------------
         //error situations
 
-
         [Fact]
-        public async Task TestSaveChangesAsyncUpdatesNoSqlFail()
+        public void TestSaveChangesUpdatesNoSqlFail()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -259,12 +255,12 @@ namespace Test.UnitTests.DataLayer
             using (var noSqlContext = new NoSqlDbContext(builder.Options))
             using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
-                await sqlContext.Database.EnsureCreatedAsync();
+                sqlContext.Database.EnsureCreated();
 
                 //ATTEMPT
-                var book = DddEfTestData.CreateDummyBookOneAuthor();
+                var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 sqlContext.Add(book);
-                var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () => await sqlContext.SaveChangesAsync());
+                var ex = Assert.Throws<InvalidOperationException> (() => sqlContext.SaveChanges());
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(0);

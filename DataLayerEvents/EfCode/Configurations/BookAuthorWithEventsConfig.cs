@@ -1,12 +1,11 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using DataLayer.EfClassesSql;
-using DataLayer.EfClassesWithEvents;
+using DataLayerEvents.EfClasses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DataLayer.EfCode.Configurations
+namespace DataLayerEvents.EfCode.Configurations
 {
     public class BookAuthorWithEventsConfig : IEntityTypeConfiguration<BookAuthorWithEvents>
     {

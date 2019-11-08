@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using DataLayer.EfClassesWithEvents;
-using DataLayer.EfCode.Configurations;
+using DataLayerEvents.EfClasses;
+using DataLayerEvents.EfCode.Configurations;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataLayer.EfCode
+namespace DataLayerEvents.EfCode
 {
     public class SqlEventsDbContext : DbContext
     {

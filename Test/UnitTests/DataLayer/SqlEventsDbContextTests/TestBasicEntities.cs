@@ -2,8 +2,9 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Linq;
-using DataLayer.DomainEvents;
 using DataLayer.EfCode;
+using DataLayerEvents.DomainEvents;
+using DataLayerEvents.EfCode;
 using Test.Helpers;
 using TestSupport.EfHelpers;
 using Xunit;

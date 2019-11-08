@@ -1,12 +1,11 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using DataLayer.DomainEventCode;
+using DataLayerEvents.DomainEventCode;
 
-namespace DataLayer.DomainEvents
+namespace DataLayerEvents.DomainEvents
 {
-    public class BookReviewsChangedEvent : IDomainEvent
+    public class AuthorNameUpdatedEvent : IDomainEvent
     {
-        
     }
 }

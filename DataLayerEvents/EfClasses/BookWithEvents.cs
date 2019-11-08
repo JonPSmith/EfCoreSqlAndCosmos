@@ -5,12 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using DataLayer.DomainEventCode;
-using DataLayer.DomainEvents;
+using DataLayerEvents.DomainEventCode;
+using DataLayerEvents.DomainEvents;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataLayer.EfClassesWithEvents
+namespace DataLayerEvents.EfClasses
 {
     public class BookWithEvents : EventsHolder
     {

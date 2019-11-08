@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataLayerEvents\DataLayerEvents.csproj" />
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
     <ProjectReference Include="..\EfCoreSqlAndCosmos\EfCoreSqlAndCosmos.csproj" />
     <ProjectReference Include="..\ServiceLayer\ServiceLayer.csproj" />

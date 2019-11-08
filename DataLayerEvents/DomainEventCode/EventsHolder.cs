@@ -2,10 +2,9 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace DataLayer.DomainEventCode
+namespace DataLayerEvents.DomainEventCode
 {
     /// <summary>
     /// This is a class that the EF Core entity classes inherit to add events

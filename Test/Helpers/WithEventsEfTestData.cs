@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using DataLayer.EfClassesSql;
-using DataLayer.EfClassesWithEvents;
 using DataLayer.EfCode;
+using DataLayerEvents.EfClasses;
+using DataLayerEvents.EfCode;
 
 namespace Test.Helpers
 {

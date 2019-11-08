@@ -4,10 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using DataLayer.DomainEventCode;
-using DataLayer.DomainEvents;
+using DataLayerEvents.DomainEventCode;
+using DataLayerEvents.DomainEvents;
 
-namespace DataLayer.EfClassesWithEvents
+namespace DataLayerEvents.EfClasses
 {
     public class AuthorWithEvents : EventsHolder
     {

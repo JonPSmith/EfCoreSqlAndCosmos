@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DataLayer.EfClassesWithEvents
+namespace DataLayerEvents.EfClasses
 {
     public class ReviewWithEvents
     {

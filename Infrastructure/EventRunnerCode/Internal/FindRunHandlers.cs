@@ -23,8 +23,9 @@ namespace Infrastructure.EventRunnerCode.Internal
         /// <param name="domainEvent"></param>
         public void DispatchBeforeSave(IDomainEvent domainEvent)
         {
-            var wrapperType = GetMatchingEventType(domainEvent, true);
-            var wrappedHandlers = _serviceProvider.GetServices(wrapperType)
+            var handlerInterface = typeof(IBeforeSaveEventHandler<>).MakeGenericType(domainEvent.GetType());
+            var wrapperType = typeof(BeforeSaveHandler<>).MakeGenericType(domainEvent.GetType());
+            var wrappedHandlers = _serviceProvider.GetServices(handlerInterface)
                 .Select(handler => (BeforeSaveEventHandler)Activator.CreateInstance(wrapperType, handler));
 
             foreach (var handler in wrappedHandlers)
@@ -39,23 +40,15 @@ namespace Infrastructure.EventRunnerCode.Internal
         /// <param name="domainEvent"></param>
         public void DispatchAfterSave(IDomainEvent domainEvent)
         {
-            var wrapperType = GetMatchingEventType(domainEvent, false);
-            var wrappedHandlers = _serviceProvider.GetServices(wrapperType)
-                .Select(handler => (BeforeSaveEventHandler)Activator.CreateInstance(wrapperType, handler));
+            var handlerInterface = typeof(IAfterSaveEventHandler<>).MakeGenericType(domainEvent.GetType());
+            var wrapperType = typeof(AfterSaveHandler<>).MakeGenericType(domainEvent.GetType());
+            var wrappedHandlers = _serviceProvider.GetServices(handlerInterface)
+                .Select(handler => (AfterSaveEventHandler)Activator.CreateInstance(wrapperType, handler));
 
             foreach (var handler in wrappedHandlers)
             {
                 handler.Handle(domainEvent);
             }
-        }
-
-        private Type GetMatchingEventType(IDomainEvent domainEvent, bool beforeSave)
-        {
-            var handlerTypeToBuildFor =
-                beforeSave ? typeof(IBeforeSaveEventHandler<>) : typeof(IAfterSaveEventHandler<>);
-            var handlerInterface = handlerTypeToBuildFor.MakeGenericType(domainEvent.GetType());
-            var wrapperType = handlerTypeToBuildFor.MakeGenericType(domainEvent.GetType());
-            return wrapperType;
         }
 
         private abstract class BeforeSaveEventHandler

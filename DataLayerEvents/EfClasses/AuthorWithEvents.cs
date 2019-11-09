@@ -28,7 +28,7 @@ namespace DataLayerEvents.EfClasses
             set
             {
                 if (value != _name)
-                    AddBeforeSaveEvent(new AuthorNameUpdatedEvent());
+                    AddBeforeSaveEvent(new AuthorNameUpdatedEvent(this));
                 _name = value;
             }
         }

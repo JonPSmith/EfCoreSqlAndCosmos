@@ -2,10 +2,17 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using DataLayerEvents.DomainEventCode;
+using DataLayerEvents.EfClasses;
 
 namespace DataLayerEvents.DomainEvents
 {
     public class AuthorNameUpdatedEvent : IDomainEvent
     {
+        public AuthorNameUpdatedEvent(AuthorWithEvents changedAuthor)
+        {
+            ChangedAuthor = changedAuthor;
+        }
+
+        public AuthorWithEvents ChangedAuthor { get; }
     }
 }

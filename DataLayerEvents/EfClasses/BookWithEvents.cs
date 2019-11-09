@@ -42,7 +42,7 @@ namespace DataLayerEvents.EfClasses
 
         public string ImageUrl { get; private set; }
 
-        public bool SoftDeleted { get; set; }
+        public bool SoftDeleted { get; private set; }
 
         public IEnumerable<ReviewWithEvents> Reviews => _reviews?.ToList();
         public IEnumerable<BookAuthorWithEvents> AuthorsLink => _authorsLink?.ToList();
@@ -53,7 +53,14 @@ namespace DataLayerEvents.EfClasses
         //Extra properties filled in by events
         public string AuthorsOrdered { get; set; }
         public int ReviewsCount { get; set; }
-        public double? ReviewsAverageVotes { get; set; }
+        public double ReviewsAverageVotes { get; set; }
+
+        //This is an action provided in the review add/remove event so that the review handler can update these properties
+        private void UpdateReviewCachedValues(int reviewsCount, double reviewsAverageVotes)
+        {
+            ReviewsCount = reviewsCount;
+            ReviewsAverageVotes = reviewsAverageVotes;
+        }
         //----------------------------------------------
 
         public static IStatusGeneric<BookWithEvents> CreateBook(string title, string description, DateTime publishedOn,
@@ -114,7 +121,7 @@ namespace DataLayerEvents.EfClasses
                 throw new InvalidOperationException("Could not add a new review.");  
             }
 
-            AddBeforeSaveEvent(new BookReviewsChangedEvent());
+            AddBeforeSaveEvent(new BookReviewAddedEvent(numStars, this, UpdateReviewCachedValues));
         }
 
         public void RemoveReview(ReviewWithEvents review, DbContext context = null)
@@ -129,7 +136,7 @@ namespace DataLayerEvents.EfClasses
                 throw new ArgumentNullException(nameof(context),
                     "You must provide a context if the Reviews collection isn't valid.");
             }
-            else if (review.BookId != BookId || review.ReviewId <= 0)
+            else if (review.BookId != BookId || review.ReviewId != 0)
             {
                 // This ensures that the review is a) linked to the book you defined, and b) the review has a valid primary key
                 throw new InvalidOperationException("The review either hasn't got a valid primary key or was not linked to the Book.");
@@ -140,7 +147,7 @@ namespace DataLayerEvents.EfClasses
                 context.Remove(review);
             }
 
-            AddBeforeSaveEvent(new BookReviewsChangedEvent());
+            AddBeforeSaveEvent(new BookReviewRemovedEvent(review, this, UpdateReviewCachedValues));
         }
 
         public IStatusGeneric AddPromotion(decimal actualPrice, string promotionalText)                  
@@ -155,7 +162,7 @@ namespace DataLayerEvents.EfClasses
             ActualPrice = actualPrice;  
             PromotionalText = promotionalText;
 
-            status.Message = $"The bookWithEvents's new price is ${actualPrice:F}.";
+            status.Message = $"The book's new price is ${actualPrice:F}.";
 
             return status; 
         }

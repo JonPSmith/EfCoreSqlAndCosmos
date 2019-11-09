@@ -3,9 +3,7 @@
 
 using System.Linq;
 using System.Reflection;
-using DataLayer.EfCode;
 using DataLayerEvents.DomainEventCode;
-using DataLayerEvents.DomainEvents;
 using DataLayerEvents.EfCode;
 using Infrastructure.EventHandlers;
 using Infrastructure.EventRunnerCode;
@@ -29,22 +27,28 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         }
 
         [Fact]
-        public void TestCreateBookAndCheckAddReviewHandlerOk()
+        public void TestCreateBookWithReviewsAndCheckReviewAddedHandlerOk()
         {
             //SETUP
+            var showLog = false;
             var options =
-                SqliteInMemory.CreateOptionsWithLogging<SqlEventsDbContext>(x => _output.WriteLine(x.Message));
+                SqliteInMemory.CreateOptionsWithLogging<SqlEventsDbContext>(x =>
+                {
+                    if (showLog)
+                        _output.WriteLine(x.DecodeMessage());
+                });
             var services = new ServiceCollection();
             services.RegisterEventRunner();
             services.RegisterEventHandlers(Assembly.GetAssembly( typeof(ReviewAddedHandler)));
             services.AddScoped(x =>
                 new SqlEventsDbContext(options, x.GetRequiredService<IEventsRunner>()));
             var serviceProvider = services.BuildServiceProvider();
-            using (var context = serviceProvider.GetRequiredService<SqlEventsDbContext>())
+            var context = serviceProvider.GetRequiredService<SqlEventsDbContext>();
             {
                 context.Database.EnsureCreated();
 
                 //ATTEMPT
+                showLog = true;
                 var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 context.Add(book);
                 context.SaveChanges();
@@ -55,7 +59,88 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             }
         }
 
-        
+        [Fact]
+        public void TestAddReviewToCreatedBookAndCheckReviewAddedHandlerOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            {
+                var context = CreateSqlEventsDbContextWithServices(options);
+                context.Database.EnsureCreated();
+                var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
+                context.Add(book);
+                context.SaveChanges();
 
+                //ATTEMPT
+                book.AddReview(4, "OK", "me");
+                context.SaveChanges();
+
+                //VERIFY
+                book.ReviewsCount.ShouldEqual(1);
+                book.ReviewsAverageVotes.ShouldEqual(4);
+            }
+        }
+
+        [Fact]
+        public void TestAddReviewToExistingBookAndCheckReviewAddedHandlerOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            {
+                var context = CreateSqlEventsDbContextWithServices(options);
+                context.Database.EnsureCreated();
+                var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
+                context.Add(book);
+                context.SaveChanges();
+            }
+            {
+                var context = CreateSqlEventsDbContextWithServices(options);
+                var book = context.Books.Single();
+
+                //ATTEMPT
+                book.AddReview(4, "OK", "me", context);
+                context.SaveChanges();
+
+                //VERIFY
+                book.ReviewsCount.ShouldEqual(1);
+                book.ReviewsAverageVotes.ShouldEqual(4);
+            }
+        }
+
+        [Fact]
+        public void TestCreateBookWithReviewsThenRemoveReviewCheckReviewRemovedHandlerOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            {
+                var context = CreateSqlEventsDbContextWithServices(options); 
+                context.Database.EnsureCreated();
+                var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
+                context.Add(book);
+                context.SaveChanges();
+
+                //ATTEMPT
+                var reviewToRemove = book.Reviews.First();
+                book.RemoveReview(reviewToRemove);
+
+                //VERIFY
+                book.ReviewsCount.ShouldEqual(1);
+                book.ReviewsAverageVotes.ShouldEqual(1);
+            }
+        }
+
+
+        private static SqlEventsDbContext CreateSqlEventsDbContextWithServices(
+            DbContextOptions<SqlEventsDbContext> options)
+        {
+            var services = new ServiceCollection();
+            services.RegisterEventRunner();
+            services.RegisterEventHandlers(Assembly.GetAssembly(typeof(ReviewAddedHandler)));
+            services.AddScoped(x =>
+                new SqlEventsDbContext(options, x.GetRequiredService<IEventsRunner>()));
+            var serviceProvider = services.BuildServiceProvider();
+            var context = serviceProvider.GetRequiredService<SqlEventsDbContext>();
+            return context;
+        }
     }
 }

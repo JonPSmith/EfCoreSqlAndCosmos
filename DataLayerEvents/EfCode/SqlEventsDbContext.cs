@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DataLayerEvents.DomainEventCode;
@@ -31,6 +32,8 @@ namespace DataLayerEvents.EfCode
         {
             if (_eventsRunner == null)
                 return base.SaveChanges(acceptAllChangesOnSuccess);
+
+            var trackedEntities = ChangeTracker.Entries().ToList();
 
             return _eventsRunner.RunEventsBeforeAfterSaveChanges(() => ChangeTracker.Entries<EventsHolder>(),
                     () => base.SaveChanges(acceptAllChangesOnSuccess));

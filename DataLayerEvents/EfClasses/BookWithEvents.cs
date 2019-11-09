@@ -82,6 +82,7 @@ namespace DataLayerEvents.EfClasses
                 ImageUrl = imageUrl,
                 //We need to initialise the AuthorsOrdered string when the entry is created
                 AuthorsOrdered = string.Join(", ", authors.Select(x => x.Name)),
+                //We don't need to initialise the ReviewsCount and the ReviewsAverageVotes  as they default to zero
                 _reviews = new HashSet<ReviewWithEvents>()       //We add an empty list on create. I allows reviews to be added when building test data
             };
             if (authors == null)

@@ -21,6 +21,16 @@ namespace Infrastructure.EventHandlers
 
         public void Handle(BookReviewRemovedEvent domainEvent)
         {
+            if (domainEvent.Book.Reviews != null)
+            {
+                //The reviews collection is filled, either because the book was created, or it was loaded with .Include(x => x.Reviews)
+                var numReviews = domainEvent.Book.Reviews.Count();
+                var reviewsAverageVotes = domainEvent.Book.Reviews.ToList().Average(x => (double)x.NumStars);
+                domainEvent.UpdateReviewCachedValues(numReviews, reviewsAverageVotes);
+
+                return;
+            }
+
             if (true)
             {
                 //This is the slow but sure way

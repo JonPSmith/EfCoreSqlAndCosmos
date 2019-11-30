@@ -107,7 +107,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
 
                 //VERIFY
                 var dEvent = book.GetBeforeSaveEventsThenClear().Single();
-                dEvent.ShouldBeType<BookReviewAddedEvent>();
+                dEvent.ShouldBeType<BookReviewRemovedEvent>();
             }
         }
 

@@ -3,12 +3,15 @@
 
 using System.Linq;
 using System.Reflection;
-using DataLayerEvents.DomainEventCode;
 using DataLayerEvents.EfCode;
+using GenericEventRunner.ForDbContext;
+using GenericEventRunner.ForHandlers;
+using GenericEventRunner.ForSetup;
 using Infrastructure.EventHandlers;
-using Infrastructure.EventRunnerCode;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Test.Helpers;
 using TestSupport.EfHelpers;
 using Xunit;
@@ -37,13 +40,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
                     if (showLog)
                         _output.WriteLine(x.DecodeMessage());
                 });
-            var services = new ServiceCollection();
-            services.RegisterEventRunner();
-            services.RegisterEventHandlers(Assembly.GetAssembly( typeof(ReviewAddedHandler)));
-            services.AddScoped(x =>
-                new SqlEventsDbContext(options, x.GetRequiredService<IEventsRunner>()));
-            var serviceProvider = services.BuildServiceProvider();
-            var context = serviceProvider.GetRequiredService<SqlEventsDbContext>();
+            var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
             {
                 context.Database.EnsureCreated();
 
@@ -65,7 +62,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
             {
-                var context = CreateSqlEventsDbContextWithServices(options);
+                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
                 context.Database.EnsureCreated();
                 var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
                 context.Add(book);
@@ -87,14 +84,14 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
             {
-                var context = CreateSqlEventsDbContextWithServices(options);
+                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
                 context.Database.EnsureCreated();
                 var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
                 context.Add(book);
                 context.SaveChanges();
             }
             {
-                var context = CreateSqlEventsDbContextWithServices(options);
+                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
                 var book = context.Books.Single();
 
                 //ATTEMPT
@@ -113,7 +110,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
             {
-                var context = CreateSqlEventsDbContextWithServices(options); 
+                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(); 
                 context.Database.EnsureCreated();
                 var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
                 context.Add(book);
@@ -130,18 +127,5 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             }
         }
 
-
-        private static SqlEventsDbContext CreateSqlEventsDbContextWithServices(
-            DbContextOptions<SqlEventsDbContext> options)
-        {
-            var services = new ServiceCollection();
-            services.RegisterEventRunner();
-            services.RegisterEventHandlers(Assembly.GetAssembly(typeof(ReviewAddedHandler)));
-            services.AddScoped(x =>
-                new SqlEventsDbContext(options, x.GetRequiredService<IEventsRunner>()));
-            var serviceProvider = services.BuildServiceProvider();
-            var context = serviceProvider.GetRequiredService<SqlEventsDbContext>();
-            return context;
-        }
     }
 }

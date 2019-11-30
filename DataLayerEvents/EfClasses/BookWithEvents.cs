@@ -5,14 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using DataLayerEvents.DomainEventCode;
 using DataLayerEvents.DomainEvents;
+using GenericEventRunner.ForEntities;
 using GenericServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayerEvents.EfClasses
 {
-    public class BookWithEvents : EventsHolder
+    public class BookWithEvents : EntityEvents
     {
         public const int PromotionalTextLength = 200;
         private HashSet<BookAuthorWithEvents> _authorsLink;
@@ -122,7 +122,7 @@ namespace DataLayerEvents.EfClasses
                 throw new InvalidOperationException("Could not add a new review.");  
             }
 
-            AddBeforeSaveEvent(new BookReviewAddedEvent(numStars, this, UpdateReviewCachedValues));
+            AddEvent(new BookReviewAddedEvent(numStars, this, UpdateReviewCachedValues));
         }
 
         public void RemoveReview(ReviewWithEvents review, DbContext context = null)
@@ -148,7 +148,7 @@ namespace DataLayerEvents.EfClasses
                 context.Remove(review);
             }
 
-            AddBeforeSaveEvent(new BookReviewRemovedEvent(review, this, UpdateReviewCachedValues));
+            AddEvent(new BookReviewRemovedEvent(review, this, UpdateReviewCachedValues));
         }
 
         public IStatusGeneric AddPromotion(decimal actualPrice, string promotionalText)                  

@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using DataLayer.EfClassesSql;
-using DataLayer.EfCode;
 using DataLayerEvents.EfClasses;
 using DataLayerEvents.EfCode;
 

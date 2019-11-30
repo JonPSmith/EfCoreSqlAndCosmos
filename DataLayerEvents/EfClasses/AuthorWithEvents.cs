@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using DataLayerEvents.DomainEventCode;
 using DataLayerEvents.DomainEvents;
+using GenericEventRunner.ForEntities;
 
 namespace DataLayerEvents.EfClasses
 {
-    public class AuthorWithEvents : EventsHolder
+    public class AuthorWithEvents : EntityEvents
     {
         public const int NameLength = 100;
         public const int EmailLength = 100;
@@ -27,8 +27,8 @@ namespace DataLayerEvents.EfClasses
             get => _name;
             set
             {
-                if (value != _name)
-                    AddBeforeSaveEvent(new AuthorNameUpdatedEvent(this));
+                //if (value != _name)
+                //    AddEvent(new AuthorNameUpdatedEvent(this));
                 _name = value;
             }
         }

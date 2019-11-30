@@ -6,7 +6,9 @@ using System.Linq;
 using DataLayerEvents.DomainEvents;
 using DataLayerEvents.EfClasses;
 using DataLayerEvents.EfCode;
-using Infrastructure.EventRunnerCode;
+using GenericEventRunner.ForEntities;
+using GenericEventRunner.ForHandlers;
+using StatusGeneric;
 
 namespace Infrastructure.EventHandlers
 {
@@ -19,7 +21,7 @@ namespace Infrastructure.EventHandlers
             _context = context;
         }
 
-        public void Handle(BookReviewAddedEvent domainEvent)
+        public IStatusGeneric Handle(EntityEvents callingEntity, BookReviewAddedEvent domainEvent)
         {
             if (domainEvent.Book.Reviews != null)
             {
@@ -28,7 +30,7 @@ namespace Infrastructure.EventHandlers
                 var reviewsAverageVotes = domainEvent.Book.Reviews.ToList().Average(x => (double)x.NumStars);
                 domainEvent.UpdateReviewCachedValues(numReviews, reviewsAverageVotes);
 
-                return;
+                return null;
             }
 
             if (true)
@@ -53,6 +55,9 @@ namespace Infrastructure.EventHandlers
                 var numReviews = domainEvent.Book.ReviewsCount + 1;
                 domainEvent.UpdateReviewCachedValues(numReviews, totalStars/numReviews);
             }
+
+            return null;
         }
+
     }
 }

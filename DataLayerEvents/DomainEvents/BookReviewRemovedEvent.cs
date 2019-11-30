@@ -2,8 +2,8 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
-using DataLayerEvents.DomainEventCode;
 using DataLayerEvents.EfClasses;
+using GenericEventRunner.ForEntities;
 
 namespace DataLayerEvents.DomainEvents
 {

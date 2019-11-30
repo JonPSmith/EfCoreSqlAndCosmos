@@ -14,11 +14,11 @@ using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
 {
-    public class TestBasicEntitiesNoRunner
+    public class TestEntitiesNoEvents
     {
         private readonly ITestOutputHelper _output;
 
-        public TestBasicEntitiesNoRunner(ITestOutputHelper output)
+        public TestEntitiesNoEvents(ITestOutputHelper output)
         {
             _output = output;
         }

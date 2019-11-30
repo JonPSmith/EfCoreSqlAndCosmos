@@ -52,7 +52,11 @@ namespace DataLayerEvents.EfClasses
         //----------------------------------------------
         //Extra properties filled in by events
         public string AuthorsOrdered { get; set; }
+
+        [ConcurrencyCheck]
         public int ReviewsCount { get; set; }
+
+        [ConcurrencyCheck]
         public double ReviewsAverageVotes { get; set; }
 
         //This is an action provided in the review add/remove event so that the review handler can update these properties

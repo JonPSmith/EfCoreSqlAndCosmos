@@ -2,16 +2,8 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Linq;
-using System.Reflection;
 using DataLayerEvents.EfCode;
-using GenericEventRunner.ForDbContext;
-using GenericEventRunner.ForHandlers;
-using GenericEventRunner.ForSetup;
 using Infrastructure.EventHandlers;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Test.Helpers;
 using TestSupport.EfHelpers;
 using Xunit;
@@ -20,11 +12,11 @@ using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
 {
-    public class TestBasicEntitiesWithRunner
+    public class TestEntitiesWithEvents
     {
         private readonly ITestOutputHelper _output;
 
-        public TestBasicEntitiesWithRunner(ITestOutputHelper output)
+        public TestEntitiesWithEvents(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -61,21 +53,19 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            {
-                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
-                context.Database.EnsureCreated();
-                var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
-                context.Add(book);
-                context.SaveChanges();
+            var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
+            context.Database.EnsureCreated();
+            var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
+            context.Add(book);
+            context.SaveChanges();
 
-                //ATTEMPT
-                book.AddReview(4, "OK", "me");
-                context.SaveChanges();
+            //ATTEMPT
+            book.AddReview(4, "OK", "me");
+            context.SaveChanges();
 
-                //VERIFY
-                book.ReviewsCount.ShouldEqual(1);
-                book.ReviewsAverageVotes.ShouldEqual(4);
-            }
+            //VERIFY
+            book.ReviewsCount.ShouldEqual(1);
+            book.ReviewsAverageVotes.ShouldEqual(4);
         }
 
         [Fact]

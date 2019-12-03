@@ -47,6 +47,17 @@ namespace DataLayer.EfClassesSql
 
         public Guid BookId { get; private set; }
 
+        //----------------------------------------------
+        //Extra properties used by BookWithEvents - this means I can access the same database with normal and event versions
+        public string AuthorsOrdered { get; set; }
+
+        [ConcurrencyCheck]
+        public int ReviewsCount { get; set; }
+
+        [ConcurrencyCheck]
+        public double ReviewsAverageVotes { get; set; }
+
+
         public static IStatusGeneric<Book> CreateBook(string title, string description, DateTime publishedOn,
             string publisher, decimal price, string imageUrl, ICollection<Author> authors)
         {

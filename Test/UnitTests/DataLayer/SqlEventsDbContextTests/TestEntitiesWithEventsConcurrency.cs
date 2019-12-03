@@ -1,17 +1,13 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
-using System.Linq;
-using System.Reflection;
+using System;
+using DataLayerEvents.EfClasses;
 using DataLayerEvents.EfCode;
-using GenericEventRunner.ForDbContext;
-using GenericEventRunner.ForHandlers;
 using GenericEventRunner.ForSetup;
+using Infrastructure.ConcurrencyHandlers;
 using Infrastructure.EventHandlers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Test.Helpers;
 using TestSupport.EfHelpers;
 using Xunit;
@@ -29,35 +25,9 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             _output = output;
         }
 
-        [Fact]
-        public void TestCreateBookWithReviewsAndCheckReviewAddedHandlerOk()
-        {
-            //SETUP
-            var showLog = false;
-            var options =
-                SqliteInMemory.CreateOptionsWithLogging<SqlEventsDbContext>(x =>
-                {
-                    if (showLog)
-                        _output.WriteLine(x.DecodeMessage());
-                });
-            var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
-            {
-                context.Database.EnsureCreated();
-
-                //ATTEMPT
-                showLog = true;
-                var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
-                context.Add(book);
-                context.SaveChanges();
-
-                //VERIFY
-                book.ReviewsCount.ShouldEqual(2);
-                book.ReviewsAverageVotes.ShouldEqual(6.0/2);
-            }
-        }
 
         [Fact]
-        public void TestAddReviewToCreatedBookAndCheckReviewAddedHandlerOk()
+        public void TestAddReviewCauseConcurrencyThrown()
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
@@ -69,61 +39,67 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
 
             //ATTEMPT
             book.AddReview(4, "OK", "me");
+            //This simulates adding a review with NumStars of 2 before the AddReview 
+            context.Database.ExecuteSqlRaw(
+                "UPDATE Books SET ReviewsCount = @p0, ReviewsAverageVotes = @p1 WHERE BookId = @p2",
+                1, 2, book.BookId);
+
+            //VERIFY
+            Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
+        }
+
+        [Fact]
+        public void TestAddReviewConcurrencyFixed()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            var config = new GenericEventRunnerConfig
+            {
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleReviewConcurrency
+            };
+            var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
+            context.Database.EnsureCreated();
+            var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
+            context.Add(book);
+            context.SaveChanges();
+
+            book.AddReview(4, "OK", "me");
+            //This simulates adding a review with NumStars of 2 before the AddReview 
+            context.Database.ExecuteSqlRaw(
+                "UPDATE Books SET ReviewsCount = @p0, ReviewsAverageVotes = @p1 WHERE BookId = @p2",
+                1, 2, book.BookId);
+
+            //ATTEMPT
             context.SaveChanges();
 
             //VERIFY
-            book.ReviewsCount.ShouldEqual(1);
-            book.ReviewsAverageVotes.ShouldEqual(4);
+            var foundBook = context.Find<BookWithEvents>(book.BookId);
+            foundBook.ReviewsCount.ShouldEqual(2);
+            foundBook.ReviewsAverageVotes.ShouldEqual(6.0/2.0);
         }
 
         [Fact]
-        public void TestAddReviewToExistingBookAndCheckReviewAddedHandlerOk()
+        public void TestAddSaveChangesExceptionHandlerButStillFailsOnOtherDbExceptions()
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            var config = new GenericEventRunnerConfig
             {
-                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
-                context.Database.EnsureCreated();
-                var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
-                context.Add(book);
-                context.SaveChanges();
-            }
-            {
-                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
-                var book = context.Books.Single();
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleReviewConcurrency
+            };
+            var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
+            context.Database.EnsureCreated();
 
-                //ATTEMPT
-                book.AddReview(4, "OK", "me", context);
-                context.SaveChanges();
+            var review = new ReviewWithEvents(1,"hello", "Me", Guid.NewGuid());
+            context.Add(review);
 
-                //VERIFY
-                book.ReviewsCount.ShouldEqual(1);
-                book.ReviewsAverageVotes.ShouldEqual(4);
-            }
+            //ATTEMPT
+            var ex = Assert.Throws<DbUpdateException>(() => context.SaveChanges());
+
+            //VERIFY
+            ex.InnerException.Message.ShouldEqual("SQLite Error 19: 'FOREIGN KEY constraint failed'.");
         }
 
-        [Fact]
-        public void TestCreateBookWithReviewsThenRemoveReviewCheckReviewRemovedHandlerOk()
-        {
-            //SETUP
-            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            {
-                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(); 
-                context.Database.EnsureCreated();
-                var book = WithEventsEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
-                context.Add(book);
-                context.SaveChanges();
-
-                //ATTEMPT
-                var reviewToRemove = book.Reviews.First();
-                book.RemoveReview(reviewToRemove);
-                context.SaveChanges();
-
-                //VERIFY
-                book.ReviewsCount.ShouldEqual(1);
-                book.ReviewsAverageVotes.ShouldEqual(1);
-            }
-        }
 
     }
 }

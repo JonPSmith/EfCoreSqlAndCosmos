@@ -3,6 +3,9 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Test")]
 
 namespace DataLayerEvents.EfClasses
 {

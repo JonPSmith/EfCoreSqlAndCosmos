@@ -2,6 +2,7 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using GenericEventRunner.ForSetup;
+using Infrastructure.ConcurrencyHandlers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.AppStart
@@ -10,8 +11,14 @@ namespace Infrastructure.AppStart
     {
         public static void RegisterInfrastructureDi(this IServiceCollection services)
         {
-            services.RegisterGenericEventRunner();
 
+            //This provides a SaveChangesExceptionHandler which handles concurrency issues around ReviewsCount and ReviewsAverageVotes
+            var config = new GenericEventRunnerConfig
+            {
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleReviewConcurrency
+            };
+            //Because I haven't provided any assemblies this will scan this assembly
+            services.RegisterGenericEventRunner(config);
 
         }
     }

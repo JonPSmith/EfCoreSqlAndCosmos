@@ -52,7 +52,13 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         public void TestAddReviewToCreatedBookAndCheckReviewAddedHandlerOk()
         {
             //SETUP
-            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            var showLog = false;
+            var options =
+                SqliteInMemory.CreateOptionsWithLogging<SqlEventsDbContext>(x =>
+                {
+                    if (showLog)
+                        _output.WriteLine(x.DecodeMessage());
+                });
             var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
             context.Database.EnsureCreated();
             var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
@@ -60,6 +66,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             context.SaveChanges();
 
             //ATTEMPT
+            showLog = true;
             book.AddReview(4, "OK", "me");
             context.SaveChanges();
 

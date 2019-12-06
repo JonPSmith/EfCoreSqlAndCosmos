@@ -20,7 +20,7 @@ namespace DataLayerEvents.EfClasses
         //-----------------------------------------------
         //relationships
 
-        //Use uninitialised backing fields - this means we can detect if the collection was loaded
+        //Use uninitialized backing fields - this means we can detect if the collection was loaded
         private HashSet<ReviewWithEvents> _reviews;
 
         //-----------------------------------------------
@@ -129,11 +129,15 @@ namespace DataLayerEvents.EfClasses
             AddEvent(new BookReviewAddedEvent(numStars, this, UpdateReviewCachedValues));
         }
 
-        public void RemoveReview(ReviewWithEvents review, DbContext context = null)
+        public void RemoveReview(int reviewId, DbContext context = null)
         {
+            ReviewWithEvents review;
             if (_reviews != null)
             {
                 //This is there to handle the add/remove of reviews when first created (or someone uses an .Include(p => p.Reviews)
+                review = _reviews.SingleOrDefault(x => x.ReviewId == reviewId);
+                if (review == null)
+                    throw new InvalidOperationException("The review with that key was not found in the book's Reviews.");
                 _reviews.Remove(review);
             }
             else if (context == null)
@@ -141,14 +145,15 @@ namespace DataLayerEvents.EfClasses
                 throw new ArgumentNullException(nameof(context),
                     "You must provide a context if the Reviews collection isn't valid.");
             }
-            else if (review.BookId != BookId || review.ReviewId != 0)
-            {
-                // This ensures that the review is a) linked to the book you defined, and b) the review has a valid primary key
-                throw new InvalidOperationException("The review either hasn't got a valid primary key or was not linked to the Book.");
-            }
             else
             {
-                //NOTE: EF Core can delete a entity even if it isn't loaded - it just has to have a valid primary key.
+                review = context.Find<ReviewWithEvents>(reviewId);
+                if (review == null || review.BookId != BookId)
+                {
+                    // This ensures that the review is a) linked to the book you defined, and b) the review has a valid primary key
+                    throw new InvalidOperationException("The review either wasn't found or was not linked to this Book.");
+                }
+
                 context.Remove(review);
             }
 

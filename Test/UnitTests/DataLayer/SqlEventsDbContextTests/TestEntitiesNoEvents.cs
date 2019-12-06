@@ -103,7 +103,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
                 book.GetBeforeSaveEventsThenClear();
 
                 //ATTEMPT
-                book.RemoveReview(book.Reviews.First());
+                book.RemoveReview(book.Reviews.First().ReviewId);
 
                 //VERIFY
                 var dEvent = book.GetBeforeSaveEventsThenClear().Single();

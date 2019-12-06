@@ -120,25 +120,27 @@ namespace DataLayer.EfClassesSql
             if (_reviews != null)
             {
                 //This is there to handle the add/remove of reviews when first created (or someone uses an .Include(p => p.Reviews)
-                if (!_reviews.Remove(_reviews.Single(x => x.ReviewId == reviewId)))
-                    throw new InvalidOperationException("The review was not found in the book's Reviews.");
-                return;
+                var localReview = _reviews.SingleOrDefault(x => x.ReviewId == reviewId);
+                if (localReview == null)
+                    throw new InvalidOperationException("The review with that key was not found in the book's Reviews.");
+                _reviews.Remove(localReview);
             }
-            
-            if (context == null)
+            else if (context == null)
             {
                 throw new ArgumentNullException(nameof(context),
                     "You must provide a context if the Reviews collection isn't valid.");
             }
-
-            var review = context.Find<Review>(reviewId);
-            if (review == null || review.BookId != BookId)
+            else
             {
-                // This ensures that the review is a) linked to the book you defined, and b) the review has a valid primary key
-                throw new InvalidOperationException("The review either wasn't found or was not linked to this Book.");
-            }
+                var review = context.Find<Review>(reviewId);
+                if (review == null || review.BookId != BookId)
+                {
+                    // This ensures that the review is a) linked to the book you defined, and b) the review has a valid primary key
+                    throw new InvalidOperationException("The review either wasn't found or was not linked to this Book.");
+                }
 
-            context.Remove(review);
+                context.Remove(review);
+            }
         }
 
         public IStatusGeneric AddPromotion(decimal actualPrice, string promotionalText)                  

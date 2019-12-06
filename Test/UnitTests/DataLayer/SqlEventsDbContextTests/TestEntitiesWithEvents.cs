@@ -115,7 +115,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
 
                 //ATTEMPT
                 var reviewToRemove = book.Reviews.First();
-                book.RemoveReview(reviewToRemove);
+                book.RemoveReview(reviewToRemove.ReviewId);
                 context.SaveChanges();
 
                 //VERIFY

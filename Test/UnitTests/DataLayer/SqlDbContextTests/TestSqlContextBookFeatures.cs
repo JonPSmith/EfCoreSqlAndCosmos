@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System;
 using System.Linq;
 using DataLayer.EfCode;
 using Test.Helpers;
@@ -103,6 +104,25 @@ namespace Test.UnitTests.DataLayer.SqlDbContextTests
 
                 //VERIFY
                 bookWithReviews.Reviews.Count().ShouldEqual(1);
+            }
+        }
+
+        [Fact]
+        public void TestRemoveReviewForLocalListFail()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(options))
+            {
+                context.Database.EnsureCreated();
+
+                var bookWithReviews = context.SeedDatabaseFourBooks().Last();
+
+                //ATTEMPT
+                var ex = Assert.Throws<InvalidOperationException>(() => bookWithReviews.RemoveReview(9999));
+
+                //VERIFY
+                ex.Message.ShouldEqual("The review with that key was not found in the book's Reviews.");
             }
         }
     }

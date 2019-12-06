@@ -115,12 +115,30 @@ namespace DataLayer.EfClassesSql
             }
         }
 
-        public void RemoveReview(Review review)                          
+        public void RemoveReview(int reviewId, DbContext context = null)
         {
-            if (_reviews == null)
-                throw new NullReferenceException("You must use .Include(p => p.Reviews) before calling this method.");
+            if (_reviews != null)
+            {
+                //This is there to handle the add/remove of reviews when first created (or someone uses an .Include(p => p.Reviews)
+                if (!_reviews.Remove(_reviews.Single(x => x.ReviewId == reviewId)))
+                    throw new InvalidOperationException("The review was not found in the book's Reviews.");
+                return;
+            }
+            
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context),
+                    "You must provide a context if the Reviews collection isn't valid.");
+            }
 
-            _reviews.Remove(review); 
+            var review = context.Find<Review>(reviewId);
+            if (review == null || review.BookId != BookId)
+            {
+                // This ensures that the review is a) linked to the book you defined, and b) the review has a valid primary key
+                throw new InvalidOperationException("The review either wasn't found or was not linked to this Book.");
+            }
+
+            context.Remove(review);
         }
 
         public IStatusGeneric AddPromotion(decimal actualPrice, string promotionalText)                  

@@ -11,14 +11,14 @@ using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests.DataLayer.SqlDbContextTests
 {
-    public class TestBookAverage
+    public class TestSqlContextBookFeatures
     {
-        public TestBookAverage(ITestOutputHelper output)
+        public TestSqlContextBookFeatures(ITestOutputHelper output)
         {
             _output = output;
         }
 
-        private ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
 
         [Fact]
         public void TestAverageReviewOk()
@@ -62,9 +62,11 @@ namespace Test.UnitTests.DataLayer.SqlDbContextTests
                 //ATTEMPT
                 var aveReviews = context.Books
                     .Select(p => p.Reviews.Select(y => (double?)y.NumStars).Average())
-                    .ToList();
+                    .Single();
 
                 //VERIFY
+
+                aveReviews.ShouldEqual(5);
             }
         }
 
@@ -82,6 +84,25 @@ namespace Test.UnitTests.DataLayer.SqlDbContextTests
 
                 //VERIFY
                 context.Books.Count().ShouldEqual(4);
+            }
+        }
+
+        [Fact]
+        public void TestRemoveReviewForLocalListOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var context = new SqlDbContext(options))
+            {
+                context.Database.EnsureCreated();
+
+                var bookWithReviews = context.SeedDatabaseFourBooks().Last();
+
+                //ATTEMPT
+                bookWithReviews.RemoveReview(bookWithReviews.Reviews.Last().ReviewId);
+
+                //VERIFY
+                bookWithReviews.Reviews.Count().ShouldEqual(1);
             }
         }
     }

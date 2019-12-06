@@ -21,7 +21,6 @@ namespace DataLayerEvents.EfCode.Configurations
 
             entity.HasIndex(x => x.PublishedOn);
             entity.HasIndex(x => x.ActualPrice);
-            entity.HasIndex(x => x.ReviewsCount);
             entity.HasIndex(x => x.ReviewsAverageVotes);
 
             entity.HasQueryFilter(p => !p.SoftDeleted);

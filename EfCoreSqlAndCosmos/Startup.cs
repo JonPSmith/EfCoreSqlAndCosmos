@@ -4,6 +4,7 @@
 using System.Reflection;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
+using DataLayerEvents.EfCode;
 using EfCoreSqlAndCosmos.Logger;
 using GenericServices.Setup;
 using Infrastructure.AppStart;
@@ -15,11 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NetCore.AutoRegisterDi;
 using ServiceLayer.AppStart;
 using ServiceLayer.BooksSql.Dtos;
-using ServiceLayer.BooksSql.Services;
-using ServiceLayer.DatabaseServices.Concrete;
 
 namespace EfCoreSqlAndCosmos
 {
@@ -50,6 +48,9 @@ namespace EfCoreSqlAndCosmos
             services.AddDbContext<SqlDbContext>(options =>
                 options.UseSqlServer(sqlConnection, sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure())
             );
+            services.AddDbContext<SqlEventsDbContext>(options =>
+                options.UseSqlServer(sqlConnection, sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure())
+            );
 
             //The user secrets provides an actual Azure Cosmos database. The takeUserSecrets flag controls this  
             var takeUserSecrets = false;
@@ -63,12 +64,15 @@ namespace EfCoreSqlAndCosmos
             //This registers the NoSqlBookUpdater and will cause changes to books to be updated in the NoSql database
             services.AddScoped<IBookUpdater, NoSqlBookUpdater>();
 
-            //Setup GenericServices
-            services.GenericServicesSimpleSetup<SqlDbContext>(Assembly.GetAssembly(typeof(BookListDto)));
-
             //The other projects that need DI have their own extension methods to handle that
             services.RegisterInfrastructureDi();
             services.RegisterServiceLayerDi();
+
+            //Setup GenericServices (two DbContexts) 
+            //NOTE: must come after the call to RegisterInfrastructureDi which sets up the EventsRunner 
+            services.ConfigureGenericServicesEntities(typeof(SqlDbContext), typeof(SqlEventsDbContext))
+                .ScanAssemblesForDtos(Assembly.GetAssembly(typeof(BookListDto)))
+                .RegisterGenericServices();
 
 
         }

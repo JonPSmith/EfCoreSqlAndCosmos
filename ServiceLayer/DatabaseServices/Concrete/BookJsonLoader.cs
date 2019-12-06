@@ -51,7 +51,7 @@ namespace ServiceLayer.DatabaseCode.Services
             //setup the author cache value for the SQL Events version
             book.AuthorsOrdered = string.Join(", ", authors.Select(x => x.Name));
 
-            if (bookInfoJson.averageRating != null)
+            if (bookInfoJson.averageRating != null && bookInfoJson.averageRating != 0)
             {
                 CalculateReviewsToMatch((double)bookInfoJson.averageRating, (int)bookInfoJson.ratingsCount).ToList()
                     .ForEach(x => book.AddReview(x, null, "anonymous"));
@@ -59,7 +59,7 @@ namespace ServiceLayer.DatabaseCode.Services
                 //setup the reviews cache values for the SQL Events version
                 book.ReviewsCount = book.Reviews.Count();
                 book.ReviewsAverageVotes = book.Reviews.Sum(x => x.NumStars) / (double)book.ReviewsCount;
-            }
+            } 
 
             return book;
         }

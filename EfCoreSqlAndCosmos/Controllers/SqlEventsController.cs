@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksSql;
 using ServiceLayer.BooksSql.Dtos;
+using ServiceLayer.BooksSqlWithEvents;
 using ServiceLayer.Logger;
 
 namespace EfCoreSqlAndCosmos.Controllers
 {
     public class SqlEventsController : BaseTraceController
     {
-        public IActionResult Index (SqlSortFilterPageOptions options, [FromServices] ISqlListBooksService service)
+        public IActionResult Index (SqlSortFilterPageOptions options, [FromServices]ISqlEventsListBooksService service)
         {
             var output = service.SortFilterPage(options).ToList();
             SetupTraceInfo();
@@ -28,7 +29,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         /// <returns></returns>
         [HttpGet]
         public JsonResult GetFilterSearchContent    
-            (SqlSortFilterPageOptions options, [FromServices]IBookFilterDropdownService service)         
+            (SqlSortFilterPageOptions options, [FromServices]IBookEventsFilterDropdownService service)         
         {
 
             var traceIdent = HttpContext.TraceIdentifier; 

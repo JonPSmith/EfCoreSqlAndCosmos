@@ -21,6 +21,9 @@ namespace DataLayer.EfCode.Configurations
             entity.HasIndex(x => x.PublishedOn);
             entity.HasIndex(x => x.ActualPrice);
 
+            //Add indexes for the SqlEvent cached value that is filtered on
+            entity.HasIndex(x => x.ReviewsAverageVotes);
+
             entity.HasQueryFilter(p => !p.SoftDeleted);
 
             //----------------------------

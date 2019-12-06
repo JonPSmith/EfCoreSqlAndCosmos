@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
+using Microsoft.EntityFrameworkCore;
 using ServiceLayer.DatabaseServices.Concrete;
 using TestSupport.EfHelpers;
 using TestSupport.Helpers;
@@ -17,11 +18,36 @@ namespace Test.UnitTests.ServiceLayer
     public class TestBookGenerator
     {
 
+        [Fact]
+        public async Task TestWriteBooksAsyncFillsInCacheValuesOk()
+        {
+            //SETUP
+            var sqlOptions = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var sqlContext = new SqlDbContext(sqlOptions))
+            {
+                sqlContext.Database.EnsureCreated();
+
+                var filepath = TestData.GetFilePath("10ManningBooks.json");
+
+                var generator = new BookGenerator(sqlOptions, null);
+
+                //ATTEMPT
+                await generator.WriteBooksAsync(filepath, 10, true, default(CancellationToken));
+
+                //VERIFY
+                var booksWithReviews = sqlContext.Books.Include(x => x.Reviews).ToList();
+                booksWithReviews.Count().ShouldEqual(10);
+                booksWithReviews.ForEach(x => x.ReviewsCount.ShouldEqual(x.Reviews.Count()));
+                booksWithReviews.ForEach(x => x.AuthorsOrdered.ShouldNotBeNull());
+            }
+        }
+
+
         [Theory]
         [InlineData(5)]
         [InlineData(15)]
         [InlineData(20)]
-        public async Task TestWriteBooksAsyncOk(int numBooks)
+        public async Task TestWriteBooksAsyncCorrectAmountOk(int numBooks)
         {
             //SETUP
             var noSqlOptions = this.GetCosmosDbToEmulatorOptions<NoSqlDbContext>();

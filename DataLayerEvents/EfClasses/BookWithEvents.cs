@@ -26,7 +26,7 @@ namespace DataLayerEvents.EfClasses
         //-----------------------------------------------
         //ctors
 
-        private BookWithEvents() { }
+        private BookWithEvents() { } //Needed by EF Core
 
         [Required(AllowEmptyStrings = false)]
         public string Title { get; private set; }

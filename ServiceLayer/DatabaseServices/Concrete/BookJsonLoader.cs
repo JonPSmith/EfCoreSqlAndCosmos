@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Schema;
 using DataLayer.EfClassesSql;
 using Newtonsoft.Json;
 using ServiceLayer.DatabaseServices.Concrete;
@@ -47,9 +48,18 @@ namespace ServiceLayer.DatabaseCode.Services
                 bookInfoJson.imageLinksThumbnail,
                 authors).Result;
 
+            //setup the author cache value for the SQL Events version
+            book.AuthorsOrdered = string.Join(", ", authors.Select(x => x.Name));
+
             if (bookInfoJson.averageRating != null)
+            {
                 CalculateReviewsToMatch((double)bookInfoJson.averageRating, (int)bookInfoJson.ratingsCount).ToList()
                     .ForEach(x => book.AddReview(x, null, "anonymous"));
+
+                //setup the reviews cache values for the SQL Events version
+                book.ReviewsCount = book.Reviews.Count();
+                book.ReviewsAverageVotes = book.Reviews.Sum(x => x.NumStars) / (double)book.ReviewsCount;
+            }
 
             return book;
         }

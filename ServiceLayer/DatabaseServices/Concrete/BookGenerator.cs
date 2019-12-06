@@ -50,8 +50,11 @@ namespace ServiceLayer.DatabaseServices.Concrete
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                using( var noSqlContext = new NoSqlDbContext(_noSqlOptions))
-                using (var sqlDbContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
+                //noSql can be null. If so then it doesn't write to CosmosDb
+                var noSqlBookUpdater = _noSqlOptions != null
+                    ? new NoSqlBookUpdater(new NoSqlDbContext(_noSqlOptions))
+                    : null;
+                using (var sqlDbContext = new SqlDbContext(_sqlOptions, noSqlBookUpdater))
                 {
                     var authorsFinder = new AuthorFinder(sqlDbContext);
                     var batchToAdd = Math.Min(_loadedBookData.Count, numToWrite - numWritten);
@@ -82,6 +85,9 @@ namespace ServiceLayer.DatabaseServices.Concrete
                     null,
                     authors).Result;
 
+                //setup the author cache value for the SQL Events version
+                book.AuthorsOrdered = string.Join(", ", authors.Select(x => x.Name));
+
                 for (int j = 0; j < i % 12; j++)
                 {
                     book.AddReview((Math.Abs(3 - j) % 4) + 2, null, j.ToString());
@@ -89,6 +95,13 @@ namespace ServiceLayer.DatabaseServices.Concrete
                 if (i % 7 == 0)
                 {
                     book.AddPromotion(book.ActualPrice * 0.5m, "today only - 50% off! ");
+                }
+
+                if (book.Reviews.Any())
+                {
+                    //setup the reviews cache values for the SQL Events version
+                    book.ReviewsCount = book.Reviews.Count();
+                    book.ReviewsAverageVotes = book.Reviews.Sum(x => x.NumStars) / (double)book.ReviewsCount;
                 }
 
                 yield return book;

@@ -1,11 +1,10 @@
 ﻿@model ServiceLayer.BooksSql.Dtos.AddReviewDto
 
 
-
 <h2>Add a book review</h2>
 
 <div class="form-horizontal">
-    <form asp-controller="Admin" asp-action="AddBookReview" method="post">
+    <form asp-action="AddBookReview" method="post">
         <!-- Input and Submit elements -->
         <input name="BookId" type="hidden" value="@Model.BookId" />
         

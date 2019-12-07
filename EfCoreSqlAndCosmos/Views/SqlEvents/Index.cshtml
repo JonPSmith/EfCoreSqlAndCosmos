@@ -89,10 +89,10 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                            <li>@Html.ActionLink("Change Pub Date", "ChangePubDate", "Admin", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Add Price Promotion", "AddPromotion", "Admin", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Remove Promotion", "RemovePromotion", "Admin", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Add Review", "AddBookReview", "Admin", new { id = item.BookId })</li>
+                            <li>@Html.ActionLink("Change Pub Date", "ChangePubDate", "SqlEvents", new { id = item.BookId })</li>
+                            <li>@Html.ActionLink("Add Price Promotion", "AddPromotion", "SqlEvents", new { id = item.BookId })</li>
+                            <li>@Html.ActionLink("Remove Promotion", "RemovePromotion", "SqlEvents", new { id = item.BookId })</li>
+                            <li>@Html.ActionLink("Add Review", "AddBookReview", "SqlEvents", new { id = item.BookId })</li>
                         </ul>
                     </div>           
                 

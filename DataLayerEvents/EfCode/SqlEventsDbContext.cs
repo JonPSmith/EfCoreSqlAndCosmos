@@ -29,6 +29,8 @@ namespace DataLayerEvents.EfCode
             modelBuilder.ApplyConfiguration(new BookWithEventsConfig());       
             modelBuilder.ApplyConfiguration(new BookAuthorWithEventsConfig());
             modelBuilder.ApplyConfiguration(new AuthorWithEventsConfig());
+
+            modelBuilder.Entity<ReviewWithEvents>().ToTable("Reviews");
         }
     }
 }

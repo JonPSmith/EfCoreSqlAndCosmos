@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
+using DataLayerEvents.EfClasses;
 
 namespace Test.Helpers
 {
@@ -68,6 +69,33 @@ namespace Test.Helpers
                     (short)(i + 1),
                     $"Image{i:D4}",
                     new[] { new Author { Name = $"Author{i:D4}"}, commonAuthor}
+                ).Result;
+                for (int j = 0; j < i; j++)
+                {
+                    book.AddReview((j % 5) + 1, null, j.ToString());
+                }
+
+                result.Add(book);
+            }
+
+            return result;
+        }
+
+        public static List<BookWithEvents> CreateDummyBooksWithEvents(int numBooks = 10, bool stepByYears = false)
+        {
+            var result = new List<BookWithEvents>();
+            var commonAuthor = new AuthorWithEvents { Name = "CommonAuthor" };
+            for (int i = 0; i < numBooks; i++)
+            {
+                var book = BookWithEvents.CreateBook
+                (
+                    $"Book{i:D4} Title",
+                    $"Book{i:D4} Description",
+                    stepByYears ? DummyBookStartDate.AddYears(i) : DummyBookStartDate.AddDays(i),
+                    "Publisher",
+                    (short)(i + 1),
+                    $"Image{i:D4}",
+                    new[] { new AuthorWithEvents { Name = $"Author{i:D4}" }, commonAuthor }
                 ).Result;
                 for (int j = 0; j < i; j++)
                 {

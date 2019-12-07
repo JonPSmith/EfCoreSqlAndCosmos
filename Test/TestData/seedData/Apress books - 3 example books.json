@@ -1,0 +1,57 @@
+[
+  {
+    "title": "Pro ASP.NET 4 in C# 2010",
+    "authors": [
+      "Matthew MacDonald",
+      "Adam Freeman"
+    ],
+    "publisher": "Apress",
+    "publishedDate": "2010-06-30",
+    "description": "ASP.NET 4 is the principal standard for creating dynamic web pages on the Windows platform. Pro ASP.NET 4 in C# 2010 raises the bar for high-quality, practical advice on learning and deploying Microsoft's dynamic web solution. This edition is updated with everything you need to master up to version 4 of ASP.NET, including coverage of ASP.NET MVC, ASP.NET AJAX 4, ASP.NET Dynamic Data, and Silverlight 3. Seasoned .NET professionals Matthew MacDonald and Mario Szpuszta explain how you can get the most from these groundbreaking technologies. They cover ASP.NET 4 as a whole, illustrating both the newer features and the functionality carried over from previous versions of ASP. This book will give you the knowledge you need to code real ASP.NET 4 applications in the best possible style. Table of Contents Introducing ASP.NET Visual Studio Web Forms Server Controls ASP.NET Applications State Management ADO.NET Fundamentals Data Components and the DataSet Data Binding Rich Data Controls Caching and Asynchronous Pages Files and Streams LINQ XML User Controls Themes and Master Pages Website Navigation Website Deployment The ASP.NET Security Model Forms Authentication Membership Windows Authentication Authorization and Roles Profiles Cryptography Custom Membership Providers Custom Server Controls Graphics, GDI+, and Charting JavaScript and Ajax Techniques ASP.NET AJAX Portals with Web Part Pages MVC Dynamic Data Silverlight",
+    "pageCount": 1616,
+    "categories": [
+      "Computers"
+    ],
+    "averageRating": 4.5,
+    "ratingsCount": 4,
+    "imageLinksThumbnail": "http://books.google.com/books/content?id=2wg5LCKuChcC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+    "saleInfoCountry": "GB",
+    "saleInfoForSale": false
+  },
+  {
+    "title": "Pro Telerik ASP.NET and Silverlight Controls",
+    "authors": [
+      "Jose Rolando Guay Paz"
+    ],
+    "publisher": "Apress",
+    "publishedDate": "2010-07-07",
+    "description": "This book provides a complete guide to implementing Telerik’s range of ASP.NET and Silverlight controls. Telerik controls are invaluable for ASP.NET and Silverlight developers because they provide a vast array of rich controls targeted for the presentation layer of web applications. Telerik offers you solutions for the reports, grids, charts, and text-editing controls that you need but don’t want to build from scratch yourself—the options are endless for increasing the functionality of any of your web solutions. What you’ll learn Understand how to integrate the standard Telerik controls into any ASP.NET or Silverlight solution to increase productivity and usability. Incorporate the Telerik extensions for ASP.NET MVC. Learn to implement Telerik Open Access and ORM for all your data access requirements. Understand the new functionality provided by the WebAii Testing Framework. Work with the full API to master using the entire suite of controls. Who this book is for This book is aimed at .NET developers working with ASP.NET and Silverlight who want to take advantage of the prewritten controls that Telerik provides when developing their software. No prior knowledge of Telerik controls is required, but a working knowledge of ASP.NET and Silverlight is assumed. Table of Contents Introducing ASP.NET and Telerik Getting Started With Telerik RadControls Input RadControls Navigation RadControls Date, Time, and Scheduling RadControls Data RadControls, Part 1 Data RadControls, Part Layout RadControls Chart and Image RadControls Additional RadControls RadAjax Telerik Extensions for ASP.NET MVC RadControls for Silverlight Introducing Telerik Reporting Telerik OpenAccess ORM",
+    "pageCount": 696,
+    "categories": [
+      "Computers"
+    ],
+    "averageRating": 0.0,
+    "ratingsCount": 0,
+    "imageLinksThumbnail": "http://books.google.com/books/content?id=UL3i6G8rZ3MC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+    "saleInfoCountry": "GB",
+    "saleInfoForSale": false
+  },
+  {
+    "title": "Beginning Google Maps API 3",
+    "authors": [
+      "Gabriel Svennerberg"
+    ],
+    "publisher": "Apress",
+    "publishedDate": "2010-07-27",
+    "description": "This book is about the next generation of the Google Maps API. It will provide the reader with the skills and knowledge necessary to incorporate Google Maps version 3 on web pages in both desktop and mobile browsers. It also describes how to deal with common problems that most map developers encounter at some point, like performance and usability issues with having too many markers and possible solutions to that. Introduction to the Google Maps API version 3 Solutions to common problems most developers encounters (too many markers, common JavaScript pitfalls) Best practices using HTML/CSS/JavaScript and Google Maps What you’ll learn Building reliable Google Maps web applications How to transfer from version 2 to version 3 of the API Best practices using HTML/CSS/JavaScript Dealing with large amounts of map markers How to look up addresses and coordinates using GeoCoding and reversed GeoCoding Who this book is for Web designers/web developers with a basic knowledge of HTML, CSS and JavaScript, as well as people with knowledge of the old Google Maps API that needs help to easily transfer to the new API. And, this book is for anyone interested in learning how to integrate Google Maps on their web page. Table of Contents Introducing the Google Maps API Transferring from Version 2 to 3 Creating Your First Map Taking the Map Further with MapOptions X Marks the Spot Marker Icons InfoWindow Tips and Tricks Creating Polylines and Polygons Dealing with Massive Numbers of Markers Location, Location, Location",
+    "pageCount": 328,
+    "categories": [
+      "Computers"
+    ],
+    "averageRating": 5.0,
+    "ratingsCount": 1,
+    "imageLinksThumbnail": "http://books.google.com/books/content?id=gHb8m0GSV2MC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+    "saleInfoCountry": "GB",
+    "saleInfoForSale": false
+  }
+]

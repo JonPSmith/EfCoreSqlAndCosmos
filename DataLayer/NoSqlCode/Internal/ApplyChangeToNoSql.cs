@@ -25,8 +25,10 @@ namespace DataLayer.NoSqlCode.Internal
                     m => m.MapFrom(s => s.PublishedOn.Year))
                 .ForMember(p => p.AuthorsOrdered,
                     m => m.MapFrom(s => string.Join(", ", s.AuthorsLink.Select(x => x.Author.Name))))
+                .ForMember(p => p.ReviewsCount,
+                m => m.MapFrom(s => s.Reviews.Count()))
                 .ForMember(p => p.ReviewsAverageVotes,
-                m => m.MapFrom(s => s.Reviews.Select(y => (double?)y.NumStars).Average()));
+                    m => m.MapFrom(s => s.Reviews.Select(y => (double?)y.NumStars).Average())); ;
 
             cfg.CreateMap<BookListNoSql, BookListNoSql>();
         });

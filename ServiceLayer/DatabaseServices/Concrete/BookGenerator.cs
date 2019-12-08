@@ -62,6 +62,7 @@ namespace ServiceLayer.DatabaseServices.Concrete
                     sqlDbContext.AddRange(batch);
                     await sqlDbContext.SaveChangesAsync();
                     numWritten += batch.Count;
+                    numBooksInDb += batch.Count;
                 }
             }
         }
@@ -70,12 +71,11 @@ namespace ServiceLayer.DatabaseServices.Concrete
         {
             for (int i = numBooksInDb; i < numBooksInDb + batchToAdd; i++)
             {
-                var sectionNum = Math.Truncate(i * 1.0 / NumBooksInSet);
-                var reviews = new List<Review>();
+                var sectionNum = (int)Math.Truncate(i / (double)NumBooksInSet);
 
                 var authors = authorsFinder.GetAuthorsOfThisBook(_loadedBookData[i % _loadedBookData.Count].Authors).ToList();
                 var title = _loadedBookData[i % _loadedBookData.Count].Title;
-                if (i >= NumBooksInSet && makeBookTitlesDistinct)
+                if (sectionNum > 0 && makeBookTitlesDistinct)
                     title += $" (copy {sectionNum})";
                 var book = Book.CreateBook(title,
                     $"Book{i:D4} Description",

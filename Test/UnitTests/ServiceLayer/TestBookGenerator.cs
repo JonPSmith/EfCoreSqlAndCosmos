@@ -11,12 +11,19 @@ using ServiceLayer.DatabaseServices.Concrete;
 using TestSupport.EfHelpers;
 using TestSupport.Helpers;
 using Xunit;
+using Xunit.Abstractions;
 using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests.ServiceLayer
 {
     public class TestBookGenerator
     {
+        private ITestOutputHelper _output;
+
+        public TestBookGenerator(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Fact]
         public async Task TestWriteBooksAsyncFillsInCacheValuesOk()
@@ -61,6 +68,33 @@ namespace Test.UnitTests.ServiceLayer
                 //VERIFY
                 var booksWithPromo = sqlContext.Books.Where(x => x.PromotionalText != null).ToList();
                 booksWithPromo.ForEach(x => x.ActualPrice.ShouldEqual(x.OrgPrice * 0.5m));
+            }
+        }
+
+        [Fact]
+        public async Task TestWriteBooksAsyncPriceIncreasesAndTitleUniqueOk()
+        {
+            //SETUP
+            var sqlOptions = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var sqlContext = new SqlDbContext(sqlOptions))
+            {
+                sqlContext.Database.EnsureCreated();
+
+                var filepath = TestData.GetFilePath("10ManningBooks.json");
+
+                var generator = new BookGenerator(sqlOptions, null);
+
+                //ATTEMPT
+                await generator.WriteBooksAsync(filepath, 25, true, default(CancellationToken));
+
+                //VERIFY
+                var lastPrice = 0m;
+                foreach (var book in sqlContext.Books.ToList().OrderBy(x => x.OrgPrice))
+                {
+                    book.OrgPrice.ShouldEqual(lastPrice + 1);
+                    lastPrice = book.OrgPrice;
+                    _output.WriteLine($"Title {book.Title}, ActualPrice = {book.ActualPrice}, {book.PromotionalText}");
+                }
             }
         }
 

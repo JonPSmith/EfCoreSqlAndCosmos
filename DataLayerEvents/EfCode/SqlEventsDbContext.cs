@@ -22,15 +22,13 @@ namespace DataLayerEvents.EfCode
         public DbSet<AuthorWithEvents> Authors { get; set; }
         public DbSet<BookAuthorWithEvents> BookAuthors { get; set; }
 
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new BookWithEventsConfig());       
             modelBuilder.ApplyConfiguration(new BookAuthorWithEventsConfig());
             modelBuilder.ApplyConfiguration(new AuthorWithEventsConfig());
 
-            modelBuilder.Entity<ReviewWithEvents>().ToTable("Reviews");
+            modelBuilder.Entity<ReviewWithEvents>().ToTable("Review");
         }
     }
 }

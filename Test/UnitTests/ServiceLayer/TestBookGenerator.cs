@@ -42,6 +42,28 @@ namespace Test.UnitTests.ServiceLayer
             }
         }
 
+        [Fact]
+        public async Task TestWriteBooksAsyncPromotionValueOk()
+        {
+            //SETUP
+            var sqlOptions = SqliteInMemory.CreateOptions<SqlDbContext>();
+            using (var sqlContext = new SqlDbContext(sqlOptions))
+            {
+                sqlContext.Database.EnsureCreated();
+
+                var filepath = TestData.GetFilePath("10ManningBooks.json");
+
+                var generator = new BookGenerator(sqlOptions, null);
+
+                //ATTEMPT
+                await generator.WriteBooksAsync(filepath, 10, true, default(CancellationToken));
+
+                //VERIFY
+                var booksWithPromo = sqlContext.Books.Where(x => x.PromotionalText != null).ToList();
+                booksWithPromo.ForEach(x => x.ActualPrice.ShouldEqual(x.OrgPrice * 0.5m));
+            }
+        }
+
 
         [Theory]
         [InlineData(5)]

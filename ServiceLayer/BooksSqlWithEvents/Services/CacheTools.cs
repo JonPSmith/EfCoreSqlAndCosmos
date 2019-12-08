@@ -24,7 +24,6 @@ namespace ServiceLayer.BooksSqlWithEvents.Services
 
         public IStatusGeneric<string> CheckUpdateBookCacheProperties()
         {
-
             var status = new StatusGenericHandler<string>();
             var errorStrings = new StringBuilder();
             var numBooksChecked = 0;
@@ -36,7 +35,7 @@ namespace ServiceLayer.BooksSqlWithEvents.Services
                 var error = Errors.None;
                 numBooksChecked++;
 
-                var authorsOrdered = string.Join(", ", book.AuthorsLink.Select(x => x.Author.Name));
+                var authorsOrdered = string.Join(", ", book.AuthorsLink.OrderBy(x => x.Order).Select(x => x.Author.Name));
                 var reviewsCount = book.Reviews.Count();
                 var reviewsAverageVotes = reviewsCount == 0 ? 0 : book.Reviews.Sum(x => x.NumStars) / (double)book.ReviewsCount;
 

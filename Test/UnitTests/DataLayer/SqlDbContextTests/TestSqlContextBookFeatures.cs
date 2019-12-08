@@ -4,8 +4,11 @@
 using System;
 using System.Linq;
 using DataLayer.EfCode;
+using DataLayerEvents.EfCode;
+using Microsoft.EntityFrameworkCore;
 using Test.Helpers;
 using TestSupport.EfHelpers;
+using TestSupport.EfSchemeCompare;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Extensions.AssertExtensions;
@@ -48,7 +51,7 @@ namespace Test.UnitTests.DataLayer.SqlDbContextTests
         public void TestAverageReviewSqlServerOk()
         {
             //SETUP
-            var options = this.CreateUniqueMethodOptionsWithLogging<SqlDbContext>(
+            var options = this.CreateUniqueClassOptionsWithLogging<SqlDbContext>(
                 log => _output.WriteLine(log.Message));
             using (var context = new SqlDbContext(options))
             {

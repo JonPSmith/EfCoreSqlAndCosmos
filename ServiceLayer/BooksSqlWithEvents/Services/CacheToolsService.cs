@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using AutoMapper.Mappers.Internal;
 using DataLayerEvents.EfCode;
+using DataLayerEvents.QueryExtensions;
 using Microsoft.EntityFrameworkCore;
 using StatusGeneric;
 
@@ -35,7 +36,7 @@ namespace ServiceLayer.BooksSqlWithEvents.Services
                 var error = Errors.None;
                 numBooksChecked++;
 
-                var authorsOrdered = string.Join(", ", book.AuthorsLink.OrderBy(x => x.Order).Select(x => x.Author.Name));
+                var authorsOrdered = book.FormAuthorOrderedString();
                 var reviewsCount = book.Reviews.Count();
                 var reviewsAverageVotes = reviewsCount == 0 ? 0 : book.Reviews.Sum(x => x.NumStars) / (double)book.ReviewsCount;
 

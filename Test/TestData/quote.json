@@ -1,0 +1,141 @@
+{
+  "Header": {
+    "QuoteNumber": "A",
+    "VersionNumber": "0001-01-01T00:00:00",
+    "ConfirmByDate": "0001-01-01T00:00:00",
+    "BillToAddress": "Awaiting company's Bill To address.",
+    "ClientCompanyName": "Awaiting company's legal name.",
+    "ClientContactName": "MULTIPLE OPTIONS",
+    "ClientAddress": "Awaiting company's work address.",
+    "ClientContact": "MULTIPLE OPTIONS",
+    "VenueAddress": "Awaiting Venue, or venue's Ship To address.",
+    "VenueRoom": null,
+    "JobNumber": "00-19-0001",
+    "QuoteName": "TestQuoteName",
+    "AccountManagerName": "003 test-003",
+    "ProjectManagerName": "Awaiting the first project manager to be assigned to this job.",
+    "JobType": "Themed",
+    "QuoteStatus": "Tentative",
+    "ShippingMethod": "UNKNOWN",
+    "CustomerPo": "UNKNOWN",
+    "Terms": "UNKNOWN",
+    "TaxRule": "?? - county not set - waiting for venue",
+    "ShipDate": "2019-12-10T00:00:00+00:00",
+    "InstallDate": "2019-12-10T00:00:00+00:00",
+    "StrikeDate": "2019-12-11T00:00:00+00:00",
+    "ReturnDate": "2019-12-11T00:00:00+00:00",
+    "Notes": ""
+  },
+  "Items": [
+    {
+      "SectionName": "First Stage",
+      "SectionNote": null,
+      "Quantity": 1,
+      "Name": "Custom  Scenery  -  5’8”x22’11-3/4” HW  Flat  with  door  opening",
+      "Note": "LED  Wall  vertical  flats,  modified w/3’x6’8”  door  opening.   Wrapped in  shop  with  dye  sub.",
+      "Price": 123.0,
+      "DiscountPercentage": "",
+      "PriceExt": 123.0
+    },
+    {
+      "SectionName": "First Stage",
+      "SectionNote": null,
+      "Quantity": 1,
+      "Name": "Dye  Sub  on  Soft  Knit",
+      "Note": "7’x24’to  wrap  5’8”x22’11-3/4”  HW flat.   Solid  PMS  color.",
+      "Price": 567.0,
+      "DiscountPercentage": "",
+      "PriceExt": 567.0
+    },
+    {
+      "SectionName": "Second Stage",
+      "SectionNote": null,
+      "Quantity": 30,
+      "Name": "Staging  Dimensions  Deck  -  4’x8’",
+      "Note": "Assembled  as  custom  stage,  24”  tall",
+      "Price": 100.0,
+      "DiscountPercentage": "7.0%",
+      "PriceExt": 2790.00
+    },
+    {
+      "SectionName": "Second Stage",
+      "SectionNote": null,
+      "Quantity": 30,
+      "Name": "Borderless Front Projection Screen Package, 09' Tall",
+      "Note": "Assembled  as  custom  stage,  24”  tall",
+      "Price": 1395.00,
+      "DiscountPercentage": "7.0%",
+      "PriceExt": 38920.5000
+    },
+    {
+      "SectionName": "Second Stage",
+      "SectionNote": null,
+      "Quantity": 30,
+      "Name": "--Screen Frame, Starter 20'x5'",
+      "Note": "Assembled  as  custom  stage,  24”  tall",
+      "Price": 50.0,
+      "DiscountPercentage": "7.0%",
+      "PriceExt": 1395.00
+    },
+    {
+      "SectionName": "Second Stage",
+      "SectionNote": null,
+      "Quantity": 3,
+      "Name": "--Screen Frame, Internal 20' x 5'",
+      "Note": null,
+      "Price": 0.0,
+      "DiscountPercentage": "",
+      "PriceExt": 0.0
+    }
+  ],
+  "Services": [
+    {
+      "SectionName": "Services",
+      "SectionNote": null,
+      "Quantity": 1,
+      "Name": "test",
+      "Note": null,
+      "Price": 987.0,
+      "DiscountPercentage": "",
+      "PriceExt": 987.0
+    }
+  ],
+  "Travel": [
+    {
+      "SectionName": "Travel",
+      "SectionNote": null,
+      "Quantity": 1,
+      "Name": "test",
+      "Note": null,
+      "Price": 654.0,
+      "DiscountPercentage": "",
+      "PriceExt": 654.0
+    }
+  ],
+  "Freight": [
+    {
+      "SectionName": "Freight",
+      "SectionNote": null,
+      "Quantity": 1,
+      "Name": "Sending First Stage",
+      "Note": null,
+      "Price": 456.0,
+      "DiscountPercentage": "",
+      "PriceExt": 456.0
+    }
+  ],
+  "Labor": [
+    {
+      "SectionName": "Labor",
+      "SectionNote": null,
+      "Quantity": 2,
+      "Position": "TestLaborName",
+      "LaborTask": "Setup",
+      "StartTime": "2019-11-06T10:00:00",
+      "EndTime": "2019-11-06T18:00:00",
+      "TotalHours": 8,
+      "PricePerPerson": 800.0,
+      "PriceExt": 1600.0
+    }
+  ]
+}

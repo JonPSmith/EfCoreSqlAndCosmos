@@ -29,7 +29,7 @@ namespace Test.Helpers
                 "Book Publisher",
                 123,
                 null,
-                new[] { new AuthorWithEvents { Name = "Test Author"} }
+                new[] { new AuthorWithEvents( "Test Author", null) }
             );
 
             return book.Result;
@@ -45,7 +45,7 @@ namespace Test.Helpers
                 "Book Publisher",
                 123,
                 null,
-                new[] { new AuthorWithEvents { Name = "Author1" }, new AuthorWithEvents { Name = "Author2" } }
+                new[] { new AuthorWithEvents( "Author1", null), new AuthorWithEvents( "Author2", null) }
             );
             book.Result.AddReview(5, null, "test1");
             book.Result.AddReview(1, null, "test2");
@@ -56,7 +56,7 @@ namespace Test.Helpers
         public static List<BookWithEvents> CreateDummyBooks(int numBooks = 10, bool stepByYears = false)
         {
             var result = new List<BookWithEvents>();
-            var commonAuthor = new AuthorWithEvents { Name = "CommonAuthor"};
+            var commonAuthor = new AuthorWithEvents( "CommonAuthor", null);
             for (int i = 0; i < numBooks; i++)
             {
                 var book = BookWithEvents.CreateBook
@@ -67,7 +67,7 @@ namespace Test.Helpers
                     "Publisher",
                     (short)(i + 1),
                     $"Image{i:D4}",
-                    new[] { new AuthorWithEvents { Name = $"Author{i:D4}"}, commonAuthor}
+                    new[] { new AuthorWithEvents( $"Author{i:D4}", null), commonAuthor}
                 ).Result;
                 for (int j = 0; j < i; j++)
                 {
@@ -90,7 +90,7 @@ namespace Test.Helpers
 
         public static List<BookWithEvents> CreateFourBooks()
         {
-            var martinFowler = new AuthorWithEvents { Name = "Martin Fowler"};
+            var martinFowler = new AuthorWithEvents( "Martin Fowler", null);
 
             var books = new List<BookWithEvents>();
 
@@ -126,7 +126,7 @@ namespace Test.Helpers
                  null,
                 56,
                 null,
-                new[] { new AuthorWithEvents { Name = "Eric Evans"}}
+                new[] { new AuthorWithEvents( "Eric Evans", null) }
             ).Result;
             books.Add(book3);
 
@@ -138,7 +138,7 @@ namespace Test.Helpers
                 "Future Published",
                 220,
                 null,
-                new[] { new AuthorWithEvents { Name = "Future Person"} }
+                new[] { new AuthorWithEvents( "Future Person", null) }
             ).Result;
             book4.AddReview(5,
                 "I look forward to reading this book, if I am still alive!", "Jon P Smith");

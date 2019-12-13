@@ -2,7 +2,6 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System.Linq;
-using DataLayer.EfCode;
 using DataLayerEvents.DomainEvents;
 using DataLayerEvents.EfCode;
 using Microsoft.EntityFrameworkCore;
@@ -111,6 +110,9 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             }
         }
 
+        //---------------------------------------------------
+        //Now the AuthorsOrdered concurrency handling
+
         [Fact]
         public void TestAuthorChangeNameCausesEventOk()
         {
@@ -126,7 +128,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
                 author.GetBeforeSaveEventsThenClear();
 
                 //ATTEMPT
-                author.Name = "new name";
+                author.ChangeName("new name");
 
                 //VERIFY
                 var dEvent = author.GetBeforeSaveEventsThenClear().Single();

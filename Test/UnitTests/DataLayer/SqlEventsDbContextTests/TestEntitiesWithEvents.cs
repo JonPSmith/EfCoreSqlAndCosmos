@@ -124,5 +124,53 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             }
         }
 
+        //-------------------------------------------------------
+        //AuthorsOrdered events
+
+        [Fact]
+        public void TestCreateBookWithOneAuthorAndChangeTheAuthorsName()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            {
+                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
+                context.Database.EnsureCreated();
+                var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
+                context.Add(book);
+                context.SaveChanges();
+
+                //ATTEMPT
+                book.AuthorsOrdered.ShouldEqual("Test Author");
+                book.AuthorsLink.First().Author.ChangeName("New name");
+                context.SaveChanges();
+
+                //VERIFY
+                context.Books.First().AuthorsOrdered.ShouldEqual("New name");
+            }
+        }
+
+        [Fact]
+        public void TestCreateBookTwoAuthorsChangeCommonAuthorOk()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            {
+                var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
+                context.Database.EnsureCreated();
+                var books = WithEventsEfTestData.CreateDummyBooks(2);
+                context.AddRange(books);
+                context.SaveChanges();
+
+                //ATTEMPT
+                books.First().AuthorsOrdered.ShouldEqual("Author0000, CommonAuthor");
+                books.First().AuthorsLink.Last().Author.ChangeName("New common name");
+                context.SaveChanges();
+
+                //VERIFY
+                var readBooks = context.Books.ToList();
+                readBooks.First().AuthorsOrdered.ShouldEqual("Author0000, New common name");
+                readBooks.Last().AuthorsOrdered.ShouldEqual("Author0001, New common name");
+            }
+        }
     }
 }

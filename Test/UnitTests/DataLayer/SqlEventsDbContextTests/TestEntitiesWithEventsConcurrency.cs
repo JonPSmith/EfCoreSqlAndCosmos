@@ -25,7 +25,6 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             _output = output;
         }
 
-
         [Fact]
         public void TestAddReviewCauseConcurrencyThrown()
         {

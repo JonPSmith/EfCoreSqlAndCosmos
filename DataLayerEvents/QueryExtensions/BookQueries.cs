@@ -5,15 +5,16 @@ using System;
 using System.Linq;
 using DataLayerEvents.EfClasses;
 using DataLayerEvents.EfCode;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataLayerEvents.QueryExtensions
 {
     public static class BookQueries
     {
-        public static string FormAuthorOrderedString(this SqlEventsDbContext context, Guid bookId)
+        public static string FormAuthorOrderedString(this DbContext context, Guid bookId)
         {
-            return string.Join(", ", context.Books.Where(x => x.BookId == bookId)
-                .Select(x => x.AuthorsLink.OrderBy(y => y.Order).Select(y => y.Author.Name)).Single());
+            return string.Join(", ", context.Set<BookWithEvents>().Where(x => x.BookId == bookId)
+                .SelectMany(x => x.AuthorsLink.OrderBy(y => y.Order).Select(y => y.Author.Name)));
         }
 
         public static string FormAuthorOrderedString(this BookWithEvents book)
@@ -25,7 +26,7 @@ namespace DataLayerEvents.QueryExtensions
         }
 
         public static (int ReviewCount, double ReviewsAverageVotes) CalcReviewCacheValuesFromDb(
-            this SqlEventsDbContext context, Guid bookId)
+            this DbContext context, Guid bookId)
         {
             var reviewData = context.Set<ReviewWithEvents>()
                 .Where(x => x.BookId == bookId).Select(x => x.NumStars)

@@ -84,7 +84,7 @@ namespace Test.Helpers
         public static List<BookWithEvents> CreateDummyBooksWithEvents(int numBooks = 10, bool stepByYears = false)
         {
             var result = new List<BookWithEvents>();
-            var commonAuthor = new AuthorWithEvents { Name = "CommonAuthor" };
+            var commonAuthor = new AuthorWithEvents("CommonAuthor",null);
             for (int i = 0; i < numBooks; i++)
             {
                 var book = BookWithEvents.CreateBook
@@ -95,7 +95,7 @@ namespace Test.Helpers
                     "Publisher",
                     (short)(i + 1),
                     $"Image{i:D4}",
-                    new[] { new AuthorWithEvents { Name = $"Author{i:D4}" }, commonAuthor }
+                    new[] { new AuthorWithEvents($"Author{i:D4}", null), commonAuthor }
                 ).Result;
                 for (int j = 0; j < i; j++)
                 {

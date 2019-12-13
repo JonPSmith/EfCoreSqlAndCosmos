@@ -2,6 +2,7 @@
 // Licensed under MIT license. See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using DataLayerEvents.EfClasses;
 using DataLayerEvents.EfCode;
 using GenericEventRunner.ForSetup;
@@ -99,6 +100,60 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             ex.InnerException.Message.ShouldEqual("SQLite Error 19: 'FOREIGN KEY constraint failed'.");
         }
 
+        //---------------------------------------------------
+        //AuthorsOrdered concurrency handling
 
+        [Fact]
+        public void TestChangeAuthorOrderedCauseConcurrencyThrown()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>();
+            context.Database.EnsureCreated();
+            var books = WithEventsEfTestData.CreateDummyBooks(2);
+            context.AddRange(books);
+            context.SaveChanges();
+
+            //ATTEMPT
+            books.First().AuthorsLink.Last().Author.ChangeName("New common name");
+            //This simulates changing the AuthorsOrdered value
+            context.Database.ExecuteSqlRaw(
+                "UPDATE Books SET AuthorsOrdered = @p0 WHERE BookId = @p1",
+                "different author string", books.First().BookId);
+
+            //VERIFY
+            Assert.Throws<DbUpdateConcurrencyException>(() => context.SaveChanges());
+        }
+
+        [Fact]
+        public void TestChangeAuthorOrderedConcurrencyFixed()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            var config = new GenericEventRunnerConfig
+            {
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleReviewConcurrency
+            };
+            var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
+            context.Database.EnsureCreated();
+            var books = WithEventsEfTestData.CreateDummyBooks(2);
+            context.AddRange(books);
+            context.SaveChanges();
+
+            //ATTEMPT
+            books.First().AuthorsLink.Last().Author.ChangeName("New common name");
+            //This simulates changing the AuthorsOrdered value
+            context.Database.ExecuteSqlRaw(
+                "UPDATE Books SET AuthorsOrdered = @p0 WHERE BookId = @p1",
+                "different author string", books.First().BookId);
+
+            //ATTEMPT
+            context.SaveChanges();
+
+            //VERIFY
+            var readBooks = context.Books.ToList();
+            readBooks.First().AuthorsOrdered.ShouldEqual("Author0000, New common name");
+            readBooks.Last().AuthorsOrdered.ShouldEqual("Author0001, New common name");
+        }
     }
 }

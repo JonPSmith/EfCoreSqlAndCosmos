@@ -51,6 +51,8 @@ namespace DataLayerEvents.EfClasses
 
         //----------------------------------------------
         //Extra properties filled in by events
+
+        [ConcurrencyCheck]
         public string AuthorsOrdered { get; set; }
 
         [ConcurrencyCheck]

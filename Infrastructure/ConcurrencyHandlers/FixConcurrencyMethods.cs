@@ -2,8 +2,8 @@
 // Licensed under MIT license. See License file in the project root for license information.
 
 using System;
+using System.Linq;
 using DataLayerEvents.EfClasses;
-using DataLayerEvents.EfCode;
 using DataLayerEvents.QueryExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -63,8 +63,8 @@ namespace Infrastructure.ConcurrencyHandlers
         }
 
         /// <summary>
-        /// This recomputes the AuthorsOrdered string by going back to the database. That's because there are too many
-        /// ways that the author names could be changed to allow us to recompute it in the way we did in CheckFixReviewCacheValues
+        /// This recomputes the AuthorsOrdered string from the database. But to get the correct answer
+        /// we need to use Find, as that will return any entity that is in the DbContext. This picks up the change(s) applied 
         /// </summary>
         /// <param name="bookThatCausedConcurrency"></param>
         /// <param name="bookBeingWrittenOut"></param>
@@ -75,9 +75,16 @@ namespace Infrastructure.ConcurrencyHandlers
             if (previousAuthorsOrdered != bookThatCausedConcurrency.AuthorsOrdered)
             {
                 //There was a concurrency issue with the combined string of authors.
-                //In this case we need recompute the AuthorsOrdered, which we do by reading the database
+                //In this case we need recompute the AuthorsOrdered, but we must use Find so that any outstanding changes will be picked up.
 
-                var newAuthorsOrdered = _context.FormAuthorOrderedString(bookBeingWrittenOut.BookId);
+                var allAuthorsIdsInOrder = _context.Set<BookWithEvents>()
+                    .Where(x => x.BookId == bookBeingWrittenOut.BookId)
+                    .Select(x => x.AuthorsLink.OrderBy(y => y.Order).Select(y => y.AuthorId)).ToList()
+                    .Single();
+
+                //Note the use of Find to get the changed data in the current DbContext
+                var namesInOrder = allAuthorsIdsInOrder.Select(x => _context.Find<AuthorWithEvents>(x).Name);
+                var newAuthorsOrdered = namesInOrder.FormAuthorOrderedString();
 
                 //We write these combined values into the bookBeingWrittenOut via the entry (gets around any private setters)
                 _entry.Property(nameof(BookWithEvents.AuthorsOrdered)).CurrentValue = newAuthorsOrdered;

@@ -2,6 +2,7 @@
 // Licensed under MIT license. See License file in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataLayerEvents.EfClasses;
 using DataLayerEvents.EfCode;
@@ -13,8 +14,10 @@ namespace DataLayerEvents.QueryExtensions
     {
         public static string FormAuthorOrderedString(this DbContext context, Guid bookId)
         {
-            return string.Join(", ", context.Set<BookWithEvents>().Where(x => x.BookId == bookId)
-                .SelectMany(x => x.AuthorsLink.OrderBy(y => y.Order).Select(y => y.Author.Name)));
+            return context.Set<BookWithEvents>()
+                .Where(x => x.BookId == bookId)
+                .Select(x => x.AuthorsLink.OrderBy(y => y.Order).Select(y => y.Author.Name).ToList())
+                .Single().FormAuthorOrderedString();
         }
 
         public static string FormAuthorOrderedString(this BookWithEvents book)
@@ -22,7 +25,12 @@ namespace DataLayerEvents.QueryExtensions
             if (book.AuthorsLink == null || book.AuthorsLink.Any(x => x.Author == null))
                 throw new InvalidOperationException("The book must have the AuthorLink collection filled, and the AuthorLink Author filled too.");
 
-            return string.Join(", ", book.AuthorsLink.OrderBy(x => x.Order).Select(x => x.Author.Name));
+            return book.AuthorsLink.OrderBy(x => x.Order).Select(x => x.Author.Name).FormAuthorOrderedString();
+        }
+
+        public static string FormAuthorOrderedString(this IEnumerable<string> orderedNames)
+        {
+            return string.Join(", ", orderedNames);
         }
 
         public static (int ReviewCount, double ReviewsAverageVotes) CalcReviewCacheValuesFromDb(

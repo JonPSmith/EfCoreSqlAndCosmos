@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataLayer.EfClassesSql;
 using DataLayer.EfCode;
+using DataLayerEvents.EfCode;
 using GenericServices;
 using GenericServices.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -49,7 +50,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         //-------------------------------------------------------
 
-        public IActionResult ChangePubDate(Guid id, [FromServices]ICrudServices<SqlDbContext> service)
+        public IActionResult ChangePubDate(Guid id, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             var dto = service.ReadSingle<ChangePubDateDto>(id);
             if (!service.IsValid)
@@ -62,7 +63,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePubDate(ChangePubDateDto dto, [FromServices]ICrudServicesAsync<SqlDbContext> service)
+        public async Task<IActionResult> ChangePubDate(ChangePubDateDto dto, [FromServices]ICrudServicesAsync<SqlEventsDbContext> service)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +79,7 @@ namespace EfCoreSqlAndCosmos.Controllers
             return View(dto);
         }
 
-        public IActionResult AddPromotion(Guid id, [FromServices]ICrudServices<SqlDbContext> service)
+        public IActionResult AddPromotion(Guid id, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             var dto = service.ReadSingle<AddRemovePromotionDto>(id);
             if (!service.IsValid)
@@ -91,7 +92,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddPromotion(AddRemovePromotionDto dto, [FromServices]ICrudServices<SqlDbContext> service)
+        public IActionResult AddPromotion(AddRemovePromotionDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             if (!ModelState.IsValid)
             {
@@ -107,7 +108,7 @@ namespace EfCoreSqlAndCosmos.Controllers
             return View(dto);
         }
 
-        public IActionResult RemovePromotion(Guid id, [FromServices]ICrudServices<SqlDbContext> service)
+        public IActionResult RemovePromotion(Guid id, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             var dto = service.ReadSingle<AddRemovePromotionDto>(id);
             if (!service.IsValid)
@@ -120,7 +121,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RemovePromotion(AddRemovePromotionDto dto, [FromServices]ICrudServices<SqlDbContext> service)
+        public IActionResult RemovePromotion(AddRemovePromotionDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             if (!ModelState.IsValid)
             {
@@ -137,7 +138,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         }
 
 
-        public IActionResult AddBookReview(Guid id, [FromServices]ICrudServices<SqlDbContext> service)
+        public IActionResult AddBookReview(Guid id, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             var dto = service.ReadSingle<AddReviewDto>(id);
             if (!service.IsValid)
@@ -150,7 +151,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddBookReview(AddReviewDto dto, [FromServices]ICrudServices<SqlDbContext> service)
+        public IActionResult AddBookReview(AddReviewDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             if (!ModelState.IsValid)
             {

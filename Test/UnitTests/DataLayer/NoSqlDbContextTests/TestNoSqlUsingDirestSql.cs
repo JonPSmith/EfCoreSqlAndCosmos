@@ -7,6 +7,7 @@ using DataLayer.EfCode;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using TestSupport.Attributes;
 using TestSupport.EfHelpers;
 using TestSupport.Helpers;
 using Xunit;
@@ -16,14 +17,14 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
 {
     public class TestNoSqlUsingDirestSql
     {
-        private ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
 
         public TestNoSqlUsingDirestSql(ITestOutputHelper output)
         {
             _output = output;
         }
 
-        [Fact]
+        [RunnableInDebugOnly]
         public async Task TestGetCosmosClientOnMainDatabasesOk()
         {
             //SETUP

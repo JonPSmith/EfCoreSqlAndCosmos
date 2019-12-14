@@ -14,13 +14,13 @@ namespace Infrastructure.EventHandlers
         public IStatusGeneric Handle(EntityEvents callingEntity, BookReviewAddedEvent domainEvent)
         {
             //Here is the fast (delta) version of the update. Doesn't need access to the database
-            var totalStars = Math.Round(domainEvent.Book.ReviewsAverageVotes * domainEvent.Book.ReviewsCount) +
+            var totalStars = Math.Round(domainEvent.Book.ReviewsAverageVotes * 
+                                        domainEvent.Book.ReviewsCount) +
                              domainEvent.NumStars;
             var numReviews = domainEvent.Book.ReviewsCount + 1;
             domainEvent.UpdateReviewCachedValues(numReviews, totalStars / numReviews);
 
             return null;
         }
-
     }
 }

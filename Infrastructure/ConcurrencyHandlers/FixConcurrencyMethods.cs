@@ -83,10 +83,11 @@ namespace Infrastructure.ConcurrencyHandlers
                     .Single();
 
                 //Note the use of Find to get the changed data in the current DbContext
+                //That catches any changes that are waiting to be written to the database
                 var namesInOrder = allAuthorsIdsInOrder.Select(x => _context.Find<AuthorWithEvents>(x).Name);
                 var newAuthorsOrdered = namesInOrder.FormAuthorOrderedString();
 
-                //We write these combined values into the bookBeingWrittenOut via the entry (gets around any private setters)
+                //We write the new value into the bookBeingWrittenOut via the entry (gets around any private setters)
                 _entry.Property(nameof(BookWithEvents.AuthorsOrdered)).CurrentValue = newAuthorsOrdered;
 
                 //Now set the original value to the bookOverwrote so that we won't have another concurrency

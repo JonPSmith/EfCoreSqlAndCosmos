@@ -11,7 +11,7 @@ namespace Infrastructure.ConcurrencyHandlers
 {
     public static class BookWithEventsConcurrencyHandler
     {
-        public static IStatusGeneric HandleReviewConcurrency(this Exception ex, DbContext context)
+        public static IStatusGeneric HandleCacheValuesConcurrency(this Exception ex, DbContext context)
         {
             var dbUpdateEx = ex as DbUpdateConcurrencyException;
             if (dbUpdateEx == null)
@@ -26,7 +26,8 @@ namespace Infrastructure.ConcurrencyHandlers
 
                 //we read in the book that caused the concurrency issue
                 //This MUST be read as NoTracking otherwise it will interfere with the same entity we are trying to write
-                var bookThatCausedConcurrency = context.Set<BookWithEvents>().AsNoTracking().SingleOrDefault(p => p.BookId == bookBeingWrittenOut.BookId);
+                var bookThatCausedConcurrency = context.Set<BookWithEvents>().AsNoTracking()
+                    .SingleOrDefault(p => p.BookId == bookBeingWrittenOut.BookId);
 
                 if (bookThatCausedConcurrency == null)
                 {

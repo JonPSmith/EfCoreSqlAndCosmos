@@ -55,7 +55,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
             var config = new GenericEventRunnerConfig
             {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleReviewConcurrency
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
             };
             var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
             context.Database.EnsureCreated();
@@ -85,7 +85,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
             var config = new GenericEventRunnerConfig
             {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleReviewConcurrency
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
             };
             var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
             context.Database.EnsureCreated();
@@ -132,7 +132,7 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
             var config = new GenericEventRunnerConfig
             {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleReviewConcurrency
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
             };
             var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
             context.Database.EnsureCreated();
@@ -154,6 +154,35 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
             var readBooks = context.Books.ToList();
             readBooks.First().AuthorsOrdered.ShouldEqual("Author0000, New common name");
             readBooks.Last().AuthorsOrdered.ShouldEqual("Author0001, New common name");
+        }
+
+        [Fact]
+        public void TestBookDeletedConcurrencyFixed()
+        {
+            //SETUP
+            var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
+            var config = new GenericEventRunnerConfig
+            {
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
+            };
+            var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
+            context.Database.EnsureCreated();
+            var books = WithEventsEfTestData.CreateDummyBooks(2);
+            context.AddRange(books);
+            context.SaveChanges();
+
+            //ATTEMPT
+            books.First().AuthorsLink.Last().Author.ChangeName("New common name");
+            //This simulates changing the AuthorsOrdered value
+            context.Database.ExecuteSqlRaw("DELETE FROM Books WHERE BookId = @p0", books.First().BookId);
+
+            //ATTEMPT
+            context.SaveChanges();
+
+            //VERIFY
+            var readBooks = context.Books.ToList();
+            readBooks.Count().ShouldEqual(1);
+            readBooks.First().AuthorsOrdered.ShouldEqual("Author0001, New common name");
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Infrastructure.AppStart
             //This provides a SaveChangesExceptionHandler which handles concurrency issues around ReviewsCount and ReviewsAverageVotes
             var config = new GenericEventRunnerConfig
             {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleReviewConcurrency
+                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
             };
             //Because I haven't provided any assemblies this will scan this assembly
             services.RegisterGenericEventRunner(config);

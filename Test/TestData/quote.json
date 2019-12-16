@@ -90,7 +90,7 @@
   ],
   "Services": [
     {
-      "SectionName": "Services",
+      "SectionName": "Services - from GitHUB!!!!",
       "SectionNote": null,
       "Quantity": 1,
       "Name": "test",
@@ -102,7 +102,7 @@
   ],
   "Travel": [
     {
-      "SectionName": "Travel",
+      "SectionName": "Travel - from GitHUB!!!!",
       "SectionNote": null,
       "Quantity": 1,
       "Name": "test",
@@ -114,7 +114,7 @@
   ],
   "Freight": [
     {
-      "SectionName": "Freight",
+      "SectionName": "Freight - from GitHUB!!!!",
       "SectionNote": null,
       "Quantity": 1,
       "Name": "Sending First Stage",
@@ -126,7 +126,7 @@
   ],
   "Labor": [
     {
-      "SectionName": "Labor",
+      "SectionName": "Labor - from GitHUB!!!!",
       "SectionNote": null,
       "Quantity": 2,
       "Position": "TestLaborName",

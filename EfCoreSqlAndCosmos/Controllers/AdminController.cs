@@ -20,7 +20,7 @@ namespace EfCoreSqlAndCosmos.Controllers
         //------------------------------------------------
         //Admin commands that are called from the top menu
 
-        public IActionResult ResetCacheValues([FromServices]ICacheToolsService service)
+        public IActionResult ResetCacheValues([FromServices]IHardResetCacheService service)
         {
             var status = service.CheckUpdateBookCacheProperties();
             return View("Message", status.Message);

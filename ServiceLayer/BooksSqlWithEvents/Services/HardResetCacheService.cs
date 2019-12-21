@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using System.Text;
-using AutoMapper.Mappers.Internal;
 using DataLayerEvents.EfCode;
 using DataLayerEvents.QueryExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -12,13 +11,13 @@ using StatusGeneric;
 
 namespace ServiceLayer.BooksSqlWithEvents.Services
 {
-    public class CacheToolsService : ICacheToolsService
+    public class HardResetCacheService : IHardResetCacheService
     {
         [Flags]
         private enum Errors {None, AuthorsWrong = 1, ReviewWrong = 2}
         private readonly SqlEventsDbContext _context;
 
-        public CacheToolsService(SqlEventsDbContext context)
+        public HardResetCacheService(SqlEventsDbContext context)
         {
             _context = context;
         }

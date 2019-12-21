@@ -35,7 +35,7 @@ namespace Test.UnitTests.ServiceLayer
                 context.AddRange(books);
                 context.SaveChanges();
 
-                var service = new CacheToolsService(context);
+                var service = new HardResetCacheService(context);
 
                 //ATTEMPT
                 var status = service.CheckUpdateBookCacheProperties();

@@ -5,7 +5,7 @@ using StatusGeneric;
 
 namespace ServiceLayer.BooksSqlWithEvents
 {
-    public interface ICacheToolsService
+    public interface IHardResetCacheService
     {
         IStatusGeneric<string> CheckUpdateBookCacheProperties();
     }

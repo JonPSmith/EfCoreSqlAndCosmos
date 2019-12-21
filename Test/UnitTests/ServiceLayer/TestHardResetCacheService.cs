@@ -11,11 +11,11 @@ using Xunit.Extensions.AssertExtensions;
 
 namespace Test.UnitTests.ServiceLayer
 {
-    public class TestCacheTools
+    public class TestHardResetCacheService
     {
-        private ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
 
-        public TestCacheTools(ITestOutputHelper output)
+        public TestHardResetCacheService(ITestOutputHelper output)
         {
             _output = output;
         }

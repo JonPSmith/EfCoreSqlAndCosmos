@@ -50,7 +50,7 @@ namespace Infrastructure.ConcurrencyHandlers
                 var totalStars = Math.Round(bookThatCausedConcurrency.ReviewsAverageVotes * bookThatCausedConcurrency.ReviewsCount) +
                                  starsChange;
 
-                //We write these combined values into the bookBeingWrittenOut via the entry (gets around any private setters)
+                //We write these combined values into the bookBeingWrittenOut via the entry
                 _entry.Property(nameof(BookWithEvents.ReviewsCount)).CurrentValue = newCount;
                 _entry.Property(nameof(BookWithEvents.ReviewsAverageVotes)).CurrentValue = totalStars / newCount;
 
@@ -87,7 +87,7 @@ namespace Infrastructure.ConcurrencyHandlers
                 var namesInOrder = allAuthorsIdsInOrder.Select(x => _context.Find<AuthorWithEvents>(x).Name);
                 var newAuthorsOrdered = namesInOrder.FormAuthorOrderedString();
 
-                //We write the new value into the bookBeingWrittenOut via the entry (gets around any private setters)
+                //We write the new value into the bookBeingWrittenOut via the entry
                 _entry.Property(nameof(BookWithEvents.AuthorsOrdered)).CurrentValue = newAuthorsOrdered;
 
                 //Now set the original value to the bookOverwrote so that we won't have another concurrency

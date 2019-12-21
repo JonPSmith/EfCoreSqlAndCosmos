@@ -17,7 +17,7 @@ namespace EfCoreSqlAndCosmos
             using var scope = iHost.Services.CreateScope();
             var services = scope.ServiceProvider;
             using var sqlContext = services.GetRequiredService<SqlDbContext>();
-            using var noSqlContext = services.GetRequiredService<NoSqlDbContext>();
+            using var noSqlContext = services.GetService<NoSqlDbContext>();
 
             var wwwRootPath = Path.Combine(currDirectory, "wwwroot\\");
             sqlContext.DevelopmentEnsureCreated(noSqlContext);

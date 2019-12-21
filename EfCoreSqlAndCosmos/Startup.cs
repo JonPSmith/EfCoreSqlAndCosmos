@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using System;
 using System.Reflection;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
@@ -21,8 +22,11 @@ using ServiceLayer.BooksSql.Dtos;
 
 namespace EfCoreSqlAndCosmos
 {
+    public enum StartupModes { NotSet, SqlOnly, SqlAndCosmosDb }
+
     public class Startup
     {
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -52,17 +56,31 @@ namespace EfCoreSqlAndCosmos
                 options.UseSqlServer(sqlConnection, sqlServerOptionsAction: sqlOptions => sqlOptions.EnableRetryOnFailure())
             );
 
-            //The user secrets provides an actual Azure Cosmos database. The takeUserSecrets flag controls this  
-            var takeUserSecrets = false;
-            var cosmosUtl = takeUserSecrets ? Configuration["CosmosUrl"] : Configuration["endpoint"];
-            var cosmosKey = takeUserSecrets ? Configuration["CosmosKey"] : Configuration["authKey"];
-            //Note you don't need to set an ExecutionStrategy on Cosmos provider 
-            //see https://github.com/aspnet/EntityFrameworkCore/issues/8443#issuecomment-465836181
-            services.AddDbContext<NoSqlDbContext>(options =>
-                options.UseCosmos(
-                    cosmosUtl, cosmosKey,Configuration["database"]));
-            //This registers the NoSqlBookUpdater and will cause changes to books to be updated in the NoSql database
-            services.AddScoped<IBookUpdater, NoSqlBookUpdater>();
+            //This allows you to turn off the CosmosDb part if you are only interested in the 
+            if (!Enum.TryParse<StartupModes>(Configuration["StartupMode"], out var startupMode))
+                throw new InvalidOperationException("The appsettings.json property 'Mode' value wasn't valid.");
+
+            if (startupMode == StartupModes.SqlAndCosmosDb)
+            {
+                //The user secrets provides an actual Azure Cosmos database. The takeUserSecrets flag controls this  
+                var takeUserSecrets = false;
+                var cosmosUtl = takeUserSecrets ? Configuration["CosmosUrl"] : Configuration["CosmosDbInfo:endpoint"];
+                var cosmosKey = takeUserSecrets ? Configuration["CosmosKey"] : Configuration["CosmosDbInfo:authKey"];
+                //Note you don't need to set an ExecutionStrategy on Cosmos provider 
+                //see https://github.com/aspnet/EntityFrameworkCore/issues/8443#issuecomment-465836181
+                services.AddDbContext<NoSqlDbContext>(options =>
+                    options.UseCosmos(
+                        cosmosUtl, cosmosKey,Configuration["CosmosDbInfo:database"]));
+                //This registers the NoSqlBookUpdater and will cause changes to books to be updated in the NoSql database
+                services.AddScoped<IBookUpdater, NoSqlBookUpdater>();
+            }
+            else
+            {
+                //Setting this to null turns off all CosmosDb parts of the application
+                services.AddScoped<NoSqlDbContext>(x => null);
+                services.AddScoped<DbContextOptions<NoSqlDbContext>>(x => null);
+                services.AddScoped<IBookUpdater>(x => null);
+            }
 
             //The other projects that need DI have their own extension methods to handle that
             services.RegisterInfrastructureDi();

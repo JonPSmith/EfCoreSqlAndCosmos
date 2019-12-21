@@ -22,13 +22,13 @@ namespace ServiceLayer.DatabaseServices.Concrete
         public static void DevelopmentEnsureCreated(this SqlDbContext sqlDbContext, NoSqlDbContext noSqlDbContext)
         {
             sqlDbContext.Database.EnsureCreated();
-            noSqlDbContext.Database.EnsureCreated();
+            noSqlDbContext?.Database.EnsureCreated();
         }
 
         public static void DevelopmentWipeCreated(this SqlDbContext sqlDbContext, NoSqlDbContext noSqlDbContext)
         {
             sqlDbContext.Database.EnsureDeleted();
-            noSqlDbContext.Database.EnsureDeleted();
+            noSqlDbContext?.Database.EnsureDeleted();
             sqlDbContext.DevelopmentEnsureCreated(noSqlDbContext);
         }
 

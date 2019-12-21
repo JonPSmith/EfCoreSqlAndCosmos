@@ -1,113 +1,57 @@
-﻿@using ServiceLayer.BooksCommon
-@model ServiceLayer.BooksSql.Dtos.SqlBookListCombinedDto
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<p><span class="text-primary h2">SQL Books&nbsp;</span>- using standard EF Core with Select method.</p>
+<h2>Welcome to this database performance app.</h2>
 
-<form id="sort-filter-form" class="form-horizontal">
-    <div class="form-group">
-        <div class="col-sm-3">
-            <label class="control-label">Sort By</label>
-            <select asp-for="SortFilterPageData.OrderByOptions" name="OrderByOptions"
-                    asp-items="Html.GetEnumSelectList<OrderByOptions>()"
-                    class="form-control sort-filter-width"
-                    onchange="BookList.sendForm(this)"></select>
-        </div>
+<p class="h4">
+    This application show different ways to performance tune a SQL database.
+</p>
+<p>
+    This example application is a simple book selling site which list books. These books have a many-to-many relationship to book authors and
+    a one-to-many relationship to a series of reviews of the book. Sorting by the average review votes is both a important feature for the users
+    and a challenge to do quickly.
+</p>
+<p>
+    The books and the authors were scraped from the internet to give normal looking book names/authors.
+    When you run the application the first time it will fill the database(s) with about 65 books so that you can see it working.
+    <i>NOTE: There is a Admin->Generate feature which can generate a large number of books for performance tests.</i>
+</p>
+<p>
+    There are three types of database access code that it contains:
+</p>
+<ul>
+    <li>
+        <strong>Books (SQL):</strong> This is uses a good, but not performanced-tuned EF Core query.
+        <br />
+        I haven't got an specific article on this, but I covered it in my book <strong><a href="http://bit.ly/2m8KRAZ">Entity Framework Core in Action</a></strong>.
+    </li>
+    <li>
+        <strong>Books, event updates:</strong> This uses cached values for the author's names and the review values to provide superior performance.
+        <br />
+        I have an article called <strong><a href="#">A technique for building high-performance databases with EF Core</a></strong> which describes how I did this.
+    </li>
+    <li>
+        @if (Configuration["StartupMode"] != StartupModes.SqlAndCosmosDb.ToString())
+        {
+            <span><strong>Books (NoSQL):</strong></span>
+            <span class="h3 text-danger">This is currently disabled</span>
+            <span><i>- see Readme.md file for more information on this.</i></span>
+        }
+        else
+        {
+            <span><strong>Books (NoSQL):</strong> This uses a two-database CQRS design, with NoSQL (Cosmos Db) read-side database to provide superior performance and scalability.</span>
+        }
+        <br />
+        I have an article called
+        <strong>
+            <a href="https://www.thereformedprogrammer.net/building-a-robust-cqrs-database-with-ef-core-and-cosmos-db/">
+                Building a robust CQRS database with EF Core and Cosmos DB
+            </a>
+        </strong> which describes how I built this.
+    </li>
+</ul>
 
-        <div class="col-sm-3">
-            <label class="control-label">Filter Type</label>
-            <select asp-for="SortFilterPageData.FilterBy" name="FilterBy"
-                    asp-items="Html.GetEnumSelectList<BooksFilterBy>()"
-                    class="form-control sort-filter-width"
-                    onchange="BookList.filterByHasChanged(this)"></select>
-        </div>
-
-        <div class="col-sm-3 dim-filter-value" id="filter-value-group">
-            <label class="control-label">Filter By</label>
-            <select asp-for="SortFilterPageData.FilterValue" name="FilterValue"
-                    id="filter-value-dropdown"
-                    class="form-control sort-filter-width"
-                    disabled
-                    onchange="BookList.sendForm(this)">
-                <option>Select filter type...</option>
-            </select>
-        </div>
-
-        <div class="col-sm-2">
-            <label class="control-label">Page</label>
-            <div>
-                <input asp-for="SortFilterPageData.PageNum" name="PageNum"
-                       class="form-control page-control-width page-num-input"
-                       onchange="BookList.sendForm(this)">
-                <span class="num-pages-text">of @Model.SortFilterPageData.NumPages.ToString("##,###")</span>
-            </div>
-        </div>
-
-        <div class="col-sm-1">
-            <label class="control-label">Page&nbsp;Size</label>
-            <select asp-for="SortFilterPageData.PageSize" name="PageSize"
-                    asp-items="Model.SortFilterPageData.PageSizes.Select(x => new SelectListItem {Text = x.ToString(), Value = x.ToString()})"
-                    class="form-control page-control-width"
-                    onchange="BookList.sendForm(this)"></select>
-        </div>
-    </div>
-
-    <input id="PrevCheckState" name="PrevCheckState" type="hidden" value=@Model.SortFilterPageData.PrevCheckState>
-    @*@Html.Hidden("PrevCheckState", @Model.SortFilterPageData.PrevCheckState) -- this didn't work for some reason*@
-</form>
-<br />
-
-<table class="table">
-    @foreach (var item in Model.BooksList)
-    {
-        <tr>
-            <td>
-                <h3>@Html.DisplayFor(modelItem => item.Title)</h3>
-                <div>
-                    <small>by</small>&nbsp;@Html.DisplayFor(m => item.AuthorsOrdered)
-                </div>
-                <div>
-                    @(item.ReviewsCount == 0 ? "Be the first to review this book" : $"Votes: {item.ReviewsAverageVotes:F1} by {item.ReviewsCount} customers")
-                </div>
-                <div>
-                    <span class="h4">@(item.ActualPrice < 0 ? "- not for sale - " : $"Price: ${item.ActualPrice:##,###.00}")</span>
-                    @if (item.PromotionalText != null)
-                    {
-                        <span class="text-danger">
-                            <strong >&nbsp;<del>$@($"{item.ActualPrice:F}")</del>&nbsp;<i>@(item.PromotionalText)</i></strong>
-                        </span>
-                    }                    
-                </div>
-            </td>
-            <td class="vert-align">
-                
-                    <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Admin
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                            <li>@Html.ActionLink("Change Pub Date", "ChangePubDate", "Home", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Add Price Promotion", "AddPromotion", "Home", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Remove Promotion", "RemovePromotion", "Home", new { id = item.BookId })</li>
-                            <li>@Html.ActionLink("Add Review", "AddBookReview", "Home", new { id = item.BookId })</li>
-                        </ul>
-                    </div>           
-                
-            </td>
-        </tr>
-    }
-</table>
-
-@section Scripts{
-
-    <script type='text/javascript'>
-        document.addEventListener("DOMContentLoaded",
-            function(event) {
-                BookList.initialise('@Model.SortFilterPageData.FilterBy', '@Model.SortFilterPageData.FilterValue',
-                    '@Url.Action("GetFilterSearchContent")');
-            });
-    </script>
-}

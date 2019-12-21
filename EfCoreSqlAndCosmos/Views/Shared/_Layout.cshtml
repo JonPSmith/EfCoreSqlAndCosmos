@@ -32,7 +32,8 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Books (SQL)</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Sql" asp-action="Index">Books (SQL)</a></li>
                     <li><a asp-area="" asp-controller="SqlEvents" asp-action="Index">Books, event updates</a></li>
                     @if (Configuration["StartupMode"] == StartupModes.SqlAndCosmosDb.ToString())
                     {
@@ -45,9 +46,9 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownAdminItems">
-                            <li>@Html.ActionLink("Reset Cache Values", "ResetCacheValues", "Admin")</li>
-                            <li>@Html.ActionLink("Reset Database", "ResetDatabase", "Admin")</li>
-                            <li><a asp-area="" asp-controller="Generate" asp-action="Index">Generate</a></li>
+                            <li><a asp-area="" asp-controller="Admin" asp-action="ResetCacheValues">Reset Cache Values</a></li>
+                            <li><a asp-area="" asp-controller="Admin" asp-action="ResetDatabase">Reset Database</a></li>
+                            <li><a asp-area="" asp-controller="Generate" asp-action="Index">Generate Books</a></li>
                         </ul>
                     </li>
                 </ul>

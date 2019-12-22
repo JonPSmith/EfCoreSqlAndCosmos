@@ -12,7 +12,7 @@ The first time you run the ASP.NET Core application it will create a database(s)
 
 You need:
 
-1. NET Core 3.0 installed (installing Visual Studio 2019 should install NET Core 3.0).
+1. NET Core 3.1 installed (installing Visual Studio 2019.4 should install NET Core 3.1 for you).
 2. You need SQL Service localhost, e.g.`(localdb)\\mssqllocaldb`, which is installed with Visual Studio 2019.
 3. If you have enabled the NoSQL part (see below) you need [Azure Cosmos DB Emulator for local development and testing](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator) installed and running.
 

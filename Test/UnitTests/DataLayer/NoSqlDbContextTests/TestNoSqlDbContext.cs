@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using DataLayer.EfCode;
 using EfCoreSqlAndCosmos;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Test.Helpers;
@@ -32,10 +33,10 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
                 //ATTEMPT
                 var book = NoSqlTestData.CreateDummyNoSqlBook();
                 context.Add(book);
-                var numNoSqlChanges = await context.SaveChangesAsync();
+                var ex = await Assert.ThrowsAsync<CosmosException>(async () => await context.SaveChangesAsync());
 
                 //VERIFY
-                numNoSqlChanges.ShouldEqual(0);
+                ex.Message.ShouldStartWith("Response status code does not indicate success: 404 Substatus:");
             }
         }
 

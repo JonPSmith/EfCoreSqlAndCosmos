@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Test.CosmosTestDb;
 using TestSupport.Attributes;
@@ -53,13 +54,12 @@ namespace Test.UnitTests.ExploreCosmosDb
                 var cBook1 = new CosmosBook { CosmosBookId = 1, Title = "Book1" };
                 var cBook2 = new CosmosBook { CosmosBookId = 2, Title = "Book2" };
                 context.AddRange(cBook1, cBook2);
-                await context.SaveChangesAsync();
 
                 //ATTEMPT
-                var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => context.Books.AnyAsync(x => x.Title == "Book2"));
+                var ex = await Assert.ThrowsAsync<CosmosException>(async () => await context.SaveChangesAsync());
 
                 //VERIFY
-                ex.Message.ShouldStartWith("The LINQ expression 'Any<CosmosBook>(\r\n    source: DbSet<CosmosBook>, \r\n    predicate: (c) => c.Title == \"Book2\")' could not be translated.");
+                ex.Message.ShouldContain("Resource with specified id or name already exists.");
             }
         }
 
@@ -219,11 +219,11 @@ namespace Test.UnitTests.ExploreCosmosDb
                 var cBook = new CosmosBook { CosmosBookId = 1, Title = "Book2" };
                 context.Add(cBook);
                 context.Entry(cBook).State.ShouldEqual(EntityState.Added);
-                var changes = await context.SaveChangesAsync();
+                var ex = await Assert.ThrowsAsync<CosmosException>(async () => await context.SaveChangesAsync());
 
                 //VERIFY
-                context.Entry(cBook).State.ShouldEqual(EntityState.Unchanged);
-                changes.ShouldEqual(0);
+                ex.Message.ShouldContain("Resource with specified id or name already exists.");
+
             }
             using (var context = new CosmosDbContext(options))
             {

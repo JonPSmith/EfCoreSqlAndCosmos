@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataLayer.EfCode;
 using DataLayer.NoSqlCode;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Test.Helpers;
 using TestSupport.Attributes;
@@ -65,12 +66,12 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
                 var book = DddEfTestData.CreateDummyBookOneAuthor();
                 sqlContext.Add(book);
                 var numBooksChanged = updater.FindNumBooksChanged(sqlContext);
-                var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                var ex = await Assert.ThrowsAsync<CosmosException>(async () =>
                     await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, numBooksChanged, 
                         () => sqlContext.SaveChangesAsync()));
 
                 //VERIFY
-                ex.Message.ShouldEqual("1 books were changed in SQL, but the NoSQL changed 0");
+                ex.Message.ShouldStartWith("Response status code does not indicate success: 404 Substatus:");
                 numBooksChanged.ShouldEqual(1);
                 sqlContext.Books.Count().ShouldEqual(0);
             }

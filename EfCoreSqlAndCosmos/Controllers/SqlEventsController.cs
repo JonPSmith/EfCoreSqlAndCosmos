@@ -6,17 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataLayer.EfClassesSql;
-using DataLayer.EfCode;
 using DataLayerEvents.EfCode;
 using GenericServices;
 using GenericServices.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.BooksCommon;
 using ServiceLayer.BooksSql;
 using ServiceLayer.BooksSql.Dtos;
 using ServiceLayer.BooksSqlWithEvents;
-using ServiceLayer.DatabaseServices.Concrete;
+using ServiceLayer.BooksSqlWithEvents.Dtos;
 using ServiceLayer.Logger;
 
 namespace EfCoreSqlAndCosmos.Controllers
@@ -52,7 +50,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         public IActionResult ChangePubDate(Guid id, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
-            var dto = service.ReadSingle<ChangePubDateDto>(id);
+            var dto = service.ReadSingle<ChangePubDateEventsDto>(id);
             if (!service.IsValid)
             {
                 service.CopyErrorsToModelState(ModelState, dto);
@@ -63,7 +61,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePubDate(ChangePubDateDto dto, [FromServices]ICrudServicesAsync<SqlEventsDbContext> service)
+        public async Task<IActionResult> ChangePubDate(ChangePubDateEventsDto dto, [FromServices]ICrudServicesAsync<SqlEventsDbContext> service)
         {
             if (!ModelState.IsValid)
             {
@@ -81,7 +79,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         public IActionResult AddPromotion(Guid id, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
-            var dto = service.ReadSingle<AddRemovePromotionDto>(id);
+            var dto = service.ReadSingle<AddRemovePromotionEventsDto>(id);
             if (!service.IsValid)
             {
                 service.CopyErrorsToModelState(ModelState, dto);
@@ -92,7 +90,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddPromotion(AddRemovePromotionDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
+        public IActionResult AddPromotion(AddRemovePromotionEventsDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             if (!ModelState.IsValid)
             {
@@ -110,7 +108,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         public IActionResult RemovePromotion(Guid id, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
-            var dto = service.ReadSingle<AddRemovePromotionDto>(id);
+            var dto = service.ReadSingle<AddRemovePromotionEventsDto>(id);
             if (!service.IsValid)
             {
                 service.CopyErrorsToModelState(ModelState, dto);
@@ -121,7 +119,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RemovePromotion(AddRemovePromotionDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
+        public IActionResult RemovePromotion(AddRemovePromotionEventsDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             if (!ModelState.IsValid)
             {
@@ -140,7 +138,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         public IActionResult AddBookReview(Guid id, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
-            var dto = service.ReadSingle<AddReviewDto>(id);
+            var dto = service.ReadSingle<AddReviewEventsDto>(id);
             if (!service.IsValid)
             {
                 service.CopyErrorsToModelState(ModelState, dto);
@@ -151,7 +149,7 @@ namespace EfCoreSqlAndCosmos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddBookReview(AddReviewDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
+        public IActionResult AddBookReview(AddReviewEventsDto dto, [FromServices]ICrudServices<SqlEventsDbContext> service)
         {
             if (!ModelState.IsValid)
             {

@@ -16,11 +16,13 @@ You need:
 2. You need SQL Service localhost, e.g.`(localdb)\\mssqllocaldb`, which is installed with Visual Studio 2019.
 3. If you have enabled the NoSQL part (see below) you need [Azure Cosmos DB Emulator for local development and testing](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator) installed and running.
 
-### Controlling if the NoSQL databse is used
+### Controlling if the NoSQL database is used
 
-Because you need the Azure Cosmos DB Emulator running locally for the NoSQL part to run I set the `StartupMode` property to "SqlOnly" in the appsettings.json file in the ASP.NET Core project. This stops you from getting errors if the Azure Cosmos DB Emulator isn't available. 
+To make it easier for people wanting to try this application, by default I turn off the NoSQL part. That's because the NoSQL part will fail on startup if the Azure Cosmos DB Emulator is not running locally.
 
-If you want to try the NoSQL part then you should set the `StartupMode` to "SqlAndCosmosDb" and restart the application. **NOTE: if you previously started in "SqlOnly" you need to use Admin->Reset Database or Admin->Generate Books with wipe database ticked to rebuild the two database in sync.
+Whether the NoSQL part is on or off is controlled by the `StartupMode` property in the appsettings.json file. I set this to "SqlOnly", which turns off the NoSQL part. 
+
+If you want to try the NoSQL part then you should set the `StartupMode` to "SqlAndCosmosDb" and restart the application. **NOTE: if you previously started in "SqlOnly" you need to use Admin->Reset Database or Admin->Generate Books with wipe database ticked to rebuild the two database in sync.**
 
 
 ## Articles that go with this application

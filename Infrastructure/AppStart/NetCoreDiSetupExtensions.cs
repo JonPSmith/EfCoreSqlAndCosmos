@@ -17,9 +17,8 @@ namespace Infrastructure.AppStart
             {
                 SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
             };
-            //Because I haven't provided any assemblies this will scan this assembly
+            //Because I haven't provided any assemblies this will scan this assembly for event handlers
             services.RegisterGenericEventRunner(config);
-
         }
     }
 }

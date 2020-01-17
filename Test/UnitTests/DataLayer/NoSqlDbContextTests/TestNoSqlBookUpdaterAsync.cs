@@ -110,6 +110,40 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
         }
 
         [Fact]
+        public async Task TestNoSqlBookUpdaterWithReviewsOk()
+        {
+            //SETUP
+            var config = AppSettings.GetConfiguration();
+            var builder = new DbContextOptionsBuilder<NoSqlDbContext>()
+                .UseCosmos(
+                    config["endpoint"],
+                    config["authKey"],
+                    GetType().Name);
+
+
+            using var sqlContext = new SqlDbContext(_sqlOptions);
+            using var noSqlContext = new NoSqlDbContext(builder.Options);
+
+            await sqlContext.Database.EnsureCreatedAsync();
+            await noSqlContext.Database.EnsureCreatedAsync();
+            var updater = new NoSqlBookUpdater(noSqlContext);
+
+            //ATTEMPT
+            var book = DddEfTestData.CreateDummyBookTwoAuthorsTwoReviews();
+            sqlContext.Add(book);
+            var numBooksChanged = updater.FindNumBooksChanged(sqlContext);
+            await updater.CallBaseSaveChangesWithNoSqlWriteInTransactionAsync(sqlContext, numBooksChanged,
+                () => sqlContext.SaveChangesAsync());
+
+            //VERIFY
+            numBooksChanged.ShouldEqual(1);
+            sqlContext.Books.Count().ShouldEqual(1);
+            var noSqlResult = noSqlContext.Books.Find(book.BookId);
+            noSqlResult.ReviewsCount.ShouldEqual(2);
+            noSqlResult.ReviewsAverageVotes.ShouldEqual(3);
+        }
+
+        [Fact]
         public async Task TestNoSqlBookUpdaterWithRetryStrategyOk()
         {
             //SETUP

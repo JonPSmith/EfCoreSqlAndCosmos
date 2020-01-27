@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using GenericServices;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using StatusGeneric;
 
 namespace EfCoreSqlAndCosmos.HelperCode
 {
@@ -25,29 +25,7 @@ namespace EfCoreSqlAndCosmos.HelperCode
         /// <param name="modelState">The MVC modelState to add errors to</param>
         /// <param name="displayDto">This is the Dto that will be used to display the error messages</param>
         /// <param name="modelName">When using razor pages you need to prefix the member name by the name of the model's property</param>
-        public static void CopyErrorsToModelState<T>(this StatusGeneric.IStatusGeneric status, ModelStateDictionary modelState, T displayDto, string modelName = null)
-        {
-            if (status.IsValid) return;
-            if (displayDto == null)
-            {
-                status.CopyErrorsToModelState(modelState);
-                return;
-            }
-
-            CopyErrorsWithFilterOnDto(status.Errors.Select(x => x.ErrorResult), modelState, displayDto, modelName);
-        }
-
-        /// <summary>
-        /// This transfers error messages from the ValidationResult collection to the MVC modelState error dictionary.
-        /// It looks for errors that have member names corresponding to the properties in the displayDto.
-        /// This means that errors associated with a field on display will show next to the name. 
-        /// Other errors will be shown in the ValidationSummary
-        /// </summary>
-        /// <param name="status">The status that came back from the BizRunner</param>
-        /// <param name="modelState">The MVC modelState to add errors to</param>
-        /// <param name="displayDto">This is the Dto that will be used to display the error messages</param>
-        /// <param name="modelName">When using razor pages you need to prefix the member name by the name of the model's property</param>
-        public static void CopyErrorsToModelState<T>(this GenericServices.IStatusGeneric status, ModelStateDictionary modelState, T displayDto, string modelName = null)
+        public static void CopyErrorsToModelState<T>(this IStatusGeneric status, ModelStateDictionary modelState, T displayDto, string modelName = null)
         {
             if (status.IsValid) return;
             if (displayDto == null)
@@ -70,19 +48,6 @@ namespace EfCoreSqlAndCosmos.HelperCode
 
             foreach (var error in status.Errors)
                 modelState.AddModelError("", error.ErrorResult.ErrorMessage);
-        }
-
-        /// <summary>
-        /// This copies errors for general display where we are not returning to a page with the fields on them
-        /// </summary>
-        /// <param name="status"></param>
-        /// <param name="modelState"></param>
-        public static void CopyErrorsToModelState(this GenericServices.IStatusGeneric status, ModelStateDictionary modelState)
-        {
-            if (status.IsValid) return;
-
-            foreach (var error in status.Errors)
-                    modelState.AddModelError("", error.ErrorResult.ErrorMessage);
         }
 
         //-----------------------------------------------------------------------------------

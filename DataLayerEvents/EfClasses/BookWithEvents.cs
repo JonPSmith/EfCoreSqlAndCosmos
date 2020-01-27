@@ -7,8 +7,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using DataLayerEvents.DomainEvents;
 using GenericEventRunner.ForEntities;
-using GenericServices;
 using Microsoft.EntityFrameworkCore;
+using StatusGeneric;
 
 namespace DataLayerEvents.EfClasses
 {

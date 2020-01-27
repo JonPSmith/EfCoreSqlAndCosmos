@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using GenericServices;
 using Microsoft.EntityFrameworkCore;
+using StatusGeneric;
 
 namespace DataLayer.EfClassesSql
 {
@@ -93,54 +93,24 @@ namespace DataLayer.EfClassesSql
             PublishedOn = publishedOn;
         }
 
-        public void AddReview(int numStars, string comment, string voterName, 
-            DbContext context = null) 
+        //This works with the GenericServices' IncludeThen Attribute to pre-load the Reviews collection
+        public void AddReview(int numStars, string comment, string voterName)
         {
-            if (_reviews != null)    
-            {
-                _reviews.Add(new Review(numStars, comment, voterName));   
-            }
-            else if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context), 
-                    "You must provide a context if the Reviews collection isn't valid.");
-            }
-            else if (context.Entry(this).IsKeySet)  
-            {
-                context.Add(new Review(numStars, comment, voterName, BookId));
-            }
-            else                                     
-            {                                        
-                throw new InvalidOperationException("Could not add a new review.");  
-            }
+            if (_reviews == null)
+                throw new InvalidOperationException("The Reviews collection must be loaded before calling this method");
+            _reviews.Add(new Review(numStars, comment, voterName));
         }
 
-        public void RemoveReview(int reviewId, DbContext context = null)
-        {
-            if (_reviews != null)
-            {
-                //This is there to handle the add/remove of reviews when first created (or someone uses an .Include(p => p.Reviews)
-                var localReview = _reviews.SingleOrDefault(x => x.ReviewId == reviewId);
-                if (localReview == null)
-                    throw new InvalidOperationException("The review with that key was not found in the book's Reviews.");
-                _reviews.Remove(localReview);
-            }
-            else if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context),
-                    "You must provide a context if the Reviews collection isn't valid.");
-            }
-            else
-            {
-                var review = context.Find<Review>(reviewId);
-                if (review == null || review.BookId != BookId)
-                {
-                    // This ensures that the review is a) linked to the book you defined, and b) the review has a valid primary key
-                    throw new InvalidOperationException("The review either wasn't found or was not linked to this Book.");
-                }
 
-                context.Remove(review);
-            }
+        //This works with the GenericServices' IncludeThen Attribute to pre-load the Reviews collection
+        public void RemoveReview(int reviewId)
+        {
+            if (_reviews == null)
+                throw new InvalidOperationException("The Reviews collection must be loaded before calling this method");
+            var localReview = _reviews.SingleOrDefault(x => x.ReviewId == reviewId);
+            if (localReview == null)
+                throw new InvalidOperationException("The review with that key was not found in the book's Reviews.");
+            _reviews.Remove(localReview);
         }
 
         public IStatusGeneric AddPromotion(decimal actualPrice, string promotionalText)                  

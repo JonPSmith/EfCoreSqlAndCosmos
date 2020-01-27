@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ServiceLayer.BooksSql.Dtos
 {
+    [IncludeThen(nameof(Book.Reviews))]
     public class AddReviewDto : ILinkToEntity<Book>
     {
         [HiddenInput]

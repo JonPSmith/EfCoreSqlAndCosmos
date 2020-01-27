@@ -157,8 +157,8 @@ namespace Test.UnitTests.DataLayer.SqlDbContextTests
             using (var sqlContext = new SqlDbContext(_sqlOptions, new NoSqlBookUpdater(noSqlContext)))
             {
                 //ATTEMPT
-                var book = sqlContext.Books.Single();
-                book.AddReview(5, "xxx","yyy", sqlContext);
+                var book = sqlContext.Books.Include(x => x.Reviews).Single();
+                book.AddReview(5, "xxx","yyy");
                 await sqlContext.SaveChangesAsync();
 
                 //VERIFY

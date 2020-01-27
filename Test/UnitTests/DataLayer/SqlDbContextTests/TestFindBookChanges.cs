@@ -112,8 +112,8 @@ namespace Test.UnitTests.DataLayer.SqlDbContextTests
             using (var context = new SqlDbContext(options))
             {
                 //ATTEMPT
-                var book = context.Books.First();
-                book.AddReview(5, "test", "test", context);
+                var book = context.Books.Include(x => x.Reviews).First();
+                book.AddReview(5, "test", "test");
                 var changes = BookChangeInfo.FindBookChanges(context.ChangeTracker.Entries().ToList(), context);
 
                 //VERIFY

@@ -28,12 +28,13 @@ namespace EfCoreSqlAndCosmos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Books(int totalBooksNeeded, bool wipeDatabase, CancellationToken cancellationToken,
             [FromServices]SqlDbContext sqlContext,
-            [FromServices]NoSqlDbContext noSqlContext,
             [FromServices]BookGenerator generator,
             [FromServices]IWebHostEnvironment env)
         {
             if (totalBooksNeeded == 0)
                 return View((object) "Error: should contain the number of books to generate.");
+
+            NoSqlDbContext noSqlContext = (NoSqlDbContext) HttpContext.RequestServices.GetService(typeof(NoSqlDbContext));
 
             if (wipeDatabase)
                 sqlContext.DevelopmentWipeCreated(noSqlContext);

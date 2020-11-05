@@ -71,7 +71,7 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
                         () => sqlContext.SaveChangesAsync()));
 
                 //VERIFY
-                ex.Message.ShouldStartWith("Response status code does not indicate success: 404 Substatus:");
+                ex.Message.ShouldStartWith("Response status code does not indicate success: NotFound (404)");
                 numBooksChanged.ShouldEqual(1);
                 sqlContext.Books.Count().ShouldEqual(0);
             }

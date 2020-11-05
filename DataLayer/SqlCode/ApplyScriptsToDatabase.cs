@@ -32,7 +32,7 @@ namespace DataLayer.SqlCode
                     {
                         try
                         {
-                            context.Database.ExecuteSqlCommand(command);
+                            context.Database.ExecuteSqlRaw(command);
                         }
                         catch (SqlException)
                         {

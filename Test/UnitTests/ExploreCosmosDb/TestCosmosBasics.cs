@@ -39,7 +39,7 @@ namespace Test.UnitTests.ExploreCosmosDb
                 var ex = Assert.Throws<NotSupportedException>(() => context.Add(cBook));
 
                 //VERIFY
-                ex.Message.ShouldStartWith("The 'CosmosBookId' on entity type 'CosmosBook' does not have a value set and no value generator is available for properties of type 'int'.");
+                ex.Message.ShouldStartWith("The property 'CosmosBook.CosmosBookId' does not have a value set and no value generator is available for properties of type 'int'.");
             }
         }
 
@@ -56,10 +56,10 @@ namespace Test.UnitTests.ExploreCosmosDb
                 context.AddRange(cBook1, cBook2);
 
                 //ATTEMPT
-                var ex = await Assert.ThrowsAsync<CosmosException>(async () => await context.SaveChangesAsync());
+                var ex = await Assert.ThrowsAsync<DbUpdateException> (async () => await context.SaveChangesAsync());
 
                 //VERIFY
-                ex.Message.ShouldContain("Resource with specified id or name already exists.");
+                ex.Message.ShouldContain("Conflicts were detected for item with id 'CosmosBook|1'.");
             }
         }
 
@@ -137,12 +137,11 @@ namespace Test.UnitTests.ExploreCosmosDb
             using (var context = new CosmosDbContext(options))
             {
                 //ATTEMPT
-                var ex = await Assert.ThrowsAsync<NotSupportedException>(async ()
-                    => await context.Books.OrderBy(x => x.NullableInt).ToListAsync());
+                var books = await context.Books.OrderBy(x => x.NullableInt).ToListAsync();
 
                 //VERIFY
-                ex.Message.ShouldStartWith("Cannot execute cross partition order-by queries on mix types. " +
-                                           "Consider using IS_STRING/IS_NUMBER to get around this exception.");
+                books[0].NullableInt.ShouldBeNull();
+                books[1].NullableInt.ShouldNotBeNull();
             }
         }
 
@@ -164,12 +163,11 @@ namespace Test.UnitTests.ExploreCosmosDb
             using (var context = new CosmosDbContext(options))
             {
                 //ATTEMPT
-                var ex = await Assert.ThrowsAsync<NotSupportedException>(async () =>
-                    await context.Books.OrderBy(x => x.Title).ToListAsync());
+                var books = await context.Books.OrderBy(x => x.Title).ToListAsync();
 
                 //VERIFY
-                ex.Message.ShouldStartWith("Cannot execute cross partition order-by queries on mix types. " +
-                                           "Consider using IS_STRING/IS_NUMBER to get around this exception.");
+                books[0].Title.ShouldBeNull();
+                books[1].Title.ShouldNotBeNull();
             }
         }
 
@@ -219,10 +217,10 @@ namespace Test.UnitTests.ExploreCosmosDb
                 var cBook = new CosmosBook { CosmosBookId = 1, Title = "Book2" };
                 context.Add(cBook);
                 context.Entry(cBook).State.ShouldEqual(EntityState.Added);
-                var ex = await Assert.ThrowsAsync<CosmosException>(async () => await context.SaveChangesAsync());
+                var ex = await Assert.ThrowsAsync<DbUpdateException>(async () => await context.SaveChangesAsync());
 
                 //VERIFY
-                ex.Message.ShouldContain("Resource with specified id or name already exists.");
+                ex.Message.ShouldContain("Conflicts were detected for item with id 'CosmosBook|1'.");
 
             }
             using (var context = new CosmosDbContext(options))

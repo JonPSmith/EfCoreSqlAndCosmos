@@ -53,12 +53,12 @@ namespace Test.UnitTests.ServiceLayer
                 //ATTEMPT
                 var now = DateTime.UtcNow;
                 var books = await context.Books.Where(x => x.PublishedOn < now).ToListAsync();
-                var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
                     await context.Books.Where(x => x.PublishedOn < DateTime.UtcNow).ToListAsync());
 
                 //VERIFY
                 books.Any().ShouldBeTrue();
-                ex.Message.ShouldContain("could not be translated.");
+                ex.Message.ShouldContain("Value cannot be null.");
             }
         }
 

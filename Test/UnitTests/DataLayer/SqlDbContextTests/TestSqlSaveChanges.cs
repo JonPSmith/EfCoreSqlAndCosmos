@@ -265,7 +265,7 @@ namespace Test.UnitTests.DataLayer.SqlDbContextTests
 
                 //VERIFY
                 sqlContext.Books.Count().ShouldEqual(0);
-                ex.Message.ShouldStartWith("Response status code does not indicate success: 404 Substatus:");
+                ex.Message.ShouldStartWith("Response status code does not indicate success: NotFound (404)");
             }
         }
     }

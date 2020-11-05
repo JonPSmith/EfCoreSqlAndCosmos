@@ -36,7 +36,7 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
                 var ex = await Assert.ThrowsAsync<CosmosException>(async () => await context.SaveChangesAsync());
 
                 //VERIFY
-                ex.Message.ShouldStartWith("Response status code does not indicate success: 404 Substatus:");
+                ex.Message.ShouldStartWith("Response status code does not indicate success: NotFound (404)");
             }
         }
 

@@ -58,7 +58,7 @@ namespace Test.UnitTests.ServiceLayer
 
                 //VERIFY
                 books.Any().ShouldBeTrue();
-                ex.Message.ShouldContain("Value cannot be null.");
+                ex.Message.ShouldEqual("Value cannot be null. (Parameter 'instance')");
             }
         }
 

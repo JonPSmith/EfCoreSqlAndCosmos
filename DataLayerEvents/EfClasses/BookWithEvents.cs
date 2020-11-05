@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using DataLayerEvents.DomainEvents;
-using GenericEventRunner.ForEntities;
+using GenericEventRunner.DomainParts;
 using Microsoft.EntityFrameworkCore;
 using StatusGeneric;
 
 namespace DataLayerEvents.EfClasses
 {
-    public class BookWithEvents : EntityEvents
+    public class BookWithEvents : EntityEventsBase
     {
         public const int PromotionalTextLength = 200;
         private HashSet<BookAuthorWithEvents> _authorsLink;

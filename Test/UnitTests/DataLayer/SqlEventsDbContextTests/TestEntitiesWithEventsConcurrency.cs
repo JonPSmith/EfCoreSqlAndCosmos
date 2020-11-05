@@ -53,10 +53,8 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            var config = new GenericEventRunnerConfig
-            {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
-            };
+            var config = new GenericEventRunnerConfig();
+            config.RegisterSaveChangesExceptionHandler<SqlEventsDbContext>(BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency);
             var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
             context.Database.EnsureCreated();
             var book = WithEventsEfTestData.CreateDummyBookOneAuthor();
@@ -83,10 +81,8 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            var config = new GenericEventRunnerConfig
-            {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
-            };
+            var config = new GenericEventRunnerConfig();
+            config.RegisterSaveChangesExceptionHandler<SqlEventsDbContext>(BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency);
             var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
             context.Database.EnsureCreated();
 
@@ -130,10 +126,8 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            var config = new GenericEventRunnerConfig
-            {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
-            };
+            var config = new GenericEventRunnerConfig();
+            config.RegisterSaveChangesExceptionHandler<SqlEventsDbContext>(BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency);
             var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
             context.Database.EnsureCreated();
             var books = WithEventsEfTestData.CreateDummyBooks(2);
@@ -161,10 +155,8 @@ namespace Test.UnitTests.DataLayer.SqlEventsDbContextTests
         {
             //SETUP
             var options = SqliteInMemory.CreateOptions<SqlEventsDbContext>();
-            var config = new GenericEventRunnerConfig
-            {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
-            };
+            var config = new GenericEventRunnerConfig();
+            config.RegisterSaveChangesExceptionHandler<SqlEventsDbContext>(BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency);
             var context = options.CreateDbWithDiForHandlers<SqlEventsDbContext, ReviewAddedHandler>(config: config);
             context.Database.EnsureCreated();
             var books = WithEventsEfTestData.CreateDummyBooks(2);

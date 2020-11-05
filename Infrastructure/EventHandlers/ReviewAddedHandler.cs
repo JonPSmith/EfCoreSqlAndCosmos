@@ -3,7 +3,6 @@
 
 using System;
 using DataLayerEvents.DomainEvents;
-using GenericEventRunner.ForEntities;
 using GenericEventRunner.ForHandlers;
 using StatusGeneric;
 
@@ -11,7 +10,7 @@ namespace Infrastructure.EventHandlers
 {
     public class ReviewAddedHandler : IBeforeSaveEventHandler<BookReviewAddedEvent>
     {
-        public IStatusGeneric Handle(EntityEvents callingEntity, BookReviewAddedEvent domainEvent)
+        public IStatusGeneric Handle(object callingEntity, BookReviewAddedEvent domainEvent)
         {
             //Here is the fast (delta) version of the update. Doesn't need access to the database
             var totalStars = Math.Round(domainEvent.Book.ReviewsAverageVotes * 

@@ -3,11 +3,11 @@
 
 using System;
 using DataLayerEvents.EfClasses;
-using GenericEventRunner.ForEntities;
+using GenericEventRunner.DomainParts;
 
 namespace DataLayerEvents.DomainEvents
 {
-    public class BookReviewAddedEvent : IDomainEvent
+    public class BookReviewAddedEvent : IEntityEvent
     { 
         public BookReviewAddedEvent(int numStars, BookWithEvents book, Action<int,double> updateReviewCachedValues)
         {

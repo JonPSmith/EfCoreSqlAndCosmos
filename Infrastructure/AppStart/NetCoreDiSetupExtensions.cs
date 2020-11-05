@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019 Jon P Smith, GitHub: JonPSmith, web: http://www.thereformedprogrammer.net/
 // Licensed under MIT license. See License.txt in the project root for license information.
 
+using DataLayerEvents.EfCode;
 using GenericEventRunner.ForSetup;
 using Infrastructure.ConcurrencyHandlers;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +14,9 @@ namespace Infrastructure.AppStart
         {
 
             //This provides a SaveChangesExceptionHandler which handles concurrency issues around ReviewsCount and ReviewsAverageVotes
-            var config = new GenericEventRunnerConfig
-            {
-                SaveChangesExceptionHandler = BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency
-            };
+            var config = new GenericEventRunnerConfig();
+            config.RegisterSaveChangesExceptionHandler<SqlEventsDbContext>(BookWithEventsConcurrencyHandler.HandleCacheValuesConcurrency);
+
             //Because I haven't provided any assemblies this will scan this assembly for event handlers
             services.RegisterGenericEventRunner(config);
         }

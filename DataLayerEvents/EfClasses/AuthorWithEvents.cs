@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using DataLayerEvents.DomainEvents;
-using GenericEventRunner.ForEntities;
+using GenericEventRunner.DomainParts;
 
 namespace DataLayerEvents.EfClasses
 {
-    public class AuthorWithEvents : EntityEvents
+    public class AuthorWithEvents : EntityEventsBase
     {
         public const int NameLength = 100;
         public const int EmailLength = 100;

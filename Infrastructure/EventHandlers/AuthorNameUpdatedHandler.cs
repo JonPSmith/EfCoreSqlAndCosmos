@@ -7,7 +7,6 @@ using DataLayerEvents.DomainEvents;
 using DataLayerEvents.EfClasses;
 using DataLayerEvents.EfCode;
 using DataLayerEvents.QueryExtensions;
-using GenericEventRunner.ForEntities;
 using GenericEventRunner.ForHandlers;
 using StatusGeneric;
 
@@ -22,7 +21,7 @@ namespace Infrastructure.EventHandlers
             _context = context;
         }
 
-        public IStatusGeneric Handle(EntityEvents callingEntity, AuthorNameUpdatedEvent domainEvent)
+        public IStatusGeneric Handle(object callingEntity, AuthorNameUpdatedEvent domainEvent)
         {
             //We go through all the books that have this author as one of its authors
             foreach (var bookWithEvents in _context.BookAuthors

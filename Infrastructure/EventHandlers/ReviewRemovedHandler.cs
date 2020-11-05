@@ -3,7 +3,6 @@
 
 using System;
 using DataLayerEvents.DomainEvents;
-using GenericEventRunner.ForEntities;
 using GenericEventRunner.ForHandlers;
 using StatusGeneric;
 
@@ -11,7 +10,7 @@ namespace Infrastructure.EventHandlers
 {
     public class ReviewRemovedHandler : IBeforeSaveEventHandler<BookReviewRemovedEvent>
     {
-        public IStatusGeneric Handle(EntityEvents callingEntity, BookReviewRemovedEvent domainEvent)
+        public IStatusGeneric Handle(object callingEntity, BookReviewRemovedEvent domainEvent)
         {
             //Here is the fast (delta) version of the update. Doesn't need access to the database
             var numReviews = domainEvent.Book.ReviewsCount - 1;

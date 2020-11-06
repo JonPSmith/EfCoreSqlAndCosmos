@@ -3,11 +3,13 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace DataLayer.EfClassesNoSql
 {
     public class BookListNoSql
     {
+        [JsonProperty(PropertyName = "id")]
         [Key]
         public Guid BookId { get; set; }
         public string Title { get; set; }

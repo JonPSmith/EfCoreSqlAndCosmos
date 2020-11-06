@@ -29,7 +29,7 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
         {
             //SETUP
             var mainConfig = AppSettings.GetConfiguration("../EfCoreSqlAndCosmos/");
-            var noSQlDatabaseName = mainConfig["database"];
+            var noSQlDatabaseName = mainConfig["CosmosDbInfo:database"];
             var noSqlOptions = noSQlDatabaseName.GetCosmosDbToEmulatorOptions<NoSqlDbContext>();
             using (var noSqlDbContext = new NoSqlDbContext(noSqlOptions))
             {

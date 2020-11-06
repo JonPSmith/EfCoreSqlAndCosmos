@@ -88,7 +88,6 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
                     config["authKey"],
                     GetType().Name);
 
-
             using var sqlContext = new SqlDbContext(_sqlOptions);
             using var noSqlContext = new NoSqlDbContext(builder.Options);
             

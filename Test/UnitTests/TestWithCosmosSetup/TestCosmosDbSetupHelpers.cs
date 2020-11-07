@@ -23,6 +23,7 @@ namespace Test.UnitTests.TestWithCosmosSetup
         [Theory]
         [InlineData("CosmosEmulator", "TestCosmosDb")]
         [InlineData("AzureUnitTest", "AzureTestDatabase")]
+        [InlineData("BadSection", null)]
         public void TestGetConfigWithCheck(string groupName, string expectedDatabaseName)
         {
             //SETUP
@@ -31,7 +32,7 @@ namespace Test.UnitTests.TestWithCosmosSetup
             var settings = groupName.GetConfigWithCheck();
 
             //VERIFY
-            settings.Database.ShouldEqual(expectedDatabaseName);
+            settings?.Database.ShouldEqual(expectedDatabaseName);
         }
 
 

@@ -20,17 +20,16 @@ namespace Test.Helpers
             return (await settings.LinkToExistingContainerAsync(databaseName, containerName)) != null;
         }
 
-        public static async Task<bool> CheckCosmosDbContainerExistsAsync(this string configGroupName, string databaseName = null,
+        public static async Task<bool> CheckCosmosDbContainerExistsAsync(this string configSectionName, string databaseName = null,
             string containerName = null)
         {
-            return (await configGroupName.LinkToExistingContainerAsync(databaseName, containerName)) != null;
+            return (await configSectionName.LinkToExistingContainerAsync(databaseName, containerName)) != null;
         }
 
-        public static Task<Container> LinkToExistingContainerAsync(this string configGroupName, string databaseName = null, string containerName = null)
+        public static Task<Container> LinkToExistingContainerAsync(this string configSectionName, string databaseName = null, string containerName = null)
         {
-            var settings = configGroupName.GetConfigWithCheck();
-
-            return settings.LinkToExistingContainerAsync(databaseName, containerName);
+            var settings = configSectionName.GetConfigWithCheck();
+            return settings?.LinkToExistingContainerAsync(databaseName, containerName);
         }
 
         public static async Task<Container> LinkToExistingContainerAsync(this CosmosDbSettings settings, string databaseName = null, string containerName = null)
@@ -51,11 +50,11 @@ namespace Test.Helpers
             }
         }
 
-        public static DbContextOptions<TContext> GetCosmosEfCoreOptions<TContext>(this string configGroupName, string databaseName = null)
+        public static DbContextOptions<TContext> GetCosmosEfCoreOptions<TContext>(this string configSectionName, string databaseName = null)
             where TContext : DbContext
         {
-            var settings = configGroupName.GetConfigWithCheck();
-            return settings.GetCosmosEfCoreOptions<TContext>(databaseName);
+            var settings = configSectionName.GetConfigWithCheck();
+            return settings?.GetCosmosEfCoreOptions<TContext>(databaseName);
         }
 
         public static DbContextOptions<TContext> GetCosmosEfCoreOptions<TContext>(this CosmosDbSettings settings, string databaseName = null)
@@ -66,13 +65,19 @@ namespace Test.Helpers
                     databaseName ?? settings.Database).Options;
         }
 
-        public static CosmosDbSettings GetConfigWithCheck(this string configGroupName)
+        /// <summary>
+        /// This returns the Cosmos DB setting for the given section name
+        /// If no section found then returns null.
+        /// </summary>
+        /// <param name="configSectionName"></param>
+        /// <returns></returns>
+        public static CosmosDbSettings GetConfigWithCheck(this string configSectionName)
         {
             var result = new CosmosDbSettings();
 
             var config = AppSettings.GetConfiguration();
 
-            config.GetSection(configGroupName).Bind(result);
+            config.GetSection(configSectionName).Bind(result);
 
             if (result.Endpoint != null)
                 return result; 
@@ -81,13 +86,9 @@ namespace Test.Helpers
                 .AddUserSecrets<Startup>()
                 .Build();
 
-            config.GetSection(configGroupName).Bind(result);
+            config.GetSection(configSectionName).Bind(result);
 
-            if (result.Endpoint == null)
-                throw new ArgumentException(
-                    $"There isn't a group called {configGroupName} in the appsettings.json or app secrets");
-
-            return result;
+            return result.Endpoint == null ? null : result;
         }
     }
 }

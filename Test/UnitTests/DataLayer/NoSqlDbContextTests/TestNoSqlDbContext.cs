@@ -131,7 +131,7 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
             _output.WriteLine($"BulkLoad now has {result} entries");
         }
 
-        [Fact]
+        [Fact(Skip = "Needs Id property")]
         public async Task TestCosmosDbBulkLoadDirectOk()
         {
             //SETUP
@@ -158,7 +158,7 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
         private async Task TimeCosmosSdkWriteOut(int totalToWrite, Container container)
         {
             var books = NoSqlTestData.CreateDummyBooks(totalToWrite);
-            using (new TimeThings(_output, $"CosmosDb write out {totalToWrite} books", totalToWrite))
+            using (new TimeThings(_output, $"CosmosDb write out {totalToWrite} books"))
             {
                 foreach (var itemToInsert in books)
                 {
@@ -167,10 +167,8 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
             }
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1000)]
-        public async Task TestCosmosDbDirectReadViaSqlOk(int offset)
+        [Fact]
+        public async Task TestCosmosDbDirectReadViaSqlOk()
         {
             //SETUP
             var config = AppSettings.GetConfiguration();
@@ -181,12 +179,21 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
             var container = (await database.CreateContainerIfNotExistsAsync("BulkLoad", "/__partitionKey")).Container;
 
             //ATTEMPT
-            using (new TimeThings(_output, $"read all via Cosmos SQL"))
+            await TimeReadDirect(10, container);
+            await TimeReadDirect(100, container);
+            await TimeReadDirect(100, container);
+            await TimeReadDirect(10, container);
+            await TimeReadDirect(100, container);
+        }
+
+        private async Task TimeReadDirect(int numLoad, Container container)
+        {
+            using (new TimeThings(_output, $"read {numLoad} via Cosmos SQL"))
             {
-                var booksQuery = container.GetItemQueryIterator<BookListNoSql>(new QueryDefinition($"SELECT * FROM c OFFSET {offset} LIMIT 100"));
+                var booksQuery =
+                    container.GetItemQueryIterator<BookListNoSql>(
+                        new QueryDefinition($"SELECT * FROM c OFFSET 0 LIMIT {numLoad}"));
                 var books = (await booksQuery.ReadNextAsync()).ToList();
-                //VERIFY
-                _output.WriteLine($"Read {books.Count} Books");
             }
         }
 
@@ -248,7 +255,7 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
         {
             using (new TimeThings(_output, $"read {numRead} books via EF Core"))
             {
-                var books = await noSqlContext.Books.Take(numRead).ToListAsync();
+                var books = await noSqlContext.Books.AsNoTracking().Take(numRead).ToListAsync();
             }
         }
 
@@ -280,7 +287,7 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
         {
             using (new TimeThings(_output, $"read 100 with offset {offset} via EF Core"))
             {
-                var books = await noSqlContext.Books.Skip(offset).Take(100).ToListAsync();
+                var books = await noSqlContext.Books.AsNoTracking().Skip(offset).Take(100).ToListAsync();
             }
         }
 

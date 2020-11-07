@@ -9,7 +9,7 @@ namespace DataLayer.EfClassesNoSql
 {
     public class BookListNoSql
     {
-        [JsonProperty(PropertyName = "id")]
+        //[JsonProperty(PropertyName = "id")]
         [Key]
         public Guid BookId { get; set; }
         public string Title { get; set; }

@@ -175,8 +175,10 @@ namespace Test.UnitTests.DataLayer.NoSqlDbContextTests
             CosmosClientOptions options = new CosmosClientOptions();
             CosmosClient cosmosClient = new CosmosClient(config["endpoint"], config["authKey"], options);
 
-            var database = (await cosmosClient.CreateDatabaseIfNotExistsAsync(GetType().Name)).Database;
-            var container = (await database.CreateContainerIfNotExistsAsync("BulkLoad", "/__partitionKey")).Container;
+            var database = cosmosClient.GetDatabase(GetType().Name);
+            var container = database.GetContainer("BulkLoad");
+
+            var response = await container.ReadContainerAsync();
 
             //ATTEMPT
             await TimeReadDirect(10, container);
